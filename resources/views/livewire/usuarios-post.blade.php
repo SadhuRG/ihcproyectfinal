@@ -1,9 +1,7 @@
 <div>
-    <h1 class="py-5"></h1>
 
-    <h1 class="font-black text-black text-4xl ml-10 pt-20 pb-8">
-    USUARIOS
-    </h1>
+    <div class="pt-5"></div>
+    <x-section-title title="USUARIOS" />
 
   <div class="mx-10">
     <div class="bg-white p-4 rounded-lg shadow-lg">
@@ -33,21 +31,26 @@
             <tr>
               <th scope="col" class="p-4">
                 <div class="flex items-center relative">
-                  <input id="checkbox-all-search"
+                    <input
+                    id="checkbox-all-search"
                     type="checkbox"
                     wire:model.live="selectAll"
-                    class="peer appearance-none w-5 h-5 border border-accent-300 rounded-sm checked:bg-accent-300 checked:border-accent-300 focus:outline-none focus:shadow-md focus:shadow-accent-100 :bg-gray-700 :border-gray-600 :focus:ring-blue-600 :ring-offset-gray-800" />
+                    class="peer appearance-none w-5 h-5 border-[2.5px] border-black rounded-md bg-white
+                            checked:bg-blue-600 checked:border-black
+                            focus:outline-none focus:ring-2 focus:ring-blue-400
+                            transition duration-200 shadow-md hover:shadow-lg hover:scale-110 cursor-pointer"
+                    />
 
-                  <span
-                    class="pointer-events-none absolute left-[0.5px] top-0 w-5 h-5 flex items-center justify-center text-white text-sm font-bold hidden peer-checked:flex">
+                    <span class="pointer-events-none absolute left-[1px] top-[1px] w-5 h-5 flex items-center justify-center hidden peer-checked:flex">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M5 13l4 4L19 7" />
+                        <path d="M5 13l4 4L19 7" />
                     </svg>
-                  </span>
+                    </span>
 
-                  <label for="checkbox-all-search" class="sr-only">Seleccionar todos</label>
+                    <label for="checkbox-all-search" class="sr-only">Seleccionar todos</label>
                 </div>
               </th>
+
               <th>
                 <div class="flex items-center">
                   ID
@@ -98,26 +101,31 @@
           </thead>
           <tbody>
             @foreach($datos as $usuario)
-            <tr class="bg-white border-b :bg-gray-800 :border-gray-700 hover:bg-gray-50 :hover:bg-gray-600">
+
               <td class="w-4 p-4">
                 <div class="flex items-center relative">
-                  <input id="checkbox-table-search-{{ $usuario['id'] }}"
+                    <input
+                    id="checkbox-table-search-{{ $usuario['id'] }}"
                     type="checkbox"
                     wire:model.live="selectedUsuarios"
                     value="{{ $usuario['id'] }}"
-                    class="peer appearance-none w-5 h-5 border border-accent-300 rounded-sm checked:bg-accent-300 checked:border-accent-300 focus:outline-none focus:shadow-md focus:shadow-accent-100 :focus:ring-blue-600 :ring-offset-gray-800 focus:ring-2 :bg-gray-700 :border-gray-600" />
+                    class="peer appearance-none w-5 h-5 border-2 border-black rounded-md bg-white
+                            checked:bg-blue-600 checked:border-black
+                            focus:outline-none focus:ring-2 focus:ring-blue-300
+                            transition duration-200 shadow-sm hover:scale-105 cursor-pointer"
+                    />
 
-                    <span
-                      class="pointer-events-none absolute left-[0.5px] top-0 w-5 h-5 flex items-center justify-center text-white text-sm font-bold hidden peer-checked:flex">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <span class="pointer-events-none absolute left-[1px] top-[1px] w-5 h-5 flex items-center justify-center hidden peer-checked:flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 13l4 4L19 7" />
-                      </svg>
+                    </svg>
                     </span>
 
-                  <label for="checkbox-table-search-{{ $usuario['id'] }}" class="sr-only">Seleccionar registro</label>
+                    <label for="checkbox-table-search-{{ $usuario['id'] }}" class="sr-only">Seleccionar registro</label>
                 </div>
               </td>
-              <th scope="row" class="px-6 py-4 font-medium text-gray-900 :text-white whitespace-nowrap">
+
+              <th scope="row" class="px-6 py-4 font-medium text-gray-400 :text-white whitespace-nowrap">
                 {{ $usuario['id'] }}
               </th>
               <td class="px-6 py-4">

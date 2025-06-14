@@ -3,20 +3,28 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::view('/', '/welcome');   
 
-Route::view('welcome', 'welcome')
-    ->middleware(['auth', 'verified'])
-    ->name('welcome');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Redirección automática tras login
+    Route::get('/welcome', function () {
+        $user = auth()->user();
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+        if ($user->hasRole('superadministrador')) {
+            return redirect()->route('dashboard');
+        } elseif ($user->hasRole('administrador')) {
+            return redirect()->route('dashboard');
+        } elseif ($user->hasRole('colaborador')) {
+            return redirect()->route('dashboard');
+        }
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+        return view('welcome');
+    })->name('welcome');
+
+    // Vista protegida "normal" (no Livewire)
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
