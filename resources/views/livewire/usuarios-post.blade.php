@@ -1,6 +1,7 @@
 <div>
 
-    <div class="pt-5"></div>
+    <h1 class="pt-5"></h1>
+
     <x-section-title title="USUARIOS" />
 
   <div class="mx-10">
@@ -35,8 +36,8 @@
                     id="checkbox-all-search"
                     type="checkbox"
                     wire:model.live="selectAll"
-                    class="peer appearance-none w-5 h-5 border-[2.5px] border-black rounded-md bg-white
-                            checked:bg-blue-600 checked:border-black
+                    class="peer appearance-none w-5 h-5 border-[2.5px] border-gray-500 rounded-md bg-white
+                            checked:bg-blue-600 checked:border-gray-700
                             focus:outline-none focus:ring-2 focus:ring-blue-400
                             transition duration-200 shadow-md hover:shadow-lg hover:scale-110 cursor-pointer"
                     />
@@ -109,8 +110,8 @@
                     type="checkbox"
                     wire:model.live="selectedUsuarios"
                     value="{{ $usuario['id'] }}"
-                    class="peer appearance-none w-5 h-5 border-2 border-black rounded-md bg-white
-                            checked:bg-blue-600 checked:border-black
+                    class="peer appearance-none w-5 h-5 border-2 border-gray-500 rounded-md bg-white
+                            checked:bg-blue-600 checked:border-gray-700
                             focus:outline-none focus:ring-2 focus:ring-blue-300
                             transition duration-200 shadow-sm hover:scale-105 cursor-pointer"
                     />

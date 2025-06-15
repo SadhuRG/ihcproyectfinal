@@ -1,38 +1,105 @@
 <!DOCTYPE html>
-
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
-    @include('partials.head')
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Librería Pulsar</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
-<body>
+<body class="bg-gradient-to-br from-slate-50 to-blue-100 min-h-screen">
 
     <!-- HEADER -->
-    <div class="w-full p-3 bg-blue-500 shadow-lg flex items-center fixed top-0 z-50">
+    <div class="w-full p-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 shadow-xl flex items-center fixed top-0 z-50">
 
-         <div class="w-1/4 flex items-center justify-center 2xl:pr-20">
-            <a href="{{ url('/') }}">
-                <img src="/imagenes/LOGO.jpg" alt="LibreriaPulsar - Logo" class="min-w-[100px] w-16 h-auto cursor-pointer">
+        <!-- Logo Section -->
+        <div class="w-1/4 flex items-center justify-start">
+            <a href="{{ url('/') }}" class="flex items-center space-x-3">
+                <img src="/imagenes/LOGO.jpg" alt="Pulsar - Logo" class="w-12 h-12 rounded-full shadow-lg transition-transform duration-300 hover:scale-110">
+                <span class="text-white text-2xl font-bold tracking-wide hidden md:block">Pulsar</span>
             </a>
         </div>
 
-        <!-- Menú Grande -->
-        <div class="w-3/4 flex items-center justify-end pr-10 md:pr-20 ml-[5%] relative">
-            <a href="{{ route('register') }}" class="ml-1 mr-2 px-5 py-3 flex items-center justify-center bg-black text-accent-300 font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 border-accent-300 border-2 lg:ml-2">
-                <h1 class="flex items-center justify-center text-center text-xs text-accent-300 lg:text-xl lg:text-center">Crear Cuenta</h1>
-            </a>
-            <a href="{{ route('login') }}" class="ml-1 mr-2 px-5 py-3 flex items-center justify-center bg-black hover:bg-primary-300 font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 border-accent-300 hover:border-primary-300 border-2 lg:ml-2">
-                <h1 class="flex items-center justify-center text-center text-xs text-white lg:text-xl lg:text-center">Iniciar Sesión</h1>
-            </a>
+        <!-- Search Section -->
+        <div class="w-2/4 flex items-center justify-center px-4">
+            <div class="relative w-full max-w-md">
+                <input type="text"
+                       placeholder="Buscar libro..."
+                       class="w-full px-4 py-3 pl-12 bg-white/90 backdrop-blur-sm border-0 rounded-full text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white transition-all duration-300 shadow-lg">
+                <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full transition-all duration-300 hover:scale-110">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
 
+        <!-- Navigation Section -->
+        <div class="w-1/4 flex items-center justify-end space-x-3">
+            <!-- Theme Toggle -->
+            <button class="p-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 hidden md:block">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+
+            @guest
+                <x-auth.register-button />
+                <x-auth.login-button />
+            @else
+                <x-auth.user-menu />
+            @endguest
+
+            <!-- Cart Button -->
+            <button class="relative p-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full transition-all duration-300 hover:scale-110 shadow-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
+                </svg>
+                <span id="cart-counter" class="absolute -top-2 -right-2 bg-white text-rose-500 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+            </button>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full transition-all duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-xl rounded-b-2xl md:hidden transition-all duration-300" id="mobile-menu">
+            <div class="p-4 space-y-3">
+                <a href="{{ route('register') }}"
+                    class="block w-full px-4 py-3 text-center font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all duration-300">
+                    Crear Cuenta
+                </a>
+                <a href="{{ route('login') }}"
+                    class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all duration-300">
+                    Iniciar Sesión
+                </a>
+            </div>
+        </div>
     </div>
-
     <!-- FIN HEADER -->
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
 
     {{ $slot }}
 
 </body>
-
 </html>

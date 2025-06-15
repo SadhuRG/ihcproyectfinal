@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::view('/', '/welcome');   
+Route::view('/', '/welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Redirección automática tras login
@@ -20,6 +20,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         return view('welcome');
     })->name('welcome');
+
+    Route::post('/welcome', function () {
+    Auth::logout();
+    return redirect('/');
+    })->name('logout');
+
+    Route::view('user-profile', 'user-profile')
+    ->middleware(['auth'])
+    ->name('user-profile');
+
 
     // Vista protegida "normal" (no Livewire)
     Route::get('/dashboard', function () {
