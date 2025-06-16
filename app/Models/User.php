@@ -58,4 +58,36 @@ class User extends Authenticatable
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
+
+    /**
+     * Relación uno a muchos: Un usuario puede tener muchas direcciones.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Relación uno a muchos: Un usuario puede tener muchas órdenes.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Relación uno a muchos: Un usuario puede escribir muchos comentarios.
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Relación muchos a muchos: Los libros que el usuario ha marcado como favoritos.
+     */
+    public function favoriteBooks()
+    {
+        return $this->belongsToMany(Book::class, 'book_user_favorite');
+    }
 }
