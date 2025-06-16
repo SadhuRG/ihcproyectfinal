@@ -11,12 +11,13 @@ class Address extends Model
 
     protected $fillable = [
         'user_id',
-        'address_line_1',
-        'address_line_2',
-        'city',
-        'state',
-        'postal_code',
-        'country',
+        'calle',
+        'numero_piso',
+        'numero_departamento',
+        'distrito',
+        'provincia',
+        'departamento',
+        'referencia',
     ];
 
     /**

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ShipmentType extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'cost'];
+    protected $fillable = ['nombre'];
 
     public function orders() {
         return $this->hasMany(Order::class);

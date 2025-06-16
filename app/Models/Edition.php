@@ -10,9 +10,13 @@ class Edition extends Model
     use HasFactory;
 
     protected $fillable = [
+        'editorial_id',
+        'inventorie_id',
         'book_id',
-        'format',
-        'page_count',
+        'url_portada',
+        'numero_edicion',
+        'url_pdf',
+        'precio',
     ];
 
     /**
@@ -26,9 +30,13 @@ class Edition extends Model
     /**
      * Relación uno a uno: Cada edición tiene un registro de inventario.
      */
+    public function editorial()
+    {
+        return $this->belongsTo(Editorial::class, 'editorial_id');
+    }
     public function inventory()
     {
-        return $this->hasOne(Inventory::class);
+        return $this->belongsTo(Inventory::class, 'inventorie_id');
     }
 
     /**

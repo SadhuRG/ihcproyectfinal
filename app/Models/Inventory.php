@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Inventory extends Model
 {
     use HasFactory;
-    protected $fillable = ['edition_id', 'stock'];
+    protected $fillable = ['cantidad', 'umbral'];
 
     public function edition() {
         return $this->belongsTo(Edition::class);

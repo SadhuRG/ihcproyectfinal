@@ -36,4 +36,13 @@ class Book extends Model
     {
         return $this->hasMany(Comment::class, 'book_id', 'id');
     }
+
+    public function editions() {
+        return $this->hasMany(Edition::class, 'book_id');
+    }
+
+    public function commentedUsers() {
+        return $this->belongsToMany(User::class, 'book_user_coment', 'book_id', 'user_id')
+            ->withPivot(['puntuacion', 'comentario', 'fecha_valoracion']);
+    }
 }

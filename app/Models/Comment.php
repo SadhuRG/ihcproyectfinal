@@ -15,7 +15,9 @@ class Comment extends Model
     protected $fillable = [
         'user_id',
         'book_id',
-        'comment',
+        'puntuacion',
+        'comentario',
+        'fecha_valoracion',
     ];
 
     /**
