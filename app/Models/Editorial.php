@@ -9,8 +9,10 @@ class Editorial extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
-        'name',
+        'nombre',
     ];
 
     /**

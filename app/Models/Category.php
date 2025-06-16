@@ -9,21 +9,17 @@ class Category extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
-        'name',
+        'nombre',
     ];
 
-    /**
-     * Relación muchos a muchos: Una categoría puede contener muchos libros.
-     */
     public function books()
     {
-        return $this->belongsToMany(Book::class);
+        return $this->belongsToMany(Book::class, 'book_category', 'category_id', 'book_id');
     }
 
-    /**
-     * Relación muchos a muchos: Una categoría puede tener muchas promociones.
-     */
     public function promotions()
     {
         return $this->belongsToMany(Promotion::class);

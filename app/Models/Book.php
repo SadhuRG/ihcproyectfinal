@@ -9,61 +9,31 @@ class Book extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
-        'editorial_id',
-        'title',
-        'publication_year',
-        'description',
-        'price',
-        'isbn',
-        'image_path',
+        'titulo',
+        'ISBN',
+        'descripcion',
     ];
 
-    /**
-     * Relación uno a muchos (inversa): Un libro pertenece a una editorial.
-     */
-    public function editorial()
-    {
-        return $this->belongsTo(Editorial::class);
-    }
-
-    /**
-     * Relación muchos a muchos: Un libro puede tener muchas ediciones.
-     */
-    public function editions()
-    {
-        return $this->hasMany(Edition::class);
-    }
-
-    /**
-     * Relación muchos a muchos: Un libro puede tener muchos autores.
-     */
     public function authors()
     {
-        return $this->belongsToMany(Author::class);
+        return $this->belongsToMany(Author::class, 'author_book', 'book_id', 'author_id');
     }
 
-    /**
-     * Relación muchos a muchos: Un libro puede estar en muchas categorías.
-     */
     public function categories()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class, 'book_category', 'book_id', 'category_id');
     }
 
-    /**
-     * Relación uno a muchos: Un libro puede tener muchos comentarios.
-     */
+    public function favoriteUsers()
+    {
+        return $this->belongsToMany(User::class, 'book_user_favorite', 'book_id', 'user_id');
+    }
+
     public function comments()
     {
-        return $this->hasMany(Comment::class);
-    }
-
-    /**
-     * Relación muchos a muchos: Los usuarios que han marcado este libro como favorito.
-     */
-    public function favoritedByUsers()
-    {
-        return $this->belongsToMany(User::class, 'book_user_favorite');
+        return $this->hasMany(Comment::class, 'book_id', 'id');
     }
 }
