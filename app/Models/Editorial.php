@@ -16,10 +16,10 @@ class Editorial extends Model
     ];
 
     /**
-     * Relación uno a muchos: Una editorial tiene muchos libros.
+     * Relación uno a muchos: Una editorial tiene muchas ediciones.
      */
-    public function books()
+    public function editions()
     {
-        return $this->hasMany(Book::class);
+        return $this->hasMany(Edition::class, 'editorial_id');
     }
 }

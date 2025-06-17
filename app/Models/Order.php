@@ -11,6 +11,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'address_id',
         'payment_type_id',
         'shipment_type_id',
         'fecha_orden',
@@ -55,6 +56,7 @@ class Order extends Model
      */
     public function editions()
     {
-        return $this->belongsToMany(Edition::class);
+        return $this->belongsToMany(Edition::class, 'edition_order')
+                    ->withPivot('cantidad');
     }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->integer('id', true);
             $table->unsignedBigInteger('user_id')->index('user_id');
+            $table->integer('address_id')->index('address_id'); // ← ESTO FALTA
             $table->integer('payment_type_id')->index('payment_type_id');
             $table->integer('shipment_type_id')->index('shipment_type_id');
             $table->date('fecha_orden')->nullable();

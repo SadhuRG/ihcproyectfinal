@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->foreign(['user_id'], 'orders_ibfk_1')->references(['id'])->on('users')->onUpdate('restrict')->onDelete('restrict');
-            $table->foreign(['shipment_type_id'], 'orders_ibfk_2')->references(['id'])->on('shipment_types')->onUpdate('restrict')->onDelete('restrict');
-            $table->foreign(['payment_type_id'], 'orders_ibfk_3')->references(['id'])->on('payment_types')->onUpdate('restrict')->onDelete('restrict');
+            $table->foreign(['address_id'], 'orders_ibfk_2')->references(['id'])->on('addresses')->onUpdate('restrict')->onDelete('restrict'); // ← NUEVO
+            $table->foreign(['shipment_type_id'], 'orders_ibfk_3')->references(['id'])->on('shipment_types')->onUpdate('restrict')->onDelete('restrict');
+            $table->foreign(['payment_type_id'], 'orders_ibfk_4')->references(['id'])->on('payment_types')->onUpdate('restrict')->onDelete('restrict');
         });
     }
 
@@ -25,8 +26,9 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropForeign('orders_ibfk_1');
-            $table->dropForeign('orders_ibfk_2');
+            $table->dropForeign('orders_ibfk_2'); // ← NUEVO
             $table->dropForeign('orders_ibfk_3');
+            $table->dropForeign('orders_ibfk_4');
         });
     }
 };
