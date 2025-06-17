@@ -9,6 +9,8 @@ class Edition extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'editorial_id',
         'inventorie_id',

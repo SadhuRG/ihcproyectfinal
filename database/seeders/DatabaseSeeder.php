@@ -16,13 +16,19 @@ class DatabaseSeeder extends Seeder
         // Llamamos al seeder de roles y usuarios que ya tenías
         $this->call(RolesAndUsersSeeder::class);
 
-        // Llamamos a los nuevos seeders en orden
+        // Llamamos a los seeders en orden correcto (IMPORTANTE: el orden importa!)
         $this->call([
-            ExtraUserSeeder::class,
-            AuthorSeeder::class,
-            EditorialSeeder::class,
-            CategorySeeder::class,
-            BookSeeder::class,
+            ExtraUserSeeder::class,           // Más usuarios
+            AddressSeeder::class,             // Direcciones (después de usuarios)
+            AuthorSeeder::class,              // Autores
+            EditorialSeeder::class,           // Editoriales
+            CategorySeeder::class,            // Categorías
+            BookSeeder::class,                // Libros (con relaciones autor/categoria)
+            EditionSeeder::class,             // Ediciones (después de libros/editoriales)
+            PaymentTypeSeeder::class,         // Tipos de pago
+            ShipmentTypeSeeder::class,        // Tipos de envío
+            OrderSeeder::class,               // Órdenes (después de todo lo anterior)
+            PromotionSeeder::class,           // Promociones (opcional)
         ]);
     }
 }

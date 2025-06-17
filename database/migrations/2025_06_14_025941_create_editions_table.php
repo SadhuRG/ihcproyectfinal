@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('inventorie_id')->index('inventorie_id');
             $table->integer('book_id')->index('book_id');
             $table->string('url_portada', 100)->nullable();
-            $table->string('numero_edicion', 10)->nullable();
+            $table->string('numero_edicion', 15)->nullable();
             $table->string('url_pdf', 100)->nullable();
             $table->float('precio')->nullable();
         });
