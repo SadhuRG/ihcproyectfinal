@@ -1,226 +1,80 @@
-<div>
-        <x-section-title title="DASHBOARD" />
+<!-- REEMPLAZAR TODO EL CONTENIDO DE dashboard-info.blade.php CON ESTO: -->
 
-        <!-- INFORMACION PARA DASHBOARD-->
-        <div class="grid grid-cols-4 gap-6 pl-10 pr-20 ml-1 mr-3">
-            <!-- Botón Usuarios -->
-            <div class="bg-white px-4 py-4 rounded-md shadow-md bg-transparent text-[#000000] flex items-center flex-1">
+@livewire('dashboard-stats')
+
+<!-- Opcional: Agregar más secciones con datos reales -->
+<div class="mx-10 mt-10">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Resumen Rápido</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Últimas órdenes -->
             <div>
-                <h1 class="ml-3 mb-3 text-xs md:text-sm lg:text-sm text-[#636466]">Ventas del dia</h1>
-                <h1 class="ml-3 font-medium text-xs md:text-sm lg:text-lg">40,689</h1>
-            </div>
-            <div class="bg-[#E5E4FF] p-4 py-4 rounded-lg ml-auto">
-
-            </div>
-            </div>
-
-            <!-- Botón Grupos -->
-            <div class="bg-white px-4 py-2 rounded-md shadow-md bg-transparent text-black flex items-center flex-1">
-            <div>
-                <h1 class="ml-3 mb-3 text-xs md:text-sm lg:text-sm text-[#636466]">Total de Libros vendidos</h1>
-                <h1 class="ml-3 font-medium text-xs md:text-sm lg:text-lg">500</h1>
-            </div>
-            <div class="bg-[#FFF3D6] p-4 py-4 rounded-lg ml-auto">
-                <img src="{{asset('/imagenes/icons/2.svg')}}" alt="Grupos Icon" class="w-10 h-10">
-            </div>
-            </div>
-
-            <!-- Botón Certificados -->
-            <div class="bg-white px-4 py-2 rounded-md shadow-md bg-transparent text-black flex items-center flex-1">
-            <div>
-                <h1 class="ml-3 mb-3 text-xs md:text-sm lg:text-sm text-[#636466]">Usuarios</h1>
-                <h1 class="ml-3 font-medium text-xs md:text-sm lg:text-lg">2300</h1>
-            </div>
-            <div class="bg-[#E5E4FF] p-4 py-4 rounded-lg ml-auto">
-                <img src="{{asset('/imagenes/icons/3.svg')}}" alt="Certificados Icon" class="w-10 h-10">
-            </div>
-            </div>
-
-            <!-- Botón Pendientes -->
-            <div class="bg-white px-4 py-2 rounded-md shadow-md bg-transparent text-black flex items-center flex-1">
-            <div>
-                <h1 class="ml-3 mb-3 text-xs md:text-sm lg:text-sm text-[#636466]">Total de libros disponibles</h1>
-                <h1 class="ml-3 font-medium text-xs md:text-sm lg:text-lg">1500</h1>
-            </div>
-            <div class="bg-[#FFDED1] p-4 py-4 rounded-lg ml-auto">
-                <img src="{{asset('/imagenes/icons/4.svg')}}" alt="Pendientes Icon" class="w-10 h-10">
-            </div>
-            </div>
-        </div>
-
-        <div class="mx-10 mt-5 grid grid-cols-1 md:grid-cols-2 gap-10 justify-center items-start">
-        <!-- PRIMER GRÁFICO: GÉNEROS DE LIBROS -->
-        <div class="w-full bg-white rounded-lg shadow-sm p-4 md:p-6">
-            <div class="flex justify-between pb-4 mb-4 border-b border-gray-200">
-            <div class="flex items-center">
-                <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center me-3">
-                <img src="{{ asset('icons/libro.jpg') }}" alt="Libro" class="w-8 h-8">
-                </div>
-                <div>
-                <h4 class="leading-none text-1xl font-bold text-gray-900 pb-1">
-                    Géneros de libros más vendidos
-                </h4>
+                <h4 class="font-semibold text-gray-700 mb-2">Últimas Órdenes</h4>
+                @php
+                    $ultimasOrdenes = \App\Models\Order::with('user')
+                        ->latest('fecha_orden')
+                        ->take(5)
+                        ->get();
+                @endphp
+                <div class="space-y-2">
+                    @forelse($ultimasOrdenes as $orden)
+                        <div class="flex justify-between text-sm">
+                            <span>{{ $orden->user->name }}</span>
+                            <span class="font-medium">S/ {{ number_format($orden->total, 2) }}</span>
+                        </div>
+                    @empty
+                        <p class="text-gray-500 text-sm">No hay órdenes aún</p>
+                    @endforelse
                 </div>
             </div>
-            </div>
-            <div id="column-chart" class="w-full min-h-[320px]"></div>
-        </div>
 
-        <!-- SEGUNDO GRÁFICO: VENTAS MENSUALES 2024 -->
-        <div class="w-full bg-white rounded-lg shadow-sm p-4 md:p-6">
-            <div class="flex justify-between pb-4 mb-4 border-b border-gray-200">
-            <div class="flex items-center">
-                <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center me-3">
-                <img src="{{ asset('icons/libro.jpg') }}" alt="Ventas" class="w-8 h-8">
+            <!-- Libros más vendidos -->
+            <div>
+                <h4 class="font-semibold text-gray-700 mb-2">Libros Más Vendidos</h4>
+                @php
+                    $librosMasVendidos = \App\Models\Book::select('books.*')
+                        ->join('editions', 'books.id', '=', 'editions.book_id')
+                        ->join('edition_order', 'editions.id', '=', 'edition_order.edition_id')
+                        ->selectRaw('SUM(edition_order.cantidad) as total_vendido')
+                        ->groupBy('books.id')
+                        ->orderBy('total_vendido', 'desc')
+                        ->take(5)
+                        ->get();
+                @endphp
+                <div class="space-y-2">
+                    @forelse($librosMasVendidos as $libro)
+                        <div class="text-sm">
+                            <span class="block font-medium">{{ Str::limit($libro->titulo, 25) }}</span>
+                            <span class="text-gray-500">{{ $libro->total_vendido }} vendidos</span>
+                        </div>
+                    @empty
+                        <p class="text-gray-500 text-sm">No hay ventas aún</p>
+                    @endforelse
                 </div>
-                <div>
-                <h4 class="leading-none text-1xl font-bold text-gray-900 pb-1">
-                    Ventas mensuales 2024
-                </h4>
+            </div>
+
+            <!-- Stock bajo -->
+            <div>
+                <h4 class="font-semibold text-gray-700 mb-2">Stock Bajo</h4>
+                @php
+                    $stockBajo = \App\Models\Edition::with(['book', 'inventory'])
+                        ->whereHas('inventory', function($q) {
+                            $q->whereRaw('cantidad <= umbral');
+                        })
+                        ->take(5)
+                        ->get();
+                @endphp
+                <div class="space-y-2">
+                    @forelse($stockBajo as $edition)
+                        <div class="text-sm">
+                            <span class="block font-medium">{{ Str::limit($edition->book->titulo, 20) }}</span>
+                            <span class="text-red-500">{{ $edition->inventory->cantidad }} restantes</span>
+                        </div>
+                    @empty
+                        <p class="text-green-500 text-sm">Stock saludable</p>
+                    @endforelse
                 </div>
             </div>
-            </div>
-            <div id="ventas-mensuales-chart" class="w-full min-h-[320px]"></div>
         </div>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-        <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Verify ApexCharts is loaded
-            if (typeof ApexCharts === 'undefined') {
-            console.error('ApexCharts no se cargó correctamente. Asegúrate de que la biblioteca esté incluida.');
-            return;
-            }
-
-            // First Chart: Géneros de libros más vendidos
-            const options1 = {
-            series: [{
-                name: "Ventas",
-                data: [231, 122, 63, 421, 122]
-            }],
-            chart: {
-                type: "bar",
-                height: 320,
-                toolbar: { show: false }
-            },
-            plotOptions: {
-                bar: {
-                horizontal: false,
-                columnWidth: "70%",
-                endingShape: "rounded"
-                }
-            },
-            colors: ["#1A56DB"],
-            dataLabels: {
-                enabled: false
-            },
-            xaxis: {
-                categories: ["Drama", "Comedia", "Aventura", "Romance", "Novela"],
-                labels: {
-                style: {
-                    fontSize: "12px",
-                    colors: "#333"
-                }
-                }
-            },
-            yaxis: {
-                title: {
-                text: "Ventas"
-                },
-                labels: {
-                style: {
-                    fontSize: "12px",
-                    colors: "#333"
-                }
-                }
-            },
-            tooltip: {
-                y: {
-                formatter: function(val) {
-                    return val + " libros";
-                }
-                },
-                theme: 'dark', // Ensures a light background
-            }
-            };
-
-            // Second Chart: Ventas mensuales 2024
-            const options2 = {
-            series: [{
-                name: "Ventas",
-                data: [320, 280, 290, 310, 450, 500, 470, 480, 460, 490, 520, 510]
-            }],
-            chart: {
-                type: "bar",
-                height: 320,
-                toolbar: { show: false }
-            },
-            plotOptions: {
-                bar: {
-                horizontal: false,
-                columnWidth: "70%",
-                endingShape: "rounded"
-                }
-            },
-            colors: ["#00E396"],
-            dataLabels: {
-                enabled: false
-            },
-            xaxis: {
-                categories: [
-                "Ene", "Feb", "Mar", "Abr", "May", "Jun",
-                "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-                ],
-                labels: {
-                style: {
-                    fontSize: "12px",
-                    colors: "#333"
-                }
-                }
-            },
-            yaxis: {
-                title: {
-                text: "Ventas"
-                },
-                labels: {
-                style: {
-                    fontSize: "12px",
-                    colors: "#333"
-                }
-                }
-            },
-            tooltip: {
-                y: {
-                formatter: function(val) {
-                    return val + " libros";
-                }
-                },
-                theme: 'dark', // Ensures a light background
-            }
-            };
-
-            // Render charts with validation
-            const renderChart = (selector, options) => {
-            const element = document.querySelector(selector);
-            if (element) {
-                try {
-                new ApexCharts(element, options).render();
-                } catch (error) {
-                console.error(`Error al renderizar el gráfico ${selector}:`, error);
-                }
-            } else {
-                console.error(`Elemento no encontrado: ${selector}`);
-            }
-            };
-
-            renderChart("#column-chart", options1);
-            renderChart("#ventas-mensuales-chart", options2);
-        });
-        </script>
-
-        <!-- FIN GRAFICO DE LINEAS-->
+    </div>
 </div>
