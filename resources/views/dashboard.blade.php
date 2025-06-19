@@ -1,6 +1,4 @@
 <x-layouts.app>
-    <!-- ... (código anterior sin cambios) ... -->
-
     <div class="min-h-screen flex flex-col">
     <div id="main-content" class="transition-all duration-300">
         <div class="min-h-screen flex flex-col bg-[#EBF1FD]">
@@ -98,7 +96,7 @@
                 </div>
 
                 <div id="libros" class="content-section hidden">
-                    <x-section-title title="libros"/>
+                    @livewire('libros-post')
                 </div>
 
                 <div id="inventario" class="content-section hidden">
@@ -129,7 +127,7 @@
             </section>
         </div>
 
-        <!-- SCRIPT PARA MANEJAR EL DASHBARD -->
+        <!-- SCRIPT PARA MANEJAR EL DASHBOARD -->
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const sections = document.querySelectorAll('.content-section');
