@@ -79,6 +79,7 @@ class DashboardStats extends Component
     {
         return DB::table('categories')
             ->select(
+                'categories.id',
                 'categories.nombre',
                 DB::raw('SUM(edition_order.cantidad) as total_vendido')
             )
@@ -88,9 +89,9 @@ class DashboardStats extends Component
             ->join('edition_order', 'editions.id', '=', 'edition_order.edition_id')
             ->join('orders', 'edition_order.order_id', '=', 'orders.id')
             ->where('orders.estado', 1)
-            ->groupBy('categories.id', 'categories.nombre')
+            ->groupBy('categories.id', 'categories.nombre') // ← Incluir ambas columnas
             ->orderBy('total_vendido', 'desc')
-            ->limit(5) // Top 5 categorías
+            ->limit(5)
             ->get();
     }
 
