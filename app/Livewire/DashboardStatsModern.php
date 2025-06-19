@@ -9,19 +9,25 @@ use App\Models\User;
 use App\Models\Edition;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class DashboardStatsModern extends Component
 {
+    // Métricas principales
     public $ventasDelDia;
     public $totalLibrosVendidos;
     public $totalUsuarios;
     public $librosDisponibles;
+
+    // Datos para gráficos
     public $ventasMensuales;
     public $ventasPorCategoria;
-    public $crecimientoVentas;
-    public $nuevosUsuariosHoy;
+
+    // Datos para paneles de resumen
     public $stockBajo;
+    public $ultimasOrdenes;
+    public $librosMasVendidos;
 
     public function mount()
     {
@@ -30,34 +36,37 @@ class DashboardStatsModern extends Component
 
     public function cargarEstadisticas()
     {
-        // Métricas principales
-        $this->ventasDelDia = Order::whereDate('fecha_orden', today())
-            ->where('estado', 1)
-            ->sum('total');
-
-        $this->totalLibrosVendidos = DB::table('edition_order')
-            ->join('orders', 'orders.id', '=', 'edition_order.order_id')
-            ->where('orders.estado', 1)
-            ->sum('edition_order.cantidad');
-
+        // 1. Métricas principales
+        $this->ventasDelDia = Order::whereDate('fecha_orden', today())->where('estado', 1)->sum('total');
+        $this->totalLibrosVendidos = DB::table('edition_order')->join('orders', 'orders.id', '=', 'edition_order.order_id')->where('orders.estado', 1)->sum('edition_order.cantidad');
         $this->totalUsuarios = User::count();
+        $this->librosDisponibles = DB::table('inventories')->sum('cantidad');
 
-        $this->librosDisponibles = DB::table('inventories')
-            ->join('editions', 'editions.inventorie_id', '=', 'inventories.id')
-            ->sum('inventories.cantidad');
+        // 2. Datos para gráficos
+        $this->ventasMensuales = $this->getVentasMensuales();
+        $this->ventasPorCategoria = $this->getVentasPorCategoria();
 
-        // Libros con stock bajo
-        $this->stockBajo = DB::table('inventories')
-            ->join('editions', 'editions.inventorie_id', '=', 'inventories.id')
-            ->join('books', 'editions.book_id', '=', 'books.id')
-            ->select('books.titulo', 'inventories.cantidad', 'inventories.umbral')
-            ->whereRaw('inventories.cantidad <= inventories.umbral')
+        // 3. Datos para paneles de resumen (lógica traída de tu dashboard original)
+        $this->ultimasOrdenes = Order::with('user')->latest('fecha_orden')->take(5)->get();
+
+        $this->librosMasVendidos = DB::table('books')
+            ->select('books.titulo', DB::raw('SUM(edition_order.cantidad) as total_vendido'))
+            ->join('editions', 'books.id', '=', 'editions.book_id')
+            ->join('edition_order', 'editions.id', '=', 'edition_order.edition_id')
+            ->join('orders', 'edition_order.order_id', '=', 'orders.id')
+            ->where('orders.estado', 1)
+            ->groupBy('books.id', 'books.titulo')
+            ->orderBy('total_vendido', 'desc')
             ->limit(5)
             ->get();
 
-        // Datos para gráficos
-        $this->ventasMensuales = $this->getVentasMensuales();
-        $this->ventasPorCategoria = $this->getVentasPorCategoria();
+        $this->stockBajo = DB::table('editions')
+            ->join('books', 'editions.book_id', '=', 'books.id')
+            ->join('inventories', 'editions.inventorie_id', '=', 'inventories.id')
+            ->select('books.titulo', 'inventories.cantidad')
+            ->whereRaw('inventories.cantidad <= inventories.umbral')
+            ->limit(5)
+            ->get();
     }
 
     private function getVentasMensuales()
@@ -70,25 +79,19 @@ class DashboardStatsModern extends Component
             ->where('estado', 1)
             ->groupBy('mes')
             ->orderBy('mes')
-            ->get()
-            ->keyBy('mes');
+            ->get()->keyBy('mes');
 
         $ventasMensuales = [];
         for ($i = 1; $i <= 12; $i++) {
             $ventasMensuales[] = $ventas->get($i)->total_ventas ?? 0;
         }
-
         return $ventasMensuales;
     }
 
     private function getVentasPorCategoria()
     {
         return DB::table('categories')
-            ->select(
-                'categories.id',
-                'categories.nombre',
-                DB::raw('SUM(edition_order.cantidad) as total_vendido')
-            )
+            ->select('categories.nombre', DB::raw('SUM(edition_order.cantidad) as total_vendido'))
             ->join('book_category', 'categories.id', '=', 'book_category.category_id')
             ->join('books', 'book_category.book_id', '=', 'books.id')
             ->join('editions', 'books.id', '=', 'editions.book_id')
