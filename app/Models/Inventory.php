@@ -14,6 +14,6 @@ class Inventory extends Model
     protected $fillable = ['cantidad', 'umbral'];
 
     public function edition() {
-        return $this->belongsTo(Edition::class);
+        return $this->hasOne(Edition::class, 'inventorie_id');
     }
 }
