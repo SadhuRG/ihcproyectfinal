@@ -35,6 +35,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('dashboard');
+
+    // Ruta para el componente de pedidos
+    Route::get('/pedidos', function () {
+        return view('pedidos');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('pedidos');
 });
 
 require __DIR__.'/auth.php';

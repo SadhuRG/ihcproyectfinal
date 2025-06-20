@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Promotion;
 use App\Models\Category;
 use App\Models\Edition;
+use Carbon\Carbon;
 
 class PromotionSeeder extends Seeder
 {
@@ -35,14 +36,33 @@ class PromotionSeeder extends Seeder
             ],
         ];
 
-        foreach ($promotions as $promoData) {
-            $promotion = Promotion::create($promoData);
+        // Fecha base para las promociones (últimos 6 meses)
+        $baseDate = Carbon::now()->subMonths(6);
+
+        foreach ($promotions as $index => $promoData) {
+            // Cada promoción se crea con un intervalo
+            $promotionDate = $baseDate->copy()->addDays($index * 30);
+            
+            $promotion = Promotion::create([
+                'nombre' => $promoData['nombre'],
+                'tipo' => $promoData['tipo'],
+                'modalidad_promocion' => $promoData['modalidad_promocion'],
+                'cantidad' => $promoData['cantidad'],
+                'created_at' => $promotionDate,
+                'updated_at' => $promotionDate,
+            ]);
 
             // Asignar promociones a categorías o libros
             if ($promoData['tipo'] === 'categoria') {
-                $promotion->categories()->attach($categories->random(2)->pluck('id'));
+                $promotion->categories()->attach($categories->random(2)->pluck('id'), [
+                    'created_at' => $promotionDate,
+                    'updated_at' => $promotionDate,
+                ]);
             } elseif ($promoData['tipo'] === 'libro') {
-                $promotion->editions()->attach($editions->random(3)->pluck('id'));
+                $promotion->editions()->attach($editions->random(3)->pluck('id'), [
+                    'created_at' => $promotionDate,
+                    'updated_at' => $promotionDate,
+                ]);
             }
         }
     }

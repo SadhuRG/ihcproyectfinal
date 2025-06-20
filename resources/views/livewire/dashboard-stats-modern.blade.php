@@ -115,7 +115,7 @@
             <div id="categorias" class="content-section hidden">@livewire('categorias-post')</div>
             <div id="editoriales" class="content-section hidden">@livewire('editoriales-post')</div>
             <div id="inventario" class="content-section hidden"><x-section-title title="Inventario" /></div>
-            <div id="pedidos" class="content-section hidden"><x-section-title title="Pedidos" /></div>
+            <div id="pedidos" class="content-section hidden">@livewire('pedidos-post')</div>
             <div id="usuarios" class="content-section hidden">@livewire('usuarios-post')</div>
             <div id="soporte-usuario" class="content-section hidden"><x-section-title title="Soporte de Usuario" /></div>
             <div id="promociones" class="content-section hidden"><x-section-title title="Promociones" /></div>
@@ -124,153 +124,153 @@
     </div>
     @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    let ventasChart;
-    let categoriasChart;
+    document.addEventListener('DOMContentLoaded', function () {
+        let ventasChart;
+        let categoriasChart;
 
-    const renderCharts = () => {
-        // Verificar que los contenedores existan y sean visibles
-        const categoriasContainer = document.querySelector("#categorias-chart");
-        const ventasContainer = document.querySelector("#ventas-mensuales-chart");
+        const renderCharts = () => {
+            // Verificar que los contenedores existan y sean visibles
+            const categoriasContainer = document.querySelector("#categorias-chart");
+            const ventasContainer = document.querySelector("#ventas-mensuales-chart");
 
-        if (!categoriasContainer || !ventasContainer) {
-            setTimeout(renderCharts, 500);
-            return;
-        }
+            if (!categoriasContainer || !ventasContainer) {
+                setTimeout(renderCharts, 500);
+                return;
+            }
 
-        // Verificar si el dashboard está visible
-        const dashboardContent = document.querySelector("#dashboard-content");
-        if (dashboardContent && dashboardContent.classList.contains('hidden')) {
-            return;
-        }
+            // Verificar si el dashboard está visible
+            const dashboardContent = document.querySelector("#dashboard-content");
+            if (dashboardContent && dashboardContent.classList.contains('hidden')) {
+                return;
+            }
 
-        const isDark = document.body.classList.contains('dark');
-        const textColor = isDark ? '#94a3b8' : '#333';
-        const gridColor = isDark ? 'rgba(71, 85, 105, 0.3)' : '#e5e7eb';
+            const isDark = document.body.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#333';
+            const gridColor = isDark ? 'rgba(71, 85, 105, 0.3)' : '#e5e7eb';
 
-        // --- Usando TUS variables PHP originales ---
-        const categoriasData = @json($ventasPorCategoria);
-        const ventasMensuales = @json($ventasMensuales);
+            // --- Usando TUS variables PHP originales ---
+            const categoriasData = @json($ventasPorCategoria);
+            const ventasMensuales = @json($ventasMensuales);
 
-        // --- Gráfico de Categorías (tu lógica original) ---
-        const categoriasOptions = {
-            series: [{
-                name: "Libros Vendidos",
-                data: categoriasData.map(item => item.total_vendido)
-            }],
-            chart: {
-                type: "bar",
-                height: 320,
-                toolbar: { show: false },
-                background: 'transparent'
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: "70%",
-                    endingShape: "rounded"
-                }
-            },
-            colors: ["#1A56DB"],
-            dataLabels: { enabled: false },
-            xaxis: {
-                categories: categoriasData.map(item => item.nombre),
-                labels: {
-                    style: { fontSize: "12px", colors: textColor }
-                }
-            },
-            yaxis: {
-                title: { text: "Libros Vendidos" },
-                labels: {
-                    style: { fontSize: "12px", colors: textColor }
-                }
-            },
-            grid: { borderColor: gridColor },
-            tooltip: {
-                y: {
-                    formatter: function(val) { return val + " libros"; }
+            // --- Gráfico de Categorías (tu lógica original) ---
+            const categoriasOptions = {
+                series: [{
+                    name: "Libros Vendidos",
+                    data: categoriasData.map(item => item.total_vendido)
+                }],
+                chart: {
+                    type: "bar",
+                    height: 320,
+                    toolbar: { show: false },
+                    background: 'transparent'
                 },
-                theme: isDark ? 'dark' : 'light'
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: "70%",
+                        endingShape: "rounded"
+                    }
+                },
+                colors: ["#1A56DB"],
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: categoriasData.map(item => item.nombre),
+                    labels: {
+                        style: { fontSize: "12px", colors: textColor }
+                    }
+                },
+                yaxis: {
+                    title: { text: "Libros Vendidos" },
+                    labels: {
+                        style: { fontSize: "12px", colors: textColor }
+                    }
+                },
+                grid: { borderColor: gridColor },
+                tooltip: {
+                    y: {
+                        formatter: function(val) { return val + " libros"; }
+                    },
+                    theme: isDark ? 'dark' : 'light'
+                }
+            };
+
+            // --- Gráfico de Ventas Mensuales (tu lógica original) ---
+            const ventasOptions = {
+                series: [{
+                    name: "Ventas (S/)",
+                    data: ventasMensuales
+                }],
+                chart: {
+                    type: "line",
+                    height: 320,
+                    toolbar: { show: false },
+                    background: 'transparent'
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                colors: ["#00E396"],
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: [
+                        "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                        "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+                    ],
+                    labels: {
+                        style: { fontSize: "12px", colors: textColor }
+                    }
+                },
+                yaxis: {
+                    title: { text: "Ventas (S/)" },
+                    labels: {
+                        style: { fontSize: "12px", colors: textColor },
+                        formatter: function(val) { return "S/ " + val.toFixed(0); }
+                    }
+                },
+                grid: { borderColor: gridColor },
+                tooltip: {
+                    y: {
+                        formatter: function(val) { return "S/ " + val.toFixed(2); }
+                    },
+                    theme: isDark ? 'dark' : 'light'
+                }
+            };
+
+            // Destruir instancias viejas para evitar duplicados
+            if (categoriasChart) categoriasChart.destroy();
+            if (ventasChart) ventasChart.destroy();
+
+            // Renderizar nuevos gráficos
+            try {
+                categoriasChart = new ApexCharts(categoriasContainer, categoriasOptions);
+                ventasChart = new ApexCharts(ventasContainer, ventasOptions);
+
+                categoriasChart.render();
+                ventasChart.render();
+
+                console.log('Gráficos renderizados correctamente');
+            } catch (error) {
+                console.error('Error al renderizar gráficos:', error);
             }
         };
 
-        // --- Gráfico de Ventas Mensuales (tu lógica original) ---
-        const ventasOptions = {
-            series: [{
-                name: "Ventas (S/)",
-                data: ventasMensuales
-            }],
-            chart: {
-                type: "line",
-                height: 320,
-                toolbar: { show: false },
-                background: 'transparent'
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 3
-            },
-            colors: ["#00E396"],
-            dataLabels: { enabled: false },
-            xaxis: {
-                categories: [
-                    "Ene", "Feb", "Mar", "Abr", "May", "Jun",
-                    "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-                ],
-                labels: {
-                    style: { fontSize: "12px", colors: textColor }
-                }
-            },
-            yaxis: {
-                title: { text: "Ventas (S/)" },
-                labels: {
-                    style: { fontSize: "12px", colors: textColor },
-                    formatter: function(val) { return "S/ " + val.toFixed(0); }
-                }
-            },
-            grid: { borderColor: gridColor },
-            tooltip: {
-                y: {
-                    formatter: function(val) { return "S/ " + val.toFixed(2); }
-                },
-                theme: isDark ? 'dark' : 'light'
-            }
-        };
+        // Primera renderización con delay
+        setTimeout(renderCharts, 500);
 
-        // Destruir instancias viejas para evitar duplicados
-        if (categoriasChart) categoriasChart.destroy();
-        if (ventasChart) ventasChart.destroy();
-
-        // Renderizar nuevos gráficos
-        try {
-            categoriasChart = new ApexCharts(categoriasContainer, categoriasOptions);
-            ventasChart = new ApexCharts(ventasContainer, ventasOptions);
-
-            categoriasChart.render();
-            ventasChart.render();
-
-            console.log('Gráficos renderizados correctamente');
-        } catch (error) {
-            console.error('Error al renderizar gráficos:', error);
-        }
-    };
-
-    // Primera renderización con delay
-    setTimeout(renderCharts, 500);
-
-    // Escuchar cambio de tema para re-renderizar con nuevos colores
-    window.addEventListener('theme-changed', () => {
-        setTimeout(renderCharts, 200);
-    });
-
-    // Renderizar cuando se haga clic en Dashboard
-    const dashboardLink = document.querySelector('[data-section="dashboard-content"]');
-    if (dashboardLink) {
-        dashboardLink.addEventListener('click', () => {
+        // Escuchar cambio de tema para re-renderizar con nuevos colores
+        window.addEventListener('theme-changed', () => {
             setTimeout(renderCharts, 200);
         });
-    }
-});
+
+        // Renderizar cuando se haga clic en Dashboard
+        const dashboardLink = document.querySelector('[data-section="dashboard-content"]');
+        if (dashboardLink) {
+            dashboardLink.addEventListener('click', () => {
+                setTimeout(renderCharts, 200);
+            });
+        }
+    });
 </script>
 @endpush
 </div>

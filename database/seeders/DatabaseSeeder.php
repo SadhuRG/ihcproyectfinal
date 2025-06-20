@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
             EditionSeeder::class,             // Ediciones (después de libros/editoriales)
             PaymentTypeSeeder::class,         // Tipos de pago
             ShipmentTypeSeeder::class,        // Tipos de envío
-            OrderSeeder::class,               // Órdenes (después de todo lo anterior)
+            OrderSeeder::class,               // Órdenes de los últimos 7 días
+            RealisticOrderSeeder::class,      // Órdenes realistas desde abril 2025
             PromotionSeeder::class,           // Promociones (opcional)
         ]);
     }

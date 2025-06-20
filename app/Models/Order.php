@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    public $timestamps = false;
 
     protected $fillable = [
         'user_id',
@@ -18,6 +17,12 @@ class Order extends Model
         'fecha_orden',
         'estado',
         'total',
+    ];
+
+    protected $casts = [
+        'fecha_orden' => 'date',
+        'estado' => 'boolean',
+        'total' => 'decimal:2',
     ];
 
     /**
@@ -58,6 +63,47 @@ class Order extends Model
     public function editions()
     {
         return $this->belongsToMany(Edition::class, 'edition_order')
-                    ->withPivot('cantidad');
+                    ->withPivot('cantidad')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Scope para filtrar por estado
+     */
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('estado', $status);
+    }
+
+    /**
+     * Scope para filtrar por fecha
+     */
+    public function scopeByDate($query, $date)
+    {
+        return $query->whereDate('created_at', $date);
+    }
+
+    /**
+     * Scope para filtrar por usuario
+     */
+    public function scopeByUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Obtener el estado como texto
+     */
+    public function getEstadoTextAttribute()
+    {
+        return $this->estado ? 'Completado' : 'Pendiente';
+    }
+
+    /**
+     * Obtener el total formateado
+     */
+    public function getTotalFormateadoAttribute()
+    {
+        return '$' . number_format($this->total, 2);
     }
 }

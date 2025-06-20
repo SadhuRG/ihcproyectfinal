@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\PaymentType;
+use Carbon\Carbon;
 
 class PaymentTypeSeeder extends Seeder
 {
@@ -19,8 +20,19 @@ class PaymentTypeSeeder extends Seeder
             ['nombre' => 'Plin', 'estado' => true],
         ];
 
-        foreach ($paymentTypes as $type) {
-            PaymentType::create($type);
+        // Fecha base para los tipos de pago (hace 5 años)
+        $baseDate = Carbon::now()->subYears(5);
+
+        foreach ($paymentTypes as $index => $type) {
+            // Cada tipo de pago se crea con un pequeño intervalo
+            $paymentTypeDate = $baseDate->copy()->addDays($index * 7);
+            
+            PaymentType::create([
+                'nombre' => $type['nombre'],
+                'estado' => $type['estado'],
+                'created_at' => $paymentTypeDate,
+                'updated_at' => $paymentTypeDate,
+            ]);
         }
     }
 }
