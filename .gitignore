@@ -1,3 +1,4 @@
+/app/Console
 /.phpunit.cache
 /node_modules
 /public/build
