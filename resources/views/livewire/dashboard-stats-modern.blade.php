@@ -43,10 +43,14 @@
     </header>
 
     <div class="flex pt-24">
-        <aside class="sidebar-gradient w-64 h-screen fixed left-0 top-20 overflow-y-auto p-4">
+        <aside class="sidebar-gradient w-64 h-screen fixed left-0 top-20 overflow-y-auto p-4 z-40">
             <nav class="space-y-2">
                 <a href="#" onclick="showSection('dashboard-content')" data-section="dashboard-content" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path></svg><span class="font-medium">Dashboard</span></a>
                 <a href="#" onclick="showSection('libros')" data-section="libros" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg><span class="font-medium">Libros</span></a>
+
+                <a href="#" onclick="showSection('autores')" data-section="autores" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg><span class="font-medium">Autores</span></a>
+                <a href="#" onclick="showSection('categorias')" data-section="categorias" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg><span class="font-medium">Categorías</span></a>
+                <a href="#" onclick="showSection('editoriales')" data-section="editoriales" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m5-11h1m-1 4h1m-1 4h1"></path></svg><span class="font-medium">Editoriales</span></a>
                 <a href="#" onclick="showSection('inventario')" data-section="inventario" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg><span class="font-medium">Inventario</span></a>
                 <a href="#" onclick="showSection('pedidos')" data-section="pedidos" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg><span class="font-medium">Pedidos</span></a>
                 <a href="#" onclick="showSection('usuarios')" data-section="usuarios" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m9 5.197H15"></path></svg><span class="font-medium">Usuarios</span></a>
@@ -104,7 +108,12 @@
                     </div>
                 </div>
             </div>
+
             <div id="libros" class="content-section hidden">@livewire('libros-post')</div>
+
+            <div id="autores" class="content-section hidden">@livewire('autores-post')</div>
+            <div id="categorias" class="content-section hidden">@livewire('categorias-post')</div>
+            <div id="editoriales" class="content-section hidden">@livewire('editoriales-post')</div>
             <div id="inventario" class="content-section hidden"><x-section-title title="Inventario" /></div>
             <div id="pedidos" class="content-section hidden"><x-section-title title="Pedidos" /></div>
             <div id="usuarios" class="content-section hidden">@livewire('usuarios-post')</div>
