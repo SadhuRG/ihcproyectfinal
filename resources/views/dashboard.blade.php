@@ -98,7 +98,7 @@
                 </div>
 
                 <div id="libros" class="content-section hidden">
-                    <x-section-title title="libros"/>
+                    @livewire('libros-post')
                 </div>
 
                 <div id="inventario" class="content-section hidden">

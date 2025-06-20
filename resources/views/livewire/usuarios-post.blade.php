@@ -130,95 +130,227 @@
                 {{ $usuario['id'] }}
               </th>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="text"
-                  wire:model="usuarioEditado.nombre"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['nombre'] }}
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="text"
-                  wire:model="usuarioEditado.apellido"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['apellido'] }}
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="email"
-                  wire:model="usuarioEditado.email"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['email'] }}
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <select wire:model="usuarioEditado.rol"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                  <option value="administrador">Administrador</option>
-                  <option value="usuario">Usuario</option>
-                </select>
-                @else
                 <span class="px-2 py-1 rounded-full text-sm {{ $usuario['rol'] === 'administrador' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
                   {{ $usuario['rol'] }}
                 </span>
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="date"
-                  wire:model="usuarioEditado.fecha_registro"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['fecha_registro'] }}
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="date"
-                  wire:model="usuarioEditado.fecha_nacimiento"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['fecha_nacimiento'] }}
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="text"
-                  wire:model="usuarioEditado.telefono"
-                  maxlength="9"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['telefono'] }}
-                @endif
               </td>
               <td class="px-6 py-4">
-                @if($editando === $usuario['id'])
-                <input type="text"
-                  wire:model="usuarioEditado.direccion"
-                  class="w-full border-gray-300 rounded-md shadow-sm">
-                @else
                 {{ $usuario['direccion'] }}
-                @endif
               </td>
 
               <td class="px-6 py-4 text-center w-32">
                 <div class="flex items-center justify-center space-x-3">
+
                   @if($editando === $usuario['id'])
-                  <button wire:click="guardarUsuario"
-                    class="p-2 cursor-pointer bg-green-500 rounded-lg hover:scale-110 transition-transform w-10 h-10 flex items-center justify-center">
-                    <img src="{{asset('/imagenes/icons/save.svg')}}" alt="Guardar" class="w-5 h-5">
-                  </button>
-                  <button disabled
-                    class="p-2 cursor-pointer bg-red-500 opacity-50 disabled:cursor-not-allowed rounded-lg w-10 h-10 flex items-center justify-center">
-                    <img src="{{asset('/imagenes/icons/borrar.svg')}}" alt="Eliminar" class="w-5 h-5">
-                  </button>
-                  @else
+                    @if($mostrarModal)
+                        <!-- Overlay con animación -->
+                        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+                            <!-- Modal Container -->
+                            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 transform transition-all duration-300 animate-slide-up">
+
+                                <!-- Header del Modal -->
+                                <div class="relative bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-xl font-bold text-white">Editar Usuario</h2>
+                                                <p class="text-blue-100 text-sm">Actualiza la información del usuario</p>
+                                            </div>
+                                        </div>
+                                        <button wire:click="cancelarEdicion"
+                                                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors duration-200">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Contenido del Modal -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                        <!-- Campo Nombre -->
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                </svg>
+                                                <span>Nombre</span>
+                                            </label>
+                                            <input type="text"
+                                                wire:model.defer="usuarioEditado.nombre"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+
+                                        <!-- Campo Apellido -->
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                </svg>
+                                                <span>Apellido</span>
+                                            </label>
+                                            <input type="text"
+                                                wire:model.defer="usuarioEditado.apellido"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+
+                                        <!-- Campo Email -->
+                                        <div class="md:col-span-2 space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 3.26a2 2 0 001.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                </svg>
+                                                <span>Email</span>
+                                            </label>
+                                            <input type="email"
+                                                wire:model.defer="usuarioEditado.email"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+
+                                        <!-- Campo Rol -->
+                                        <div class="md:col-span-2 space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                                </svg>
+                                                <span>Rol</span>
+                                            </label>
+                                            <select wire:model.defer="usuarioEditado.rol"
+                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                                <option value="administrador" class="py-2">👑 Administrador</option>
+                                                <option value="usuario" class="py-2">👤 Usuario</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Campo Fecha de Registro -->
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                                <span>Fecha de Registro</span>
+                                            </label>
+                                            <input type="date"
+                                                wire:model.defer="usuarioEditado.fecha_registro"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+
+                                        <!-- Campo Fecha de Nacimiento -->
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                </svg>
+                                                <span>Fecha de Nacimiento</span>
+                                            </label>
+                                            <input type="date"
+                                                wire:model.defer="usuarioEditado.fecha_nacimiento"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+
+                                        <!-- Campo Teléfono -->
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.6a1 1 0 01.9.55l1.38 2.76a1 1 0 01-.26 1.26l-1.2.9a11.04 11.04 0 005.5 5.5l.9-1.2a1 1 0 011.26-.26l2.76 1.38a1 1 0 01.55.9V19a2 2 0 01-2 2h-.5C7.82 21 3 16.18 3 10.5V10a2 2 0 012-2z"/>
+                                                </svg>
+                                                <span>Teléfono</span>
+                                            </label>
+                                            <input type="tel"
+                                                wire:model.defer="usuarioEditado.telefono"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+
+                                        <!-- Campo Dirección -->
+                                        <div class="md:col-span-2 space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12l4.243-4.243a6 6 0 10-8.485 8.485L12 13.414l4.243 4.243a1 1 0 001.414-1.414z"/>
+                                                </svg>
+                                                <span>Dirección</span>
+                                            </label>
+                                            <input type="text"
+                                                wire:model.defer="usuarioEditado.direccion"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer del Modal -->
+                                <div class="bg-gray-50 px-6 py-4 rounded-b-2xl border-t border-gray-200">
+                                    <div class="flex justify-end space-x-3">
+                                        <button wire:click="cancelarEdicion"
+                                                class="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-all duration-200 font-medium flex items-center space-x-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            <span>Cancelar</span>
+                                        </button>
+                                        <button wire:click="guardarUsuario"
+                                                class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-200 transition-all duration-200 font-medium shadow-lg hover:shadow-xl flex items-center space-x-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            <span>Guardar Cambios</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estilos CSS adicionales -->
+                        <style>
+                            @keyframes fade-in {
+                                from { opacity: 0; }
+                                to { opacity: 1; }
+                            }
+
+                            @keyframes slide-up {
+                                from {
+                                    opacity: 0;
+                                    transform: translateY(20px) scale(0.95);
+                                }
+                                to {
+                                    opacity: 1;
+                                    transform: translateY(0) scale(1);
+                                }
+                            }
+
+                            .animate-fade-in {
+                                animation: fade-in 0.2s ease-out;
+                            }
+
+                            .animate-slide-up {
+                                animation: slide-up 0.3s ease-out;
+                            }
+                        </style>
+                    @endif
+                @else
                   <button wire:click="editarUsuario({{ $usuario['id'] }})"
                     class="p-2 cursor-pointer bg-blue-500 rounded-lg hover:scale-110 transition-transform w-10 h-10 flex items-center justify-center">
                     <img src="{{asset('/imagenes/icons/editar.svg')}}" alt="Editar" class="w-5 h-5">
@@ -245,42 +377,42 @@
 
       </div>
 
-      <!-- BOTONES DE PAGINACION -->
-      <div class="flex justify-between mt-3 gap-8">
-        <!-- TEXTO AGREGADO-->
+        <div class="flex justify-between items-center mt-3 gap-8">
+            <!-- Botón Borrar (sin cambios) -->
+            <div class="flex items-center gap-8 ml-4">
+                <button id="deleteMultiple"
+                wire:click="eliminarshowmodal"
+                @if(count($selectedUsuarios) < 2) disabled @endif
+                class="cursor-pointer px-4 py-3 flex items-center justify-center bg-white hover:bg-red-400 text-accent-300 font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 border-accent-300 border-2 border-black disabled:opacity-50 disabled:cursor-not-allowed">
+                <img src="{{asset('/imagenes/icons/supertrash.svg')}}" alt="Trash Icon" class="w-6 h-6 mr-2">
+                <span class="text-center text-black text-xs lg:text-sm">Borrar</span>
+                </button>
+            </div>
 
-          <div class="flex items-center gap-4 ml-4 mt-3">
-            <button id="deleteMultiple"
-              wire:click="eliminarshowmodal"
-              @if(count($selectedUsuarios) < 2) disabled @endif
-              class="cursor-pointer px-4 py-3 mb-4 flex items-center justify-center bg-white hover:bg-red-400 text-accent-300 font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 border-accent-300 border-2 border-black">
-              <img src="{{asset('/imagenes/icons/supertrash.svg')}}" alt="Trash Icon" class="w-6 h-6 mr-2">
-              <span class="text-center text-black text-xs lg:text-sm">Borrar</span>
-            </button>
-          </div>
+            <!-- Contenedor de paginación -->
+            <div class="flex items-center gap-8">
+                <!-- Botón Anterior -->
+                <button type="button"
+                wire:click="previousPage"
+                class="flex items-center justify-center cursor-pointer w-10 h-10 bg-white hover:bg-gray-200 border-2 border-black rounded-lg shadow-md text-black text-lg font-semibold transition-all duration-200 transform hover:scale-105 {{ $currentPage <= 1 ? 'opacity-50 disabled:cursor-not-allowed' : '' }}"
+                {{ $currentPage <= 1 ? 'disabled' : '' }}>
+                <span>&lt;&lt;</span>
+                </button>
 
-        <!-- Botón Anterior -->
-        <button type="button"
-          wire:click="previousPage"
-          class="flex items-center cursor-pointer px-6 border border-black text-black hover:bg-gray-100 {{ $currentPage <= 1 ? 'opacity-50 disabled:cursor-not-allowed' : '' }}"
-          {{ $currentPage <= 1 ? 'disabled' : '' }}>
-          <span class="mr-2">&lt;&lt;</span>
-          Anterior
-        </button>
+                <!-- Texto de página (centrado) -->
+                <div class="flex items-center justify-center text-sm text-black font-semibold">
+                Página {{ $currentPage }} de {{ $totalPages }}
+                </div>
 
-        <div class="text-sm text-black mt-6">
-          Página {{ $currentPage }} de {{ $totalPages }}
+                <!-- Botón Siguiente -->
+                <button type="button"
+                wire:click="nextPage"
+                class="flex items-center justify-center cursor-pointer w-10 h-10 bg-white hover:bg-gray-200 border-2 border-black rounded-lg shadow-md text-black text-lg font-semibold transition-all duration-200 transform hover:scale-105 {{ $currentPage >= $totalPages ? 'opacity-50 disabled:cursor-not-allowed' : '' }}"
+                {{ $currentPage >= $totalPages ? 'disabled' : '' }}>
+                <span>&gt;&gt;</span>
+                </button>
+            </div>
         </div>
-
-        <!-- Botón Siguiente -->
-        <button type="button"
-          wire:click="nextPage"
-          class="flex items-center cursor-pointer px-6 py-2 border border-black text-black hover:bg-gray-100 {{ $currentPage >= $totalPages ? 'opacity-50 disabled:cursor-not-allowed' : '' }}"
-          {{ $currentPage >= $totalPages ? 'disabled' : '' }}>
-          <span class="ml-2">&gt;&gt;</span>
-          Siguiente
-        </button>
-      </div>
 
     </div>
   </div>

@@ -10,7 +10,7 @@
                 <h1 class="ml-3 font-medium text-xs md:text-sm lg:text-lg">40,689</h1>
             </div>
             <div class="bg-[#E5E4FF] p-4 py-4 rounded-lg ml-auto">
-
+                <img src="{{asset('/imagenes/icons/1.svg')}}" alt="Grupos Icon" class="w-10 h-10">
             </div>
             </div>
 

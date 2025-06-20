@@ -25,6 +25,9 @@ class UsuariosPost extends Component
     public $selectedUsuarios = [];
     public $selectAll = false;
     public $eliminacionmode = 'unico';
+    public $mostrarModal = false; // nueva propiedad
+
+
 
     public function mount()
     {
@@ -52,6 +55,7 @@ class UsuariosPost extends Component
         if ($indice !== false) {
             $this->usuarioEditado = $this->datos[$indice];
             $this->editando = $id;
+            $this->mostrarModal = true; // <-- activar el modal
         }
     }
 
@@ -71,6 +75,14 @@ class UsuariosPost extends Component
             }
         }
 
+        $this->editando = null;
+        $this->usuarioEditado = [];
+        $this->mostrarModal = false; // cerrar modal
+    }
+
+    public function cancelarEdicion()
+    {
+        $this->mostrarModal = false;
         $this->editando = null;
         $this->usuarioEditado = [];
     }
