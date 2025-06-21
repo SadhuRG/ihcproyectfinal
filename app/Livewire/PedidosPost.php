@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Address;
 use App\Models\PaymentType;
 use App\Models\ShipmentType;
-use App\Models\Edition;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -40,11 +39,6 @@ class PedidosPost extends Component
     public $notificationMessage = '';
     public $notificationType = 'success';
 
-    // Propiedades de creación
-    public $showCreateModal = false;
-    public $nuevoPedido = [];
-    public $edicionesSeleccionadas = [];
-
     // Propiedades de vista detallada
     public $showDetailModal = false;
     public $pedidoDetalle = null;
@@ -55,25 +49,6 @@ class PedidosPost extends Component
     public $shipmentFilter = '';
 
     protected $paginationTheme = 'tailwind';
-
-    public function mount()
-    {
-        $this->resetNuevoPedido();
-    }
-
-    public function resetNuevoPedido()
-    {
-        $this->nuevoPedido = [
-            'user_id' => '',
-            'address_id' => '',
-            'payment_type_id' => '',
-            'shipment_type_id' => '',
-            'fecha_orden' => now()->format('Y-m-d'),
-            'estado' => 0,
-            'total' => 0
-        ];
-        $this->edicionesSeleccionadas = [];
-    }
 
     public function updatedSearch()
     {
@@ -104,54 +79,6 @@ class PedidosPost extends Component
             $this->direction = 'desc';
         }
         $this->resetPage();
-    }
-
-    /**
-     * Crea un nuevo pedido.
-     */
-    public function crearPedido()
-    {
-        $this->validate([
-            'nuevoPedido.user_id' => 'required|exists:users,id',
-            'nuevoPedido.payment_type_id' => 'required|exists:payment_types,id',
-            'nuevoPedido.shipment_type_id' => 'required|exists:shipment_types,id',
-            'nuevoPedido.fecha_orden' => 'required|date',
-            'nuevoPedido.estado' => 'required|in:0,1',
-            'nuevoPedido.total' => 'required|numeric|min:0'
-        ]);
-
-        try {
-            DB::transaction(function () {
-                // Obtener la primera dirección del usuario (en un caso real, deberías permitir seleccionar la dirección)
-                $direccion = Address::where('user_id', $this->nuevoPedido['user_id'])->first();
-
-                if (!$direccion) {
-                    throw new \Exception('El usuario no tiene direcciones registradas');
-                }
-
-                // Crear el pedido
-                $pedido = Order::create([
-                    'user_id' => $this->nuevoPedido['user_id'],
-                    'address_id' => $direccion->id,
-                    'payment_type_id' => $this->nuevoPedido['payment_type_id'],
-                    'shipment_type_id' => $this->nuevoPedido['shipment_type_id'],
-                    'fecha_orden' => $this->nuevoPedido['fecha_orden'],
-                    'estado' => $this->nuevoPedido['estado'],
-                    'total' => $this->nuevoPedido['total']
-                ]);
-            });
-
-            $this->showCreateModal = false;
-            $this->resetNuevoPedido();
-            $this->showNotification = true;
-            $this->notificationMessage = 'Pedido creado correctamente.';
-            $this->notificationType = 'success';
-
-        } catch (\Exception $e) {
-            $this->showNotification = true;
-            $this->notificationMessage = 'Error al crear el pedido: ' . $e->getMessage();
-            $this->notificationType = 'error';
-        }
     }
 
     /**
@@ -400,7 +327,6 @@ class PedidosPost extends Component
             'usuarios' => User::orderBy('name')->get(),
             'paymentTypes' => PaymentType::orderBy('nombre')->get(),
             'shipmentTypes' => ShipmentType::orderBy('nombre')->get(),
-            'editions' => Edition::with(['book', 'editorial'])->orderBy('id')->get(),
         ]);
     }
 }

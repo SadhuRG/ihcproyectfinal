@@ -227,7 +227,7 @@
 
     <!-- Modal para Editar Inventario -->
     @if($showEditModal)
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-4">
+    <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold">Editar Inventario</h3>
@@ -272,7 +272,7 @@
 
     <!-- Modal para Confirmación de Eliminación -->
     @if($showDeleteModal)
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-4">
+    <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
             <h3 class="text-lg font-semibold mb-4">Confirmar Eliminación</h3>
             @if($eliminacionmode === 'unico')
@@ -323,7 +323,7 @@
     x-init="startTimer()"
     x-show="visible"
     x-transition
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-4"
+    class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4"
     @click.self="$wire.cerrarNotificacion()">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 border-l-4 {{ $notificationType === 'success' ? 'border-green-500' : ($notificationType === 'error' ? 'border-red-500' : 'border-yellow-500') }}"
              @mouseenter="resetTimer" @click.stop>

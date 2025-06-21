@@ -114,7 +114,7 @@
 
     {{-- MODAL PARA CREAR USUARIO --}}
     @if($showCreateModal)
-    <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" @click.away="$set('showCreateModal', false)">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 class="text-xl font-semibold text-gray-800">Crear Nuevo Usuario</h3>
@@ -163,7 +163,7 @@
 
     {{-- MODAL PARA EDITAR USUARIO --}}
     @if($showEditModal)
-    <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" @click.away="$set('showEditModal', false)">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 class="text-xl font-semibold text-gray-800">Editar Usuario</h3>
@@ -207,7 +207,7 @@
 
     {{-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN --}}
     @if($showDeleteModal)
-     <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full" @click.away="$set('showDeleteModal', false)">
             <h3 class="text-lg font-semibold mb-4 text-center">Confirmar Eliminación</h3>
             @if($eliminacionmode === 'unico')

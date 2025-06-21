@@ -7,3 +7,4 @@
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
 @custom-variant light (&:where(.light, .light *));
+@custom-variant dark (&:where(.dark, .dark *));
