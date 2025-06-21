@@ -26,15 +26,6 @@
                             <option value="stock_normal">Stock normal</option>
                         </select>
                     </div>
-
-                    <!-- Botón Nuevo Inventario -->
-                    <button wire:click="$set('showCreateModal', true)"
-                        class="px-4 py-3 mb-4 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        <span class="text-xs lg:text-sm">Nuevo Inventario</span>
-                    </button>
                 </div>
 
                 @if($inventarios->count() > 0)
@@ -233,67 +224,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal para Crear Inventario -->
-    @if($showCreateModal)
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-4">
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">Crear Nuevo Inventario</h3>
-                <button wire:click="$set('showCreateModal', false)" class="text-gray-500 hover:text-gray-700">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <form wire:submit.prevent="crearInventario" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Edición del Libro *</label>
-                    <select wire:model="nuevoInventario.edition_id" required
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Seleccionar edición...</option>
-                        @foreach($ediciones as $edicion)
-                            @if(!$edicion->inventorie_id) {{-- Solo ediciones sin inventario --}}
-                                <option value="{{ $edicion->id }}">
-                                    {{ $edicion->book->titulo ?? 'Sin título' }} - {{ $edicion->editorial->nombre ?? 'Sin editorial' }} ({{ $edicion->numero_edicion }})
-                                </option>
-                            @endif
-                        @endforeach
-                    </select>
-                    @error('nuevoInventario.edition_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad Inicial *</label>
-                        <input type="number" wire:model="nuevoInventario.cantidad" required min="0"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        @error('nuevoInventario.cantidad') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Umbral Mínimo *</label>
-                        <input type="number" wire:model="nuevoInventario.umbral" required min="0"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        @error('nuevoInventario.umbral') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-4 pt-4">
-                    <button type="button" wire:click="$set('showCreateModal', false)"
-                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors">
-                        Cancelar
-                    </button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-                        Crear Inventario
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    @endif
 
     <!-- Modal para Editar Inventario -->
     @if($showEditModal)

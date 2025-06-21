@@ -64,7 +64,7 @@
             <div id="dashboard-content" class="content-section">
                 <div class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
                     <div class="metric-card rounded-2xl p-5"><h3 class="text-sm font-medium mb-2" style="color: var(--text-secondary);">Ventas de Hoy</h3><p class="text-3xl font-bold" style="color: var(--text-primary);">S/ {{ number_format($ventasDelDia, 2) }}</p></div>
-                    <div class="metric-card rounded-2xl p-5"><h3 class="text-sm font-medium mb-2" style="color: var(--text-secondary);">Libros Vendidos (Hoy)</h3><p class="text-3xl font-bold" style="color: var(--text-primary);">{{ $totalLibrosVendidos }}</p></div>
+                    <div class="metric-card rounded-2xl p-5"><h3 class="text-sm font-medium mb-2" style="color: var(--text-secondary);">Libros Vendidos</h3><p class="text-3xl font-bold" style="color: var(--text-primary);">{{ $totalLibrosVendidos }}</p></div>
                     <div class="metric-card rounded-2xl p-5"><h3 class="text-sm font-medium mb-2" style="color: var(--text-secondary);">Total Usuarios</h3><p class="text-3xl font-bold" style="color: var(--text-primary);">{{ $totalUsuarios }}</p></div>
                     <div class="metric-card rounded-2xl p-5"><h3 class="text-sm font-medium mb-2" style="color: var(--text-secondary);">Stock Total</h3><p class="text-3xl font-bold" style="color: var(--text-primary);">{{ $librosDisponibles }}</p></div>
                 </div>
@@ -114,7 +114,7 @@
             <div id="autores" class="content-section hidden">@livewire('autores-post')</div>
             <div id="categorias" class="content-section hidden">@livewire('categorias-post')</div>
             <div id="editoriales" class="content-section hidden">@livewire('editoriales-post')</div>
-            <div id="inventario" class="content-section hidden"><@livewire('inventario-post')</div>
+            <div id="inventario" class="content-section hidden">@livewire('inventario-post')</div>
             <div id="pedidos" class="content-section hidden">@livewire('pedidos-post')</div>
             <div id="usuarios" class="content-section hidden">@livewire('usuarios-post')</div>
             <div id="soporte-usuario" class="content-section hidden"><x-section-title title="Soporte de Usuario" /></div>

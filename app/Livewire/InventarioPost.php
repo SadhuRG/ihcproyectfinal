@@ -36,29 +36,7 @@ class InventarioPost extends Component
     public $notificationMessage = '';
     public $notificationType = 'success';
 
-    // Propiedades de creación
-    public $showCreateModal = false;
-    public $nuevoInventario = [];
-
-    // Para selects
-    public $ediciones = [];
-
     protected $paginationTheme = 'tailwind';
-
-    public function mount()
-    {
-        $this->ediciones = Edition::with(['book', 'editorial'])->get();
-        $this->resetNuevoInventario();
-    }
-
-    public function resetNuevoInventario()
-    {
-        $this->nuevoInventario = [
-            'edition_id' => '',
-            'cantidad' => '',
-            'umbral' => ''
-        ];
-    }
 
     public function updatedSearch()
     {
