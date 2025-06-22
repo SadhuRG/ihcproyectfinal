@@ -89,9 +89,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <!-- Header con logo -->
     <div class="text-center">
-        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
-            <img src="/imagenes/LOGO.jpg" alt="Pulsar Logo" class="w-12 h-12 rounded-xl">
-        </div>
         <h1 class="text-2xl font-bold text-white mb-1">Librería Pulsar</h1>
         <p class="text-white/80 text-sm">Bienvenido de vuelta</p>
     </div>
