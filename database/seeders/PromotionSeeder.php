@@ -42,7 +42,7 @@ class PromotionSeeder extends Seeder
         foreach ($promotions as $index => $promoData) {
             // Cada promoción se crea con un intervalo
             $promotionDate = $baseDate->copy()->addDays($index * 30);
-            
+
             $promotion = Promotion::create([
                 'nombre' => $promoData['nombre'],
                 'tipo' => $promoData['tipo'],

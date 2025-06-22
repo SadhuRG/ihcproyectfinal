@@ -118,7 +118,7 @@
             <div id="pedidos" class="content-section hidden">@livewire('pedidos-post')</div>
             <div id="usuarios" class="content-section hidden">@livewire('usuarios-post')</div>
             <div id="soporte-usuario" class="content-section hidden"><x-section-title title="Soporte de Usuario" /></div>
-            <div id="promociones" class="content-section hidden"><x-section-title title="Promociones" /></div>
+            <div id="promociones" class="content-section hidden">@livewire('promociones-post')</div>
             <div id="reportes" class="content-section hidden"><x-section-title title="Reportes" /></div>
         </main>
     </div>
