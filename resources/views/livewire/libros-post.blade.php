@@ -80,8 +80,8 @@
                                 <th scope="col" class="px-6 py-3">Autores</th>
                                 <th scope="col" class="px-6 py-3">Categorías</th>
                                 <th scope="col" class="px-6 py-3">Editorial</th>
+                                <th scope="col" class="px-6 py-3">Edición</th>
                                 <th scope="col" class="px-6 py-3">Precio</th>
-                                <th scope="col" class="px-6 py-3">Stock</th>
                                 <th scope="col" class="px-6 py-3">Descripción</th>
                                 <th scope="col" class="px-6 py-3 text-center">Acciones</th>
                             </tr>
@@ -134,21 +134,15 @@
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    <span class="font-semibold text-green-600 dark:text-green-400">
-                                        S/ {{ number_format($libro->editions->first()->precio ?? 0, 2) }}
+                                    <span class="px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
+                                        {{ $libro->editions->first()->numero_edicion ?? 'N/A' }}
                                     </span>
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    @php
-                                        $inventory = $libro->editions->first()->inventory ?? null;
-                                        $cantidad = $inventory ? $inventory->cantidad : 0;
-                                        $umbral = $inventory ? $inventory->umbral : 0;
-                                    @endphp
-                                    <span class="block {{ $cantidad <= $umbral ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-900 dark:text-gray-300' }}">
-                                        {{ $cantidad }} unidades
+                                    <span class="font-semibold text-green-600 dark:text-green-400">
+                                        S/ {{ number_format($libro->editions->first()->precio ?? 0, 2) }}
                                     </span>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">Umbral: {{ $umbral }}</span>
                                 </td>
 
                                 <td class="px-6 py-4">
@@ -207,6 +201,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal para Crear Libro -->
     @if($showCreateModal)
     <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
@@ -282,25 +277,34 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Edición *</label>
+                        <input type="text" wire:model="nuevoLibro.numero_edicion" required placeholder="Ej: 1ra Edición, 2da Edición..."
+                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        @error('nuevoLibro.numero_edicion') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio (S/) *</label>
                         <input type="number" step="0.01" wire:model="nuevoLibro.precio" required
                             class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('nuevoLibro.precio') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
+                </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Inicial *</label>
                         <input type="number" wire:model="nuevoLibro.cantidad" required
                             class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('nuevoLibro.cantidad') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
-                </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Umbral de Stock *</label>
-                    <input type="number" wire:model="nuevoLibro.umbral" required
-                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    @error('nuevoLibro.umbral') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Umbral de Stock *</label>
+                        <input type="number" wire:model="nuevoLibro.umbral" required
+                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        @error('nuevoLibro.umbral') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-4 pt-4">
@@ -393,25 +397,18 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Edición *</label>
+                        <input type="text" wire:model="libroEditado.numero_edicion" required placeholder="Ej: 1ra Edición, 2da Edición..."
+                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        @error('libroEditado.numero_edicion') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio (S/) *</label>
                         <input type="number" step="0.01" wire:model="libroEditado.precio" required
                             class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('libroEditado.precio') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock *</label>
-                        <input type="number" wire:model="libroEditado.cantidad" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        @error('libroEditado.cantidad') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Umbral de Stock *</label>
-                    <input type="number" wire:model="libroEditado.umbral" required
-                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    @error('libroEditado.umbral') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="flex justify-end space-x-4 pt-4">
