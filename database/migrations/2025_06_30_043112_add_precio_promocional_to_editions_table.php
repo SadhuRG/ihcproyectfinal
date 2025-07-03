@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('books', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->string('titulo', 100)->nullable();
-            $table->string('ISBN', 50)->nullable();
-            $table->text('descripcion')->nullable();
+        Schema::table('editions', function (Blueprint $table) {
+            $table->decimal('precio_promocional', 10, 2)->nullable()->after('precio');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('books');
+        Schema::table('editions', function (Blueprint $table) {
+            $table->dropColumn('precio_promocional');
+        });
     }
 };

@@ -1,5 +1,4 @@
 <div>
-    <h1 class="pt-5"></h1>
     <x-section-title title="GESTIÓN DE LIBROS" />
 
     <div class="mx-10">
@@ -80,8 +79,6 @@
                                 <th scope="col" class="px-6 py-3">Autores</th>
                                 <th scope="col" class="px-6 py-3">Categorías</th>
                                 <th scope="col" class="px-6 py-3">Editorial</th>
-                                <th scope="col" class="px-6 py-3">Edición</th>
-                                <th scope="col" class="px-6 py-3">Precio</th>
                                 <th scope="col" class="px-6 py-3">Descripción</th>
                                 <th scope="col" class="px-6 py-3 text-center">Acciones</th>
                             </tr>
@@ -134,23 +131,19 @@
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    <span class="px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
-                                        {{ $libro->editions->first()->numero_edicion ?? 'N/A' }}
-                                    </span>
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <span class="font-semibold text-green-600 dark:text-green-400">
-                                        S/ {{ number_format($libro->editions->first()->precio ?? 0, 2) }}
-                                    </span>
-                                </td>
-
-                                <td class="px-6 py-4">
                                     <span class="text-sm text-gray-900 dark:text-gray-300">{{ Str::limit($libro->descripcion, 50) }}</span>
                                 </td>
 
                                 <td class="px-6 py-4 text-center w-32">
                                     <div class="flex items-center justify-center space-x-3">
+                                        <button wire:click="verDetalleLibro({{ $libro->id }})"
+                                            class="p-2 bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-lg hover:scale-110 transition-transform w-10 h-10 flex items-center justify-center"
+                                            title="Ver detalles">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
                                         <button wire:click="editarLibro({{ $libro->id }})"
                                             class="p-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg hover:scale-110 transition-transform w-10 h-10 flex items-center justify-center">
                                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -383,34 +376,6 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Editorial *</label>
-                        <select wire:model="libroEditado.editorial_id" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Seleccionar...</option>
-                            @foreach($editoriales as $editorial)
-                            <option value="{{ $editorial->id }}">{{ $editorial->nombre }}</option>
-                            @endforeach
-                        </select>
-                        @error('libroEditado.editorial_id') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Edición *</label>
-                        <input type="text" wire:model="libroEditado.numero_edicion" required placeholder="Ej: 1ra Edición, 2da Edición..."
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        @error('libroEditado.numero_edicion') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio (S/) *</label>
-                        <input type="number" step="0.01" wire:model="libroEditado.precio" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        @error('libroEditado.precio') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
                 <div class="flex justify-end space-x-4 pt-4">
                     <button type="button" wire:click="$set('showEditModal', false)"
                         class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
@@ -525,6 +490,139 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
+        </div>
+    </div>
+    @endif
+
+    <!-- Modal para Ver Detalles del Libro -->
+    @if($showDetailModal)
+    <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detalles del Libro</h3>
+                <button wire:click="$set('showDetailModal', false)" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            @if($libroDetalle)
+            <div class="p-6">
+                <!-- Información del libro -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Información General</h4>
+                        <div class="space-y-2">
+                            <div>
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Título:</span>
+                                <span class="text-gray-900 dark:text-white ml-2">{{ $libroDetalle->titulo }}</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700 dark:text-gray-300">ISBN:</span>
+                                <span class="text-gray-900 dark:text-white ml-2">{{ $libroDetalle->ISBN }}</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Autores:</span>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    @foreach($libroDetalle->authors as $autor)
+                                    <span class="px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-xs">
+                                        {{ $autor->nombre }} {{ $autor->apellido }}
+                                    </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Categorías:</span>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    @foreach($libroDetalle->categories as $categoria)
+                                    <span class="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-full text-xs">
+                                        {{ $categoria->nombre }}
+                                    </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Descripción</h4>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{{ $libroDetalle->descripcion }}</p>
+                    </div>
+                </div>
+
+                <!-- Tabla de ediciones -->
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-4">Ediciones Disponibles</h4>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-600">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Portada</th>
+                                    <th scope="col" class="px-6 py-3">Edición</th>
+                                    <th scope="col" class="px-6 py-3">Editorial</th>
+                                    <th scope="col" class="px-6 py-3">Precio</th>
+                                    <th scope="col" class="px-6 py-3">Stock</th>
+                                    <th scope="col" class="px-6 py-3">Estado Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($libroDetalle->editions as $edicion)
+                                <tr class="bg-white dark:bg-gray-700 border-b dark:border-gray-600">
+                                    <td class="px-6 py-4">
+                                        <img src="{{ $edicion->url_portada }}" alt="Portada" class="h-20 w-16 object-cover rounded shadow-lg">
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
+                                            {{ $edicion->numero_edicion }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-900 dark:text-gray-300">
+                                        {{ $edicion->editorial->nombre }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="font-semibold text-green-600 dark:text-green-400">
+                                            S/ {{ number_format($edicion->precio, 2) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-900 dark:text-gray-300">
+                                        {{ $edicion->inventory->cantidad ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($edicion->inventory)
+                                            @if($edicion->inventory->cantidad > $edicion->inventory->umbral)
+                                                <span class="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-full text-xs">
+                                                    Disponible
+                                                </span>
+                                            @elseif($edicion->inventory->cantidad > 0)
+                                                <span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full text-xs">
+                                                    Stock Bajo
+                                                </span>
+                                            @else
+                                                <span class="px-2 py-1 bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200 rounded-full text-xs">
+                                                    Agotado
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-xs">
+                                                Sin Stock
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <div class="flex justify-end p-6 border-t dark:border-gray-700">
+                <button wire:click="$set('showDetailModal', false)"
+                    class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
+                    Cerrar
+                </button>
+            </div>
         </div>
     </div>
     @endif

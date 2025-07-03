@@ -1,5 +1,4 @@
 <div>
-    <h1 class="pt-5"></h1>
     <x-section-title title="GESTIÓN DE PROMOCIONES" />
 
     <div class="mx-10">

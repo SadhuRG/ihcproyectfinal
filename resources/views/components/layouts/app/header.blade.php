@@ -46,11 +46,25 @@
         <!-- Navigation Section -->
         <div class="w-1/4 flex items-center justify-end space-x-3">
             <!-- Theme Toggle -->
-            <button class="p-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 hidden md:block">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                </svg>
-            </button>
+            <div class="theme-toggle-container hidden md:block flex items-center space-x-2">
+                <!-- Dynamic Icon (Left) - Changes between Sun and Moon -->
+                <div class="flex items-center space-x-2">
+                    <div id="theme-icon-container" class="w-8 h-8">
+                        <!-- Sun Icon -->
+                        <svg id="sun-icon" class="w-8 h-8 text-yellow-300 transition-all duration-300 absolute" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <!-- Moon Icon -->
+                        <svg id="moon-icon" class="w-8 h-8 text-blue-300 transition-all duration-300 absolute opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </div>
+                    <!-- Toggle Button -->
+                    <button id="theme-toggle" class="relative w-14 h-7 bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:scale-110 flex items-center p-1" onclick="toggleTheme()">
+                        <div id="toggle-circle" class="w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300 transform translate-x-0"></div>
+                    </button>
+                </div>
+            </div>
 
             @guest
                 <x-auth.register-button />
@@ -96,6 +110,81 @@
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
+        });
+
+        // Theme toggle animation function
+        function updateThemeToggle(isDark) {
+            const toggleCircle = document.getElementById('toggle-circle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (toggleCircle && sunIcon && moonIcon) {
+                if (isDark) {
+                    // Dark mode - move circle to right, show moon
+                    toggleCircle.style.transform = 'translateX(1.75rem)';
+                    sunIcon.style.opacity = '0';
+                    moonIcon.style.opacity = '1';
+                } else {
+                    // Light mode - move circle to left, show sun
+                    toggleCircle.style.transform = 'translateX(0)';
+                    sunIcon.style.opacity = '1';
+                    moonIcon.style.opacity = '0';
+                }
+            }
+
+            // Update dashboard header toggle if it exists
+            const toggleCircleDashboard = document.getElementById('toggle-circle-dashboard');
+            const sunIconDashboard = document.getElementById('sun-icon-dashboard');
+            const moonIconDashboard = document.getElementById('moon-icon-dashboard');
+            
+            if (toggleCircleDashboard && sunIconDashboard && moonIconDashboard) {
+                if (isDark) {
+                    // Dark mode - move circle to right, show moon
+                    toggleCircleDashboard.style.transform = 'translateX(1.75rem)';
+                    sunIconDashboard.style.opacity = '0';
+                    moonIconDashboard.style.opacity = '1';
+                } else {
+                    // Light mode - move circle to left, show sun
+                    toggleCircleDashboard.style.transform = 'translateX(0)';
+                    sunIconDashboard.style.opacity = '1';
+                    moonIconDashboard.style.opacity = '0';
+                }
+            }
+        }
+
+        // Initialize theme toggle state
+        const isDarkMode = document.body.classList.contains('dark');
+        updateThemeToggle(isDarkMode);
+
+        // Listen for theme changes
+        window.addEventListener('theme-changed', () => {
+            const isDark = document.body.classList.contains('dark');
+            updateThemeToggle(isDark);
+        });
+
+        // Global toggleTheme function
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.classList.contains('dark');
+            
+            // Toggle theme
+            body.classList.toggle('dark');
+            localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+            
+            // Update toggle animations
+            updateThemeToggle(!isDark);
+            
+            // Dispatch theme change event
+            window.dispatchEvent(new CustomEvent('theme-changed'));
+        }
+
+        // Load theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDark = localStorage.getItem('theme') === 'dark';
+            if (isDark) {
+                document.body.classList.add('dark');
+            }
+            updateThemeToggle(isDark);
         });
     </script>
 

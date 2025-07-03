@@ -1,53 +1,95 @@
 <div x-data="{ openUserMenu: false }">
-    <header class="glassmorphism fixed top-0 w-full z-50 border-b" style="border-color: var(--border-color);">
-        <div class="flex items-center justify-between px-6 py-4">
-            <a href="/welcome" class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
-                    <img src="/imagenes/LOGO.jpg" alt="Pulsar Logo" class="w-8 h-8 rounded-lg">
-                </div>
+    <!-- HEADER -->
+    <div class="w-full p-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 shadow-xl flex items-center fixed top-0 z-50">
+
+        <!-- Logo Section -->
+        <div class="w-1/4 flex items-center justify-start">
+            <a href="{{ url('/') }}" class="flex items-center space-x-3">
+                <img src="/imagenes/LOGO.jpg" alt="Pulsar - Logo" class="w-12 h-12 rounded-full shadow-lg transition-transform duration-300 hover:scale-110">
                 <div>
-                    <h1 class="text-xl font-bold" style="color: var(--text-primary);">Librería Pulsar</h1>
-                    <p class="text-sm" style="color: var(--text-secondary);">Panel Administrativo</p>
+                    <span class="text-white text-2xl font-bold tracking-wide hidden md:block">Pulsar</span>
+                    <p class="text-white/80 text-sm hidden md:block">Panel Administrativo</p>
                 </div>
             </a>
+        </div>
+        <!-- Navigation Section -->
+        <div class="w-3/4 flex items-center justify-end space-x-3">
+            <!-- Theme Toggle -->
+            <div class="theme-toggle-container hidden md:block flex items-center space-x-2">
+                <!-- Dynamic Icon (Left) - Changes between Sun and Moon -->
 
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <div class="theme-toggle" onclick="toggleTheme()"><div class="theme-toggle-inner"><svg id="theme-icon" class="w-4 h-4" style="color: var(--bg-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg></div></div>
-                    <svg class="w-5 h-5" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <div class="flex items-center space-x-2">
+                    <div id="theme-icon-container-dashboard flex items-center space-x-2" class="w-8 h-8">
+                        <!-- Sun Icon -->
+                        <svg id="sun-icon-dashboard" class="w-8 h-8 text-yellow-300 transition-all duration-300 absolute" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <!-- Moon Icon -->
+                        <svg id="moon-icon-dashboard" class="w-8 h-8 text-blue-300 transition-all duration-300 absolute opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </div>
+                    <!-- Toggle Button -->
+                    <button id="theme-toggle-dashboard" class="relative w-14 h-7 bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:scale-110 flex items-center p-1" onclick="toggleTheme()">
+                        <div id="toggle-circle-dashboard" class="w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300 transform translate-x-0"></div>
+                    </button>
                 </div>
 
-                <div class="relative">
-                    <button @click="openUserMenu = !openUserMenu" class="flex items-center space-x-3 glassmorphism px-4 py-2 rounded-xl">
-                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                            <span class="text-white text-sm font-semibold">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium" style="color: var(--text-primary);">{{ Auth::user()->name }}</p>
-                            <p class="text-xs" style="color: var(--text-secondary);">Administrador</p>
-                        </div>
-                    </button>
-                    <div x-show="openUserMenu" @click.away="openUserMenu = false" x-transition class="absolute right-0 mt-2 w-48 glassmorphism rounded-xl shadow-lg py-1 z-50">
-                        <a href="#" class="block px-4 py-2 text-sm" style="color: var(--text-primary);">Mi Perfil</a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm" style="color: var(--text-primary);">
-                                Cerrar Sesión
-                            </button>
-                        </form>
+            </div>
+
+            <!-- User Menu -->
+            <div class="relative">
+                <button @click="openUserMenu = !openUserMenu" class="flex items-center space-x-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-full transition-all duration-300">
+                    <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-semibold">{{ substr(Auth::user()->name, 0, 1) }}</span>
                     </div>
+                    <div class="hidden md:block">
+                        <p class="text-sm font-medium text-white">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-white/80">Administrador</p>
+                    </div>
+                </button>
+                <div x-show="openUserMenu" @click.away="openUserMenu = false" x-transition class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-lg py-1 z-50">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Cerrar Sesión
+                        </button>
+                    </form>
                 </div>
             </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full transition-all duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
-    </header>
+
+        <!-- Mobile Menu -->
+        <div class="hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-xl rounded-b-2xl md:hidden transition-all duration-300" id="mobile-menu">
+            <div class="p-4 space-y-3">
+                <a href="#" class="block w-full px-4 py-3 text-center font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all duration-300">
+                    Mi Perfil
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all duration-300">
+                        Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- FIN HEADER -->
 
     <div class="flex pt-24">
         <aside class="sidebar-gradient w-64 h-screen fixed left-0 top-20 overflow-y-auto p-4 z-40">
             <nav class="space-y-2">
                 <a href="#" onclick="showSection('dashboard-content')" data-section="dashboard-content" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path></svg><span class="font-medium">Dashboard</span></a>
                 <a href="#" onclick="showSection('libros')" data-section="libros" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg><span class="font-medium">Libros</span></a>
-
+                <a href="#" onclick="showSection('ediciones')" data-section="ediciones" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="font-medium">Ediciones</span></a>
                 <a href="#" onclick="showSection('autores')" data-section="autores" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg><span class="font-medium">Autores</span></a>
                 <a href="#" onclick="showSection('categorias')" data-section="categorias" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg><span class="font-medium">Categorías</span></a>
                 <a href="#" onclick="showSection('editoriales')" data-section="editoriales" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m5-11h1m-1 4h1m-1 4h1"></path></svg><span class="font-medium">Editoriales</span></a>
@@ -110,6 +152,8 @@
             </div>
 
             <div id="libros" class="content-section hidden">@livewire('libros-post')</div>
+
+            <div id="ediciones" class="content-section hidden">@livewire('ediciones-post')</div>
 
             <div id="autores" class="content-section hidden">@livewire('autores-post')</div>
             <div id="categorias" class="content-section hidden">@livewire('categorias-post')</div>
@@ -270,6 +314,17 @@
                 setTimeout(renderCharts, 200);
             });
         }
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Listen for theme changes
+        window.addEventListener('theme-changed', () => {
+            setTimeout(renderCharts, 200);
+        });
     });
 </script>
 @endpush

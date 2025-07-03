@@ -1,6 +1,5 @@
 <div>
-    <h1 class="pt-5"></h1>
-    <x-section-title title="GESTIÓN DE INVENTARIOS" />
+    <x-section-title title="GESTIÓN DE INVENTARIO" />
 
     <div class="mx-10">
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg">

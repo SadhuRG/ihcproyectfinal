@@ -19,6 +19,7 @@ class Edition extends Model
         'numero_edicion',
         'url_pdf',
         'precio',
+        'precio_promocional',
     ];
 
     /**

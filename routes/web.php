@@ -40,6 +40,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pedidos', function () {
         return view('pedidos');
     })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('pedidos');
+
+    // Ruta para el componente de ediciones
+    Route::get('/ediciones', function () {
+        return view('ediciones');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('ediciones');
 });
 
 require __DIR__.'/auth.php';

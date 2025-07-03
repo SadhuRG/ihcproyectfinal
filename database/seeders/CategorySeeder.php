@@ -15,22 +15,39 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
+            'Literatura Contemporánea',
+            'Novela Histórica',
             'Ciencia Ficción',
             'Fantasía',
-            'Novela Histórica',
             'Misterio y Suspense',
-            'Biografía',
+            'Romance',
+            'Biografía y Memorias',
             'Desarrollo Personal',
-            'Tecnología',
-            'Poesía'
+            'Negocios y Economía',
+            'Tecnología e Informática',
+            'Poesía',
+            'Teatro',
+            'Ensayo',
+            'Filosofía',
+            'Psicología',
+            'Historia',
+            'Ciencias Sociales',
+            'Arte y Fotografía',
+            'Cocina y Gastronomía',
+            'Viajes y Geografía',
+            'Infantil y Juvenil',
+            'Educación',
+            'Salud y Bienestar',
+            'Religión y Espiritualidad',
+            'Política y Actualidad',
         ];
 
-        // Fecha base para las categorías (hace 3 años)
-        $baseDate = Carbon::now()->subYears(3);
+        // Fecha base para las categorías (hace 5 años)
+        $baseDate = Carbon::now()->subYears(5);
 
         foreach ($categories as $index => $categoryName) {
             // Cada categoría se crea con un pequeño intervalo
-            $categoryDate = $baseDate->copy()->addDays($index * 15);
+            $categoryDate = $baseDate->copy()->addDays($index * 10);
             
             Category::create([
                 'nombre' => $categoryName,

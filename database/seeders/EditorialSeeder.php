@@ -14,15 +14,53 @@ class EditorialSeeder extends Seeder
      */
     public function run(): void
     {
-        // Creamos 10 editoriales de ejemplo
-        for ($i = 0; $i < 10; $i++) {
-            // Fecha de creación de la editorial (últimos 10 años)
-            $editorialCreatedAt = Carbon::now()->subDays(rand(0, 3650));
+        $editorials = [
+            'Alfaguara',
+            'Planeta',
+            'Random House',
+            'Penguin Books',
+            'HarperCollins',
+            'Simon & Schuster',
+            'Bloomsbury',
+            'Salamandra',
+            'Debolsillo',
+            'Tusquets',
+            'Anagrama',
+            'Seix Barral',
+            'Grijalbo',
+            'Ediciones B',
+            'Espasa Calpe',
+            'Santillana',
+            'SM',
+            'Vicens Vives',
+            'Cátedra',
+            'Akal',
+            'Paidós',
+            'Ariel',
+            'Crítica',
+            'Temas de Hoy',
+            'Urano',
+            'Plaza & Janés',
+            'Minotauro',
+            'Debate',
+            'Aguilar',
+            'Elipse',
+            'Obelisco',
+            'Alianza',
+            'Real Academia Española',
+        ];
+
+        // Fecha base para las editoriales (últimos 20 años)
+        $baseDate = Carbon::now()->subYears(20);
+
+        foreach ($editorials as $index => $editorialName) {
+            // Cada editorial se crea con un intervalo
+            $editorialDate = $baseDate->copy()->addDays($index * 20);
             
             Editorial::create([
-                'nombre' => fake()->company() . ' Press',
-                'created_at' => $editorialCreatedAt,
-                'updated_at' => $editorialCreatedAt,
+                'nombre' => $editorialName,
+                'created_at' => $editorialDate,
+                'updated_at' => $editorialDate,
             ]);
         }
     }

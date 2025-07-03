@@ -5,7 +5,6 @@
     - Todas las clases dark: añadidas para consistencia visual
 --}}
 <div>
-    <h1 class="pt-5"></h1>
     <x-section-title title="GESTIÓN DE USUARIOS" />
 
     <div class="mx-10">
