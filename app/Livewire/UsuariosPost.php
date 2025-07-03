@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UsuariosPost extends Component
@@ -21,6 +22,9 @@ class UsuariosPost extends Component
     // Propiedades de edición (MODIFICADO para usar modal)
     public $showEditModal = false;
     public $usuarioEditado = [];
+    public $cambiarPassword = false;
+    public $nuevaPassword = '';
+    public $confirmarPassword = '';
 
     // Propiedades de eliminación
     public $showDeleteModal = false;
@@ -58,6 +62,7 @@ class UsuariosPost extends Component
             'password' => '',
             'telefono' => '',
             'fecha_n' => '',
+            'url_foto' => '',
             'rol' => 'usuario'
         ];
     }
@@ -93,10 +98,42 @@ class UsuariosPost extends Component
                 'email' => $usuario->email,
                 'telefono' => $usuario->telefono,
                 'fecha_n' => $usuario->fecha_n?->format('Y-m-d'),
+                'url_foto' => $usuario->url_foto,
                 'rol' => $usuario->roles->first()?->name ?? 'usuario'
             ];
+
+            // Resetear propiedades de cambio de contraseña
+            $this->cambiarPassword = false;
+            $this->nuevaPassword = '';
+            $this->confirmarPassword = '';
+
             $this->showEditModal = true;
         }
+    }
+
+    /**
+     * Limpia valores vacíos convirtiéndolos a null para campos específicos
+     */
+    private function limpiarDatos($datos)
+    {
+        // Convertir strings vacías a null para campos que lo requieren
+        if (isset($datos['telefono']) && $datos['telefono'] === '') {
+            $datos['telefono'] = null;
+        }
+
+        if (isset($datos['fecha_n']) && $datos['fecha_n'] === '') {
+            $datos['fecha_n'] = null;
+        }
+
+        if (isset($datos['apellido']) && $datos['apellido'] === '') {
+            $datos['apellido'] = null;
+        }
+
+        if (isset($datos['url_foto']) && $datos['url_foto'] === '') {
+            $datos['url_foto'] = null;
+        }
+
+        return $datos;
     }
 
     /**
@@ -104,7 +141,8 @@ class UsuariosPost extends Component
      */
     public function guardarUsuario()
     {
-        $this->validate([
+        // Validaciones base
+        $rules = [
             'usuarioEditado.name' => 'required|string|max:255',
             'usuarioEditado.apellido' => 'nullable|string|max:50',
             'usuarioEditado.email' => [
@@ -114,31 +152,61 @@ class UsuariosPost extends Component
             ],
             'usuarioEditado.telefono' => 'nullable|numeric|digits_between:9,15',
             'usuarioEditado.fecha_n' => 'nullable|date',
+            'usuarioEditado.url_foto' => 'nullable|url|max:100',
             'usuarioEditado.rol' => 'required|exists:roles,name'
-        ]);
+        ];
+
+        // Validaciones adicionales si se va a cambiar la contraseña
+        if ($this->cambiarPassword) {
+            $rules['nuevaPassword'] = 'required|string|min:8';
+            $rules['confirmarPassword'] = 'required|string|same:nuevaPassword';
+        }
+
+        $this->validate($rules);
 
         try {
+            DB::beginTransaction();
+
             $usuario = User::find($this->usuarioEditado['id']);
 
-            $usuario->update([
+            // Limpiar datos antes de actualizar
+            $datosLimpios = $this->limpiarDatos([
                 'name' => $this->usuarioEditado['name'],
                 'apellido' => $this->usuarioEditado['apellido'],
                 'email' => $this->usuarioEditado['email'],
                 'telefono' => $this->usuarioEditado['telefono'],
-                'fecha_n' => $this->usuarioEditado['fecha_n']
+                'fecha_n' => $this->usuarioEditado['fecha_n'],
+                'url_foto' => $this->usuarioEditado['url_foto']
             ]);
 
+            // Agregar nueva contraseña si se especificó
+            if ($this->cambiarPassword && !empty($this->nuevaPassword)) {
+                $datosLimpios['password'] = Hash::make($this->nuevaPassword);
+            }
+
+            $usuario->update($datosLimpios);
             $usuario->syncRoles([$this->usuarioEditado['rol']]);
 
+            DB::commit();
+
             $this->showEditModal = false;
-            $this->showNotification = true;
-            $this->notificationMessage = 'Usuario actualizado correctamente.';
-            $this->notificationType = 'success';
+
+            // Resetear propiedades de cambio de contraseña
+            $this->cambiarPassword = false;
+            $this->nuevaPassword = '';
+            $this->confirmarPassword = '';
+
+            $mensaje = 'Usuario actualizado correctamente.';
+            if ($this->cambiarPassword) {
+                $mensaje .= ' La contraseña también fue cambiada.';
+            }
+
+            $this->mostrarNotificacion($mensaje, 'success');
 
         } catch (\Exception $e) {
-            $this->showNotification = true;
-            $this->notificationMessage = 'Error al actualizar el usuario.';
-            $this->notificationType = 'error';
+            DB::rollBack();
+            \Log::error('Error al actualizar usuario: ' . $e->getMessage());
+            $this->mostrarNotificacion('Error al actualizar el usuario: ' . $e->getMessage(), 'error');
         }
     }
 
@@ -154,32 +222,57 @@ class UsuariosPost extends Component
             'nuevoUsuario.password' => 'required|string|min:8',
             'nuevoUsuario.telefono' => 'nullable|numeric|digits_between:9,15',
             'nuevoUsuario.fecha_n' => 'nullable|date',
+            'nuevoUsuario.url_foto' => 'nullable|url|max:100',
             'nuevoUsuario.rol' => 'required|exists:roles,name'
         ]);
 
         try {
-            $usuario = User::create([
+            DB::beginTransaction();
+
+            // Verificar que el rol existe
+            $rol = Role::where('name', $this->nuevoUsuario['rol'])->first();
+            if (!$rol) {
+                throw new \Exception('El rol especificado no existe.');
+            }
+
+            // Limpiar datos antes de crear
+            $datosLimpios = $this->limpiarDatos([
                 'name' => $this->nuevoUsuario['name'],
                 'apellido' => $this->nuevoUsuario['apellido'],
                 'email' => $this->nuevoUsuario['email'],
                 'password' => Hash::make($this->nuevoUsuario['password']),
                 'telefono' => $this->nuevoUsuario['telefono'],
-                'fecha_n' => $this->nuevoUsuario['fecha_n']
+                'fecha_n' => $this->nuevoUsuario['fecha_n'],
+                'url_foto' => $this->nuevoUsuario['url_foto']
             ]);
 
+            // Crear el usuario
+            $usuario = User::create($datosLimpios);
+
+            // Asignar rol
             $usuario->assignRole($this->nuevoUsuario['rol']);
+
+            DB::commit();
 
             $this->showCreateModal = false;
             $this->resetNuevoUsuario();
-            $this->showNotification = true;
-            $this->notificationMessage = 'Usuario creado correctamente.';
-            $this->notificationType = 'success';
+            $this->mostrarNotificacion('Usuario creado correctamente.', 'success');
 
         } catch (\Exception $e) {
-            $this->showNotification = true;
-            $this->notificationMessage = 'Error al crear el usuario.';
-            $this->notificationType = 'error';
+            DB::rollBack();
+            \Log::error('Error al crear usuario: ' . $e->getMessage());
+            $this->mostrarNotificacion('Error al crear el usuario: ' . $e->getMessage(), 'error');
         }
+    }
+
+    /**
+     * Método auxiliar para mostrar notificaciones
+     */
+    private function mostrarNotificacion($mensaje, $tipo = 'success')
+    {
+        $this->showNotification = true;
+        $this->notificationMessage = $mensaje;
+        $this->notificationType = $tipo;
     }
 
     public function confirmarEliminacion($id)
@@ -193,18 +286,23 @@ class UsuariosPost extends Component
     {
         if ($this->usuarioAEliminar) {
             try {
-                User::find($this->usuarioAEliminar)->delete();
+                DB::beginTransaction();
+
+                $usuario = User::find($this->usuarioAEliminar);
+                if ($usuario) {
+                    $usuario->delete();
+                }
+
+                DB::commit();
 
                 $this->showDeleteModal = false;
                 $this->usuarioAEliminar = null;
-                $this->showNotification = true;
-                $this->notificationMessage = 'Usuario eliminado correctamente.';
-                $this->notificationType = 'success';
+                $this->mostrarNotificacion('Usuario eliminado correctamente.', 'success');
 
             } catch (\Exception $e) {
-                $this->showNotification = true;
-                $this->notificationMessage = 'Error al eliminar el usuario.';
-                $this->notificationType = 'error';
+                DB::rollBack();
+                \Log::error('Error al eliminar usuario: ' . $e->getMessage());
+                $this->mostrarNotificacion('Error al eliminar el usuario: ' . $e->getMessage(), 'error');
             }
         }
     }
@@ -221,20 +319,22 @@ class UsuariosPost extends Component
     {
         if (count($this->selectedUsuarios) >= 2) {
             try {
+                DB::beginTransaction();
+
                 User::whereIn('id', $this->selectedUsuarios)->delete();
+
+                DB::commit();
 
                 $this->selectedUsuarios = [];
                 $this->selectAll = false;
                 $this->showDeleteModal = false;
                 $this->eliminacionmode = 'unico';
-                $this->showNotification = true;
-                $this->notificationMessage = 'Usuarios eliminados correctamente.';
-                $this->notificationType = 'success';
+                $this->mostrarNotificacion('Usuarios eliminados correctamente.', 'success');
 
             } catch (\Exception $e) {
-                $this->showNotification = true;
-                $this->notificationMessage = 'Error al eliminar los usuarios.';
-                $this->notificationType = 'error';
+                DB::rollBack();
+                \Log::error('Error al eliminar usuarios: ' . $e->getMessage());
+                $this->mostrarNotificacion('Error al eliminar los usuarios: ' . $e->getMessage(), 'error');
             }
         }
     }
@@ -250,6 +350,18 @@ class UsuariosPost extends Component
     {
         $this->showNotification = false;
         $this->notificationMessage = '';
+    }
+
+    /**
+     * Cierra el modal de edición y resetea las propiedades
+     */
+    public function cerrarModalEdicion()
+    {
+        $this->showEditModal = false;
+        $this->usuarioEditado = [];
+        $this->cambiarPassword = false;
+        $this->nuevaPassword = '';
+        $this->confirmarPassword = '';
     }
 
     public function updatedSelectAll($value)

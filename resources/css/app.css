@@ -7,3 +7,61 @@
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
 @custom-variant light (&:where(.light, .light *));
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Theme Toggle Styles */
+.theme-toggle-container {
+    position: relative;
+}
+
+#theme-toggle,
+#theme-toggle-dashboard {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+#theme-toggle:hover,
+#theme-toggle-dashboard:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+#toggle-circle,
+#toggle-circle-dashboard {
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#theme-icon-container,
+#theme-icon-container-dashboard {
+    position: relative;
+    flex-shrink: 0;
+}
+
+#sun-icon,
+#sun-icon-dashboard,
+#moon-icon,
+#moon-icon-dashboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.3s ease;
+}
+
+/* Dark mode styles for the toggle */
+.dark #theme-toggle,
+.dark #theme-toggle-dashboard {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hover effects for dark mode */
+.dark #theme-toggle:hover,
+.dark #theme-toggle-dashboard:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+}

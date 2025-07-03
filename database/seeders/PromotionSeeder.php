@@ -2,68 +2,92 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Promotion;
-use App\Models\Category;
+use App\Models\Book;
 use App\Models\Edition;
 use Carbon\Carbon;
 
 class PromotionSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $categories = Category::all();
-        $editions = Edition::all();
+        // Obtener algunos libros para aplicar promociones
+        $libros = Book::with('editions')->take(3)->get();
 
-        $promotions = [
+        $promociones = [
             [
-                'nombre' => 'Descuento Ficción 20%',
-                'tipo' => 'categoria',
-                'modalidad_promocion' => 'porcentual',
-                'cantidad' => 20,
-            ],
-            [
-                'nombre' => 'Black Friday - $15 off',
-                'tipo' => 'todos',
-                'modalidad_promocion' => 'monto fijo',
-                'cantidad' => 15,
-            ],
-            [
-                'nombre' => 'Oferta Libro del Mes',
+                'nombre' => 'Descuento Verano 2025 - El Quijote',
                 'tipo' => 'libro',
                 'modalidad_promocion' => 'porcentual',
-                'cantidad' => 30,
+                'cantidad' => 25, // 25% de descuento
+                'libro_index' => 0, // Primer libro
+                'fecha_inicio' => Carbon::now(),
+                'fecha_fin' => Carbon::now()->addMonths(2),
+            ],
+            [
+                'nombre' => 'Oferta Especial - Cien Años de Soledad',
+                'tipo' => 'libro',
+                'modalidad_promocion' => 'porcentual',
+                'cantidad' => 30, // 30% de descuento
+                'libro_index' => 1, // Segundo libro
+                'fecha_inicio' => Carbon::now(),
+                'fecha_fin' => Carbon::now()->addMonth(),
+            ],
+            [
+                'nombre' => 'Promoción de Lanzamiento - Don Juan Tenorio',
+                'tipo' => 'libro',
+                'modalidad_promocion' => 'porcentual',
+                'cantidad' => 15, // 15% de descuento
+                'libro_index' => 2, // Tercer libro
+                'fecha_inicio' => Carbon::now(),
+                'fecha_fin' => Carbon::now()->addWeeks(3),
             ],
         ];
 
-        // Fecha base para las promociones (últimos 6 meses)
-        $baseDate = Carbon::now()->subMonths(6);
+        foreach ($promociones as $promoData) {
+            // Verificar que el libro existe
+            if (!isset($libros[$promoData['libro_index']])) {
+                continue;
+            }
 
-        foreach ($promotions as $index => $promoData) {
-            // Cada promoción se crea con un intervalo
-            $promotionDate = $baseDate->copy()->addDays($index * 30);
+            $libro = $libros[$promoData['libro_index']];
             
+            // Crear la promoción
             $promotion = Promotion::create([
                 'nombre' => $promoData['nombre'],
                 'tipo' => $promoData['tipo'],
                 'modalidad_promocion' => $promoData['modalidad_promocion'],
                 'cantidad' => $promoData['cantidad'],
-                'created_at' => $promotionDate,
-                'updated_at' => $promotionDate,
             ]);
 
-            // Asignar promociones a categorías o libros
-            if ($promoData['tipo'] === 'categoria') {
-                $promotion->categories()->attach($categories->random(2)->pluck('id'), [
-                    'created_at' => $promotionDate,
-                    'updated_at' => $promotionDate,
+            // Obtener todas las ediciones del libro
+            $ediciones = $libro->editions;
+
+            foreach ($ediciones as $edicion) {
+                // Calcular el precio promocional
+                $descuento = $edicion->precio * ($promoData['cantidad'] / 100);
+                $precio_promocional = $edicion->precio - $descuento;
+
+                // Actualizar la edición con el precio promocional
+                $edicion->update([
+                    'precio_promocional' => round($precio_promocional, 2)
                 ]);
-            } elseif ($promoData['tipo'] === 'libro') {
-                $promotion->editions()->attach($editions->random(3)->pluck('id'), [
-                    'created_at' => $promotionDate,
-                    'updated_at' => $promotionDate,
+
+                // Crear la relación promoción-edición con fechas
+                $promotion->editions()->attach($edicion->id, [
+                    'fecha_inicio' => $promoData['fecha_inicio'],
+                    'fecha_fin' => $promoData['fecha_fin'],
                 ]);
             }
+
+            $this->command->info("Promoción '{$promoData['nombre']}' aplicada al libro '{$libro->titulo}' con {$promoData['cantidad']}% de descuento");
         }
+
+        $this->command->info('Promociones aplicadas exitosamente a libros específicos');
     }
 }

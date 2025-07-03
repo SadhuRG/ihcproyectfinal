@@ -31,6 +31,8 @@ class LibrosPost extends Component
     public $eliminacionmode = 'unico';
     public $showCreateModal = false;
     public $nuevoLibro = [];
+    public $showDetailModal = false;
+    public $libroDetalle = null;
 
     // Para selects
     public $autores = [];
@@ -54,6 +56,7 @@ class LibrosPost extends Component
             'ISBN' => '',
             'descripcion' => '',
             'editorial_id' => '',
+            'numero_edicion' => '',
             'precio' => '',
             'cantidad' => '',
             'umbral' => ''
@@ -80,20 +83,14 @@ class LibrosPost extends Component
 
     public function editarLibro($id)
     {
-        $libro = Book::with(['authors', 'categories', 'editions.editorial', 'editions.inventory'])->find($id);
+        $libro = Book::with(['authors', 'categories'])->find($id);
 
         if ($libro) {
-            $edicion = $libro->editions->first();
-
             $this->libroEditado = [
                 'id' => $libro->id,
                 'titulo' => $libro->titulo,
                 'ISBN' => $libro->ISBN,
-                'descripcion' => $libro->descripcion,
-                'editorial_id' => $edicion ? $edicion->editorial_id : '',
-                'precio' => $edicion ? $edicion->precio : '',
-                'cantidad' => $edicion && $edicion->inventory ? $edicion->inventory->cantidad : '',
-                'umbral' => $edicion && $edicion->inventory ? $edicion->inventory->umbral : ''
+                'descripcion' => $libro->descripcion
             ];
 
             $this->autorSeleccionado = $libro->authors->pluck('id')->toArray();
@@ -102,15 +99,18 @@ class LibrosPost extends Component
         }
     }
 
+    public function verDetalleLibro($id)
+    {
+        $this->libroDetalle = Book::with(['authors', 'categories', 'editions.editorial', 'editions.inventory'])->find($id);
+        $this->showDetailModal = true;
+    }
+
     public function guardarLibro()
     {
         $this->validate([
             'libroEditado.titulo' => 'required|string|max:100',
             'libroEditado.ISBN' => 'required|string|max:50',
-            'libroEditado.descripcion' => 'nullable|string|max:100',
-            'libroEditado.precio' => 'required|numeric|min:0',
-            'libroEditado.cantidad' => 'required|integer|min:0',
-            'libroEditado.umbral' => 'required|integer|min:0'
+            'libroEditado.descripcion' => 'nullable|string|max:100'
         ]);
 
         try {
@@ -127,22 +127,6 @@ class LibrosPost extends Component
                 // Actualizar relaciones
                 $libro->authors()->sync($this->autorSeleccionado);
                 $libro->categories()->sync($this->categoriaSeleccionada);
-
-                // Actualizar edición e inventario
-                $edicion = $libro->editions->first();
-                if ($edicion) {
-                    $edicion->update([
-                        'editorial_id' => $this->libroEditado['editorial_id'],
-                        'precio' => $this->libroEditado['precio']
-                    ]);
-
-                    if ($edicion->inventory) {
-                        $edicion->inventory->update([
-                            'cantidad' => $this->libroEditado['cantidad'],
-                            'umbral' => $this->libroEditado['umbral']
-                        ]);
-                    }
-                }
             });
 
             $this->showEditModal = false;
@@ -153,6 +137,9 @@ class LibrosPost extends Component
             $this->showNotification = true;
             $this->notificationMessage = 'Libro actualizado correctamente';
             $this->notificationType = 'success';
+
+            // Emitir evento para actualizar otros componentes
+            $this->dispatch('libroActualizado');
 
         } catch (\Exception $e) {
             $this->showNotification = true;
@@ -168,6 +155,7 @@ class LibrosPost extends Component
             'nuevoLibro.ISBN' => 'required|string|max:50|unique:books,ISBN',
             'nuevoLibro.descripcion' => 'nullable|string|max:100',
             'nuevoLibro.editorial_id' => 'required|exists:editorials,id',
+            'nuevoLibro.numero_edicion' => 'required|string|max:50',
             'nuevoLibro.precio' => 'required|numeric|min:0',
             'nuevoLibro.cantidad' => 'required|integer|min:0',
             'nuevoLibro.umbral' => 'required|integer|min:0'
@@ -182,7 +170,7 @@ class LibrosPost extends Component
                     'descripcion' => $this->nuevoLibro['descripcion']
                 ]);
 
-                // Crear inventario
+                // Crear inventario con los valores proporcionados
                 $inventario = Inventory::create([
                     'cantidad' => $this->nuevoLibro['cantidad'],
                     'umbral' => $this->nuevoLibro['umbral']
@@ -194,7 +182,7 @@ class LibrosPost extends Component
                     'inventorie_id' => $inventario->id,
                     'book_id' => $libro->id,
                     'url_portada' => '/images/covers/default.jpg',
-                    'numero_edicion' => '1ra edición',
+                    'numero_edicion' => $this->nuevoLibro['numero_edicion'],
                     'precio' => $this->nuevoLibro['precio']
                 ]);
 
@@ -210,8 +198,11 @@ class LibrosPost extends Component
             $this->showCreateModal = false;
             $this->resetNuevoLibro();
             $this->showNotification = true;
-            $this->notificationMessage = 'Libro creado correctamente';
+            $this->notificationMessage = 'Libro creado correctamente con inventario inicial establecido.';
             $this->notificationType = 'success';
+
+            // Emitir evento para actualizar otros componentes
+            $this->dispatch('libroCreado');
 
         } catch (\Exception $e) {
             $this->showNotification = true;
@@ -256,6 +247,9 @@ class LibrosPost extends Component
         $this->libroAEliminar = null;
         $this->showNotification = true;
         $this->notificationMessage = 'Libro eliminado correctamente';
+
+        // Emitir evento para actualizar otros componentes
+        $this->dispatch('libroEliminado');
     }
 
     public function eliminarshowmodal()
@@ -301,6 +295,9 @@ class LibrosPost extends Component
         $this->eliminacionmode = 'unico';
         $this->showNotification = true;
         $this->notificationMessage = 'Libros eliminados correctamente';
+
+        // Emitir evento para actualizar otros componentes
+        $this->dispatch('libroEliminado');
     }
 
     public function cancelarEliminacion()
@@ -333,7 +330,7 @@ class LibrosPost extends Component
 
     public function getLibros()
     {
-        return Book::with(['authors', 'categories', 'editions.editorial', 'editions.inventory'])
+        return Book::with(['authors', 'categories', 'editions.editorial'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('titulo', 'like', '%' . $this->search . '%')

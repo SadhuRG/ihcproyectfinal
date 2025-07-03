@@ -47,19 +47,68 @@
         // --- MANEJO DEL TEMA OSCURO ---
         function toggleTheme() {
             const body = document.body;
+            const isDark = body.classList.contains('dark');
+            
+            // Toggle theme
             body.classList.toggle('dark');
             localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+            
+            // Update toggle animations for both headers
+            updateThemeToggle(!isDark);
+            
+            // Dispatch theme change event
             window.dispatchEvent(new CustomEvent('theme-changed'));
         }
 
-        function loadTheme() {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark');
-                const icon = document.getElementById('theme-icon');
-                if (icon) {
-                    icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>`;
+        // Theme toggle animation function for both headers
+        function updateThemeToggle(isDark) {
+            // Update main header toggle
+            const toggleCircle = document.getElementById('toggle-circle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (toggleCircle && sunIcon && moonIcon) {
+                if (isDark) {
+                    // Dark mode - move circle to right, show moon
+                    toggleCircle.style.transform = 'translateX(1.75rem)';
+                    sunIcon.style.opacity = '0';
+                    moonIcon.style.opacity = '1';
+                } else {
+                    // Light mode - move circle to left, show sun
+                    toggleCircle.style.transform = 'translateX(0)';
+                    sunIcon.style.opacity = '1';
+                    moonIcon.style.opacity = '0';
                 }
             }
+
+            // Update dashboard header toggle
+            const toggleCircleDashboard = document.getElementById('toggle-circle-dashboard');
+            const sunIconDashboard = document.getElementById('sun-icon-dashboard');
+            const moonIconDashboard = document.getElementById('moon-icon-dashboard');
+            
+            if (toggleCircleDashboard && sunIconDashboard && moonIconDashboard) {
+                if (isDark) {
+                    // Dark mode - move circle to right, show moon
+                    toggleCircleDashboard.style.transform = 'translateX(1.75rem)';
+                    sunIconDashboard.style.opacity = '0';
+                    moonIconDashboard.style.opacity = '1';
+                } else {
+                    // Light mode - move circle to left, show sun
+                    toggleCircleDashboard.style.transform = 'translateX(0)';
+                    sunIconDashboard.style.opacity = '1';
+                    moonIconDashboard.style.opacity = '0';
+                }
+            }
+        }
+
+        function loadTheme() {
+            const isDark = localStorage.getItem('theme') === 'dark';
+            if (isDark) {
+                document.body.classList.add('dark');
+            }
+            
+            // Initialize toggle state
+            updateThemeToggle(isDark);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
