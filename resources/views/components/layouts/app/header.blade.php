@@ -92,14 +92,33 @@
         <!-- Mobile Menu -->
         <div class="hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-xl rounded-b-2xl md:hidden transition-all duration-300" id="mobile-menu">
             <div class="p-4 space-y-3">
-                <a href="{{ route('register') }}"
-                    class="block w-full px-4 py-3 text-center font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all duration-300">
-                    Crear Cuenta
-                </a>
-                <a href="{{ route('login') }}"
-                    class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all duration-300">
-                    Iniciar Sesión
-                </a>
+                @guest
+                    <a href="{{ route('register') }}"
+                        class="block w-full px-4 py-3 text-center font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all duration-300">
+                        Crear Cuenta
+                    </a>
+                    <a href="{{ route('login') }}"
+                        class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all duration-300">
+                        Iniciar Sesión
+                    </a>
+                @else
+                    <a href="{{ route('user-profile') }}"
+                        class="block w-full px-4 py-3 text-center font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all duration-300">
+                        Mi Perfil
+                    </a>
+                    @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
+                        <a href="{{ route('dashboard') }}"
+                            class="block w-full px-4 py-3 text-center font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all duration-300">
+                            Dashboard
+                        </a>
+                    @endif
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all duration-300">
+                            Cerrar Sesión
+                        </button>
+                    </form>
+                @endguest
             </div>
         </div>
     </div>

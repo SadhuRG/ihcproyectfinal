@@ -226,12 +226,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Libro</label>
-                        <select wire:model="nuevaEdicion.book_id" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <select wire:model.live="nuevaEdicion.book_id" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                             <option value="">Seleccionar libro</option>
                             @foreach($libros as $libro)
                             <option value="{{ $libro->id }}">{{ $libro->titulo }} ({{ $libro->ISBN }})</option>
                             @endforeach
                         </select>
+                        @if(empty($nuevaEdicion['book_id']))
+                            <p class="text-blue-600 dark:text-blue-400 text-sm mt-1">Selecciona un libro para ver las ediciones disponibles</p>
+                        @endif
                         @error('nuevaEdicion.book_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -248,7 +251,31 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Número de Edición</label>
-                        <input type="text" wire:model="nuevaEdicion.numero_edicion" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Ej: 1ra edición">
+                        <select wire:model.live="nuevaEdicion.numero_edicion" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" {{ empty($nuevaEdicion['book_id']) ? 'disabled' : '' }}>
+                            <option value="">Seleccionar edición...</option>
+                            @if(!empty($nuevaEdicion['book_id']) && count($edicionesDisponiblesFiltradas) > 0)
+                                @foreach($edicionesDisponiblesFiltradas as $edicion)
+                                    <option value="{{ $edicion }}">{{ $edicion }}</option>
+                                @endforeach
+                            @elseif(!empty($nuevaEdicion['book_id']) && count($edicionesDisponiblesFiltradas) == 0)
+                                <option value="" disabled>Todas las ediciones ya existen para este libro</option>
+                            @endif
+                        </select>
+                        
+                        <!-- Información de debug -->
+                        @if(!empty($nuevaEdicion['book_id']))
+                            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                <p>Libro seleccionado: {{ $nuevaEdicion['book_id'] }}</p>
+                                <p>Ediciones disponibles: {{ count($edicionesDisponiblesFiltradas) }}</p>
+                                @if(count($edicionesDisponiblesFiltradas) > 0)
+                                    <p>Opciones: {{ implode(', ', $edicionesDisponiblesFiltradas) }}</p>
+                                @endif
+                            </div>
+                        @endif
+                        
+                        @if(!empty($nuevaEdicion['book_id']) && count($edicionesDisponiblesFiltradas) == 0)
+                            <p class="text-yellow-600 dark:text-yellow-400 text-sm mt-1">Este libro ya tiene todas las ediciones disponibles</p>
+                        @endif
                         @error('nuevaEdicion.numero_edicion') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -301,12 +328,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Libro</label>
-                        <select wire:model="edicionEditada.book_id" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <select wire:model.live="edicionEditada.book_id" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                             <option value="">Seleccionar libro</option>
                             @foreach($libros as $libro)
                             <option value="{{ $libro->id }}">{{ $libro->titulo }} ({{ $libro->ISBN }})</option>
                             @endforeach
                         </select>
+                        @if(empty($edicionEditada['book_id']))
+                            <p class="text-blue-600 dark:text-blue-400 text-sm mt-1">Selecciona un libro para ver las ediciones disponibles</p>
+                        @endif
                         @error('edicionEditada.book_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -323,7 +353,31 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Número de Edición</label>
-                        <input type="text" wire:model="edicionEditada.numero_edicion" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Ej: 1ra edición">
+                        <select wire:model.live="edicionEditada.numero_edicion" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" {{ empty($edicionEditada['book_id']) ? 'disabled' : '' }}>
+                            <option value="">Seleccionar edición...</option>
+                            @if(!empty($edicionEditada['book_id']) && count($edicionesDisponiblesFiltradas) > 0)
+                                @foreach($edicionesDisponiblesFiltradas as $edicion)
+                                    <option value="{{ $edicion }}">{{ $edicion }}</option>
+                                @endforeach
+                            @elseif(!empty($edicionEditada['book_id']) && count($edicionesDisponiblesFiltradas) == 0)
+                                <option value="" disabled>Todas las ediciones ya existen para este libro</option>
+                            @endif
+                        </select>
+                        
+                        <!-- Información de debug para edición -->
+                        @if(!empty($edicionEditada['book_id']))
+                            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                <p>Libro seleccionado: {{ $edicionEditada['book_id'] }}</p>
+                                <p>Ediciones disponibles: {{ count($edicionesDisponiblesFiltradas) }}</p>
+                                @if(count($edicionesDisponiblesFiltradas) > 0)
+                                    <p>Opciones: {{ implode(', ', $edicionesDisponiblesFiltradas) }}</p>
+                                @endif
+                            </div>
+                        @endif
+                        
+                        @if(!empty($edicionEditada['book_id']) && count($edicionesDisponiblesFiltradas) == 0)
+                            <p class="text-yellow-600 dark:text-yellow-400 text-sm mt-1">Este libro ya tiene todas las ediciones disponibles</p>
+                        @endif
                         @error('edicionEditada.numero_edicion') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 

@@ -271,8 +271,13 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Edición *</label>
-                        <input type="text" wire:model="nuevoLibro.numero_edicion" required placeholder="Ej: 1ra Edición, 2da Edición..."
+                        <select wire:model="nuevoLibro.numero_edicion" required
                             class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Seleccionar edición...</option>
+                            @foreach($edicionesDisponibles as $edicion)
+                                <option value="{{ $edicion }}">{{ $edicion }}</option>
+                            @endforeach
+                        </select>
                         @error('nuevoLibro.numero_edicion') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -473,7 +478,7 @@
                 </div>
                 @endif
             </div>
-            <h3 class="text-lg font-semibold text-center text-gray-800 dark:text-gray-200 mb-2">
+            <h3 class="text-center text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 @if($notificationType === 'success')
                     ¡Éxito!
                 @elseif($notificationType === 'error')
@@ -490,6 +495,142 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
+        </div>
+    </div>
+    @endif
+
+    <!-- Modal para mostrar imagen ampliada -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[60] hidden">
+        <div class="relative max-w-4xl max-h-[90vh] mx-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden">
+                <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                    <h3 id="imageModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white"></h3>
+                    <button onclick="closeImageModal()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <img id="modalImage" src="" alt="Portada ampliada" class="w-full h-auto max-h-[70vh] object-contain rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openImageModal(imageSrc, title) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModalTitle').textContent = title;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        document.getElementById('imageModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        // Cerrar modal con la tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
+
+    <!-- Modal de Atención para ISBN Duplicado -->
+    @if($showIsbnDuplicateModal)
+    <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="flex items-center mb-4">
+                <div class="bg-yellow-100 dark:bg-yellow-800/30 p-3 rounded-full mr-4">
+                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Atención</h3>
+            </div>
+            
+            <p class="mb-6 text-gray-700 dark:text-gray-300">
+                El libro que estás intentando registrar ya existe en el sistema con el mismo ISBN. 
+                Si deseas agregar una nueva edición de este libro, por favor dirígete a la sección Ediciones y selecciona el libro correspondiente.
+            </p>
+            
+            @if($libroExistente)
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
+                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Libro existente:</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    <strong>Título:</strong> {{ $libroExistente->titulo }}<br>
+                    <strong>ISBN:</strong> {{ $libroExistente->ISBN }}
+                </p>
+            </div>
+            @endif
+            
+            <div class="flex justify-end space-x-4">
+                <button wire:click="cerrarModalIsbnDuplicado"
+                    class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
+                    Aceptar
+                </button>
+                <button wire:click="irAEdiciones" onclick="showSection('ediciones')"
+                    class="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
+                    Ir a Ediciones
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Modal de Advertencia para Título Similar -->
+    @if($showTitleSimilarModal)
+    <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="flex items-center mb-4">
+                <div class="bg-orange-100 dark:bg-orange-800/30 p-3 rounded-full mr-4">
+                    <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Aviso</h3>
+            </div>
+            
+            <p class="mb-6 text-gray-700 dark:text-gray-300">
+                El título que estás intentando registrar es muy similar a un libro ya existente. 
+                Si lo que necesitas es agregar una nueva edición, por favor ve a la sección Ediciones y selecciona el libro correspondiente. 
+                Si estás seguro de que se trata de un libro diferente, puedes continuar con el registro.
+            </p>
+            
+            @if($libroSimilar)
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
+                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Libro similar encontrado:</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    <strong>Título:</strong> {{ $libroSimilar->titulo }}<br>
+                    <strong>ISBN:</strong> {{ $libroSimilar->ISBN }}
+                </p>
+            </div>
+            @endif
+            
+            <div class="flex justify-end space-x-4">
+                <button wire:click="cerrarModalTituloSimilar"
+                    class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
+                    Cancelar
+                </button>
+                <button wire:click="irAEdiciones" onclick="showSection('ediciones')"
+                    class="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
+                    Ir a Ediciones
+                </button>
+                <button wire:click="continuarCreacionLibro"
+                    class="px-4 py-2 bg-green-500 dark:bg-green-600 text-white rounded hover:bg-green-600 dark:hover:bg-green-700 transition-colors">
+                    Crear Libro
+                </button>
+            </div>
         </div>
     </div>
     @endif
@@ -569,7 +710,14 @@
                                 @foreach($libroDetalle->editions as $edicion)
                                 <tr class="bg-white dark:bg-gray-700 border-b dark:border-gray-600">
                                     <td class="px-6 py-4">
-                                        <img src="{{ $edicion->url_portada }}" alt="Portada" class="h-20 w-16 object-cover rounded shadow-lg">
+                                        <div class="relative group cursor-pointer" onclick="openImageModal('{{ $edicion->url_portada }}', '{{ $edicion->book->titulo }} - {{ $edicion->numero_edicion }}')">
+                                            <img src="{{ $edicion->url_portada }}" alt="Portada" class="h-20 w-16 object-cover rounded shadow-lg transition-transform duration-200 group-hover:scale-105">
+                                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                <svg class="w-5 h-5 text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
@@ -626,4 +774,51 @@
         </div>
     </div>
     @endif
+
+    <!-- Modal para mostrar imagen ampliada -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[60] hidden">
+        <div class="relative max-w-4xl max-h-[90vh] mx-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden">
+                <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                    <h3 id="imageModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white"></h3>
+                    <button onclick="closeImageModal()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <img id="modalImage" src="" alt="Portada ampliada" class="w-full h-auto max-h-[70vh] object-contain rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openImageModal(imageSrc, title) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModalTitle').textContent = title;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        document.getElementById('imageModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        // Cerrar modal con la tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
 </div>
