@@ -57,6 +57,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         Auth::login($user);
 
+        // Redirigir según el rol del usuario (usuarios nuevos van a welcome)
         $this->redirectIntended(route('welcome', absolute: false), navigate: true);
     }
 }; ?>

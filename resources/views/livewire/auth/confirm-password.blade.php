@@ -28,7 +28,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         session(['auth.password_confirmed_at' => time()]);
 
-        $this->redirectIntended(default: route('welcome', absolute: false), navigate: true);
+        // Redirigir según el rol del usuario
+        $user = Auth::user();
+        if ($user->hasAnyRole(['superadministrador', 'administrador', 'colaborador'])) {
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        } else {
+            $this->redirectIntended(default: route('welcome', absolute: false), navigate: true);
+        }
     }
 }; ?>
 

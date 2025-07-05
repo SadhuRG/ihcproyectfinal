@@ -13,7 +13,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function sendVerification(): void
     {
         if (Auth::user()->hasVerifiedEmail()) {
+            // Redirigir según el rol del usuario
+        $user = Auth::user();
+        if ($user->hasAnyRole(['superadministrador', 'administrador', 'colaborador'])) {
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        } else {
             $this->redirectIntended(default: route('welcome', absolute: false), navigate: true);
+        }
 
             return;
         }

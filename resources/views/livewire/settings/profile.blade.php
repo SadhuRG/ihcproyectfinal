@@ -58,7 +58,13 @@ new class extends Component {
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
+            // Redirigir según el rol del usuario
+        $user = Auth::user();
+        if ($user->hasAnyRole(['superadministrador', 'administrador', 'colaborador'])) {
+            $this->redirectIntended(default: route('dashboard', absolute: false));
+        } else {
             $this->redirectIntended(default: route('welcome', absolute: false));
+        }
 
             return;
         }
