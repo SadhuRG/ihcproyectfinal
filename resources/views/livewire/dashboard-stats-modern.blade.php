@@ -49,7 +49,7 @@
                     </div>
                 </button>
                 <div x-show="openUserMenu" @click.away="openUserMenu = false" x-transition class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-lg py-1 z-50">
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
+                    <a href="{{ route('user-profile') }}"class="block rounded-xl px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
                     <a href="{{ route('welcome') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                         Vista Usuario
                     </a>
