@@ -17,11 +17,7 @@ class Category extends Model
 
     public function books()
     {
-        return $this->belongsToMany(Book::class, 'book_category', 'category_id', 'book_id');
-    }
-
-    public function promotions()
-    {
-        return $this->belongsToMany(Promotion::class);
+        return $this->belongsToMany(Book::class, 'book_category', 'category_id', 'book_id')
+                    ->whereNull('books.deleted_at');
     }
 }

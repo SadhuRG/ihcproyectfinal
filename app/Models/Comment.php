@@ -33,6 +33,6 @@ class Comment extends Model
      */
     public function book()
     {
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class)->whereNull('books.deleted_at');
     }
 }

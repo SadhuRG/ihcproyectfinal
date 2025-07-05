@@ -101,7 +101,26 @@ class LibrosPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function editarLibro($id)
@@ -135,35 +154,37 @@ class LibrosPost extends Component
             'libroEditado.ISBN' => 'required|string|max:50',
             'libroEditado.descripcion' => 'nullable|string|max:100'
         ]);
-
+        // Normalizar ISBN
+        $isbnNormalizado = $this->normalizarIsbn($this->libroEditado['ISBN']);
+        // Verificar si el ISBN ya existe en otro libro (ignorando espacios y guiones)
+        $libroExistente = Book::all()->first(function($libro) use ($isbnNormalizado) {
+            return $libro->id != $this->libroEditado['id'] && $this->normalizarIsbn($libro->ISBN) === $isbnNormalizado;
+        });
+        if ($libroExistente) {
+            $this->showNotification = true;
+            $this->notificationMessage = 'El ISBN ya está registrado en otro libro.';
+            $this->notificationType = 'error';
+            return;
+        }
         try {
-            DB::transaction(function () {
+            DB::transaction(function () use ($isbnNormalizado) {
                 $libro = Book::find($this->libroEditado['id']);
-
-                // Actualizar libro
                 $libro->update([
                     'titulo' => $this->libroEditado['titulo'],
-                    'ISBN' => $this->libroEditado['ISBN'],
+                    'ISBN' => $isbnNormalizado,
                     'descripcion' => $this->libroEditado['descripcion']
                 ]);
-
-                // Actualizar relaciones
                 $libro->authors()->sync($this->autorSeleccionado);
                 $libro->categories()->sync($this->categoriaSeleccionada);
             });
-
             $this->showEditModal = false;
             $this->libroEditado = [];
             $this->autorSeleccionado = [];
             $this->categoriaSeleccionada = [];
-
             $this->showNotification = true;
             $this->notificationMessage = 'Libro actualizado correctamente';
             $this->notificationType = 'success';
-
-            // Emitir evento para actualizar otros componentes
             $this->dispatch('libroActualizado');
-
         } catch (\Exception $e) {
             $this->showNotification = true;
             $this->notificationMessage = 'Error al actualizar el libro';
@@ -183,33 +204,30 @@ class LibrosPost extends Component
             'nuevoLibro.cantidad' => 'required|integer|min:0',
             'nuevoLibro.umbral' => 'required|integer|min:0'
         ]);
-        
         // Validar ISBN por separado
         $this->validate([
             'nuevoLibro.ISBN' => 'required|string|max:50'
         ]);
-        
-        // Verificar si el ISBN ya existe
-        $libroExistente = Book::where('ISBN', $this->nuevoLibro['ISBN'])->first();
-        
+        // Normalizar ISBN
+        $isbnNormalizado = $this->normalizarIsbn($this->nuevoLibro['ISBN']);
+        // Verificar si el ISBN ya existe (ignorando espacios y guiones)
+        $libroExistente = Book::all()->first(function($libro) use ($isbnNormalizado) {
+            return $this->normalizarIsbn($libro->ISBN) === $isbnNormalizado;
+        });
         if ($libroExistente) {
-            // Si el ISBN ya existe, mostrar modal de atención
             $this->libroExistente = $libroExistente;
             $this->showIsbnDuplicateModal = true;
             return;
         }
-        
         // Verificar similitud de título
         $libroSimilar = $this->detectarSimilitudTitulo($this->nuevoLibro['titulo']);
-        
         if ($libroSimilar) {
-            // Si hay un título similar, mostrar modal de advertencia
             $this->libroSimilar = $libroSimilar;
             $this->showTitleSimilarModal = true;
             return;
         }
-
-        // Si no hay similitud, continuar con la creación
+        // Guardar el ISBN normalizado
+        $this->nuevoLibro['ISBN'] = $isbnNormalizado;
         $this->crearLibroConfirmado();
     }
 
@@ -225,30 +243,34 @@ class LibrosPost extends Component
         DB::transaction(function () {
             $libro = Book::find($this->libroAEliminar);
 
-            // Eliminar ediciones e inventarios asociados
-            foreach ($libro->editions as $edicion) {
-                if ($edicion->inventory) {
-                    $edicion->inventory->delete();
+            if ($libro) {
+                // Eliminar relaciones de tablas pivot (eliminación física)
+                $libro->authors()->detach();
+                $libro->categories()->detach();
+                $libro->favoriteUsers()->detach();
+                $libro->promotions()->detach();
+
+                // Eliminar comentarios (eliminación física)
+                DB::table('book_user_coment')->where('book_id', $libro->id)->delete();
+
+                // Eliminar ediciones e inventarios (eliminación lógica)
+                foreach ($libro->editions as $edicion) {
+                    if ($edicion->inventory) {
+                        $edicion->inventory->delete(); // Soft delete del inventario
+                    }
+                    $edicion->delete(); // Soft delete de la edición
                 }
-                $edicion->delete();
+
+                // Eliminar libro (eliminación lógica)
+                $libro->delete();
             }
-
-            // Eliminar relaciones
-            $libro->authors()->detach();
-            $libro->categories()->detach();
-            $libro->favoriteUsers()->detach();
-
-            // Eliminar comentarios
-            DB::table('book_user_coment')->where('book_id', $libro->id)->delete();
-
-            // Eliminar libro
-            $libro->delete();
         });
 
         $this->showDeleteModal = false;
         $this->libroAEliminar = null;
         $this->showNotification = true;
         $this->notificationMessage = 'Libro eliminado correctamente';
+        $this->notificationType = 'success';
 
         // Emitir evento para actualizar otros componentes
         $this->dispatch('libroEliminado');
@@ -269,23 +291,24 @@ class LibrosPost extends Component
                 $libro = Book::find($libroId);
 
                 if ($libro) {
-                    // Eliminar ediciones e inventarios
-                    foreach ($libro->editions as $edicion) {
-                        if ($edicion->inventory) {
-                            $edicion->inventory->delete();
-                        }
-                        $edicion->delete();
-                    }
-
-                    // Eliminar relaciones
+                    // Eliminar relaciones de tablas pivot (eliminación física)
                     $libro->authors()->detach();
                     $libro->categories()->detach();
                     $libro->favoriteUsers()->detach();
+                    $libro->promotions()->detach();
 
-                    // Eliminar comentarios
+                    // Eliminar comentarios (eliminación física)
                     DB::table('book_user_coment')->where('book_id', $libro->id)->delete();
 
-                    // Eliminar libro
+                    // Eliminar ediciones e inventarios (eliminación lógica)
+                    foreach ($libro->editions as $edicion) {
+                        if ($edicion->inventory) {
+                            $edicion->inventory->delete(); // Soft delete del inventario
+                        }
+                        $edicion->delete(); // Soft delete de la edición
+                    }
+
+                    // Eliminar libro (eliminación lógica)
                     $libro->delete();
                 }
             }
@@ -297,6 +320,7 @@ class LibrosPost extends Component
         $this->eliminacionmode = 'unico';
         $this->showNotification = true;
         $this->notificationMessage = 'Libros eliminados correctamente';
+        $this->notificationType = 'success';
 
         // Emitir evento para actualizar otros componentes
         $this->dispatch('libroEliminado');
@@ -519,16 +543,17 @@ class LibrosPost extends Component
     {
         return Book::with(['authors', 'categories', 'editions.editorial'])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('titulo', 'like', '%' . $this->search . '%')
-                      ->orWhere('ISBN', 'like', '%' . $this->search . '%')
-                      ->orWhere('descripcion', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('authors', function ($authorQuery) {
-                          $authorQuery->where('nombre', 'like', '%' . $this->search . '%')
-                                     ->orWhere('apellido', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('titulo', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('ISBN', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('descripcion', 'like', '%' . $searchNormalized . '%')
+                      ->orWhereHas('authors', function ($authorQuery) use ($searchNormalized) {
+                          $authorQuery->where('nombre', 'like', '%' . $searchNormalized . '%')
+                                     ->orWhere('apellido', 'like', '%' . $searchNormalized . '%');
                       })
-                      ->orWhereHas('categories', function ($categoryQuery) {
-                          $categoryQuery->where('nombre', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('categories', function ($categoryQuery) use ($searchNormalized) {
+                          $categoryQuery->where('nombre', 'like', '%' . $searchNormalized . '%');
                       });
                 });
             })
@@ -541,5 +566,13 @@ class LibrosPost extends Component
         return view('livewire.libros-post', [
             'libros' => $this->getLibros()
         ]);
+    }
+
+    /**
+     * Normaliza un ISBN eliminando espacios y guiones
+     */
+    private function normalizarIsbn($isbn)
+    {
+        return preg_replace('/[\s-]+/', '', $isbn);
     }
 }

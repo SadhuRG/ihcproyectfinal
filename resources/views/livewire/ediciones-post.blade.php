@@ -479,4 +479,51 @@
         </div>
     </div>
     @endif
+
+    <!-- Modal para mostrar imagen ampliada -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[60] hidden">
+        <div class="relative max-w-4xl max-h-[90vh] mx-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden">
+                <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                    <h3 id="imageModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white"></h3>
+                    <button onclick="closeImageModal()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <img id="modalImage" src="" alt="Portada ampliada" class="w-full h-auto max-h-[70vh] object-contain rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openImageModal(imageSrc, title) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModalTitle').textContent = title;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        document.getElementById('imageModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        // Cerrar modal con la tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
 </div> 

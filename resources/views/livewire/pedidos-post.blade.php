@@ -393,8 +393,8 @@
                             <tr class="bg-white dark:bg-gray-700 border-b dark:border-gray-600">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded object-cover" src="{{ $edition->url_portada }}" alt="Portada">
+                                        <div class="flex-shrink-0 h-10 w-10 relative">
+                                            <x-edition-cover :edition="$edition" size="sm" :showModal="false" />
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $edition->book->titulo }}</div>

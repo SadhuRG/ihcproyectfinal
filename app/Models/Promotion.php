@@ -12,24 +12,15 @@ class Promotion extends Model
 
     protected $fillable = [
         'nombre',
-        'tipo',
-        'modalidad_promocion',
         'cantidad',
     ];
 
     /**
-     * Relación muchos a muchos: Una promoción puede aplicar a muchas categorías.
+     * Relación muchos a muchos: Una promoción puede aplicar a muchos libros.
      */
-    public function categories()
+    public function books()
     {
-        return $this->belongsToMany(Category::class);
-    }
-
-    /**
-     * Relación muchos a muchos: Una promoción puede aplicar a muchas ediciones.
-     */
-    public function editions()
-    {
-        return $this->belongsToMany(Edition::class);
+        return $this->belongsToMany(Book::class)
+                    ->whereNull('books.deleted_at');
     }
 }

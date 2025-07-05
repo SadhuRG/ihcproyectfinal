@@ -32,6 +32,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ediciones', function () {
         return view('ediciones');
     })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('ediciones');
+
+    // Ruta para el componente de soporte
+    Route::get('/soporte', function () {
+        return view('soporte');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('soporte');
+
+    // Ruta para el componente de reportes
+    Route::get('/reportes', function () {
+        return view('reportes');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('reportes');
 });
 
 require __DIR__.'/auth.php';

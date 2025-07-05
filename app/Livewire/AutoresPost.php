@@ -53,7 +53,26 @@ class AutoresPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function order($sort)
@@ -247,9 +266,10 @@ class AutoresPost extends Component
     {
         return Author::withCount('books')
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('nombre', 'like', '%' . $this->search . '%')
-                      ->orWhere('apellido', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('nombre', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('apellido', 'like', '%' . $searchNormalized . '%');
                 });
             })
             ->orderBy($this->sort, $this->direction)

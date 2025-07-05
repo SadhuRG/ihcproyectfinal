@@ -167,9 +167,9 @@
             <div id="inventario" class="content-section hidden">@livewire('inventario-post')</div>
             <div id="pedidos" class="content-section hidden">@livewire('pedidos-post')</div>
             <div id="usuarios" class="content-section hidden">@livewire('usuarios-post')</div>
-            <div id="soporte-usuario" class="content-section hidden"><x-section-title title="Soporte de Usuario" /></div>
+            <div id="soporte-usuario" class="content-section hidden">@livewire('soporte-post')</div>
             <div id="promociones" class="content-section hidden">@livewire('promociones-post')</div>
-            <div id="reportes" class="content-section hidden"><x-section-title title="Reportes" /></div>
+            <div id="reportes" class="content-section hidden">@livewire('reportes-post')</div>
         </main>
     </div>
     @push('scripts')

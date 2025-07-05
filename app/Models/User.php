@@ -121,7 +121,8 @@ class User extends Authenticatable
      */
     public function favoriteBooks()
     {
-        return $this->belongsToMany(Book::class, 'book_user_favorite', 'user_id', 'book_id');
+        return $this->belongsToMany(Book::class, 'book_user_favorite', 'user_id', 'book_id')
+                    ->whereNull('books.deleted_at');
     }
 
     /**
@@ -130,7 +131,16 @@ class User extends Authenticatable
     public function commentedBooks()
     {
         return $this->belongsToMany(Book::class, 'book_user_coment', 'user_id', 'book_id')
-                    ->withPivot(['puntuacion', 'comentario', 'fecha_valoracion']);
+                    ->withPivot(['puntuacion', 'comentario', 'fecha_valoracion'])
+                    ->whereNull('books.deleted_at');
+    }
+
+    /**
+     * Relación uno a muchos: Un usuario puede tener muchos tickets de soporte.
+     */
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
     }
 
     // ========== SCOPES ÚTILES ==========

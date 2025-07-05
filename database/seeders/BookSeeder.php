@@ -14,6 +14,15 @@ class BookSeeder extends Seeder
 {
     public function run(): void
     {
+        // Limpiar tablas relacionadas para evitar duplicados
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('book_user_favorite')->truncate();
+        DB::table('book_user_coment')->truncate();
+        DB::table('author_book')->truncate();
+        DB::table('book_category')->truncate();
+        DB::table('books')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $categories = Category::all();
         $authors = Author::all();
         $users = User::all();

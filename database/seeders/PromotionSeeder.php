@@ -7,7 +7,6 @@ use Illuminate\Database\Seeder;
 use App\Models\Promotion;
 use App\Models\Book;
 use App\Models\Edition;
-use Carbon\Carbon;
 
 class PromotionSeeder extends Seeder
 {
@@ -22,30 +21,18 @@ class PromotionSeeder extends Seeder
         $promociones = [
             [
                 'nombre' => 'Descuento Verano 2025 - El Quijote',
-                'tipo' => 'libro',
-                'modalidad_promocion' => 'porcentual',
                 'cantidad' => 25, // 25% de descuento
                 'libro_index' => 0, // Primer libro
-                'fecha_inicio' => Carbon::now(),
-                'fecha_fin' => Carbon::now()->addMonths(2),
             ],
             [
                 'nombre' => 'Oferta Especial - Cien Años de Soledad',
-                'tipo' => 'libro',
-                'modalidad_promocion' => 'porcentual',
                 'cantidad' => 30, // 30% de descuento
                 'libro_index' => 1, // Segundo libro
-                'fecha_inicio' => Carbon::now(),
-                'fecha_fin' => Carbon::now()->addMonth(),
             ],
             [
                 'nombre' => 'Promoción de Lanzamiento - Don Juan Tenorio',
-                'tipo' => 'libro',
-                'modalidad_promocion' => 'porcentual',
                 'cantidad' => 15, // 15% de descuento
                 'libro_index' => 2, // Tercer libro
-                'fecha_inicio' => Carbon::now(),
-                'fecha_fin' => Carbon::now()->addWeeks(3),
             ],
         ];
 
@@ -60,10 +47,11 @@ class PromotionSeeder extends Seeder
             // Crear la promoción
             $promotion = Promotion::create([
                 'nombre' => $promoData['nombre'],
-                'tipo' => $promoData['tipo'],
-                'modalidad_promocion' => $promoData['modalidad_promocion'],
                 'cantidad' => $promoData['cantidad'],
             ]);
+
+            // Asociar el libro a la promoción
+            $promotion->books()->attach($libro->id);
 
             // Obtener todas las ediciones del libro
             $ediciones = $libro->editions;
@@ -76,12 +64,6 @@ class PromotionSeeder extends Seeder
                 // Actualizar la edición con el precio promocional
                 $edicion->update([
                     'precio_promocional' => round($precio_promocional, 2)
-                ]);
-
-                // Crear la relación promoción-edición con fechas
-                $promotion->editions()->attach($edicion->id, [
-                    'fecha_inicio' => $promoData['fecha_inicio'],
-                    'fecha_fin' => $promoData['fecha_fin'],
                 ]);
             }
 

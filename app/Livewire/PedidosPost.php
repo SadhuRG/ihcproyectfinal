@@ -52,7 +52,26 @@ class PedidosPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function updatedStatusFilter()
@@ -279,12 +298,13 @@ class PedidosPost extends Component
     {
         return Order::with(['user', 'address', 'paymentType', 'shipmentType'])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('id', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('user', function ($userQuery) {
-                          $userQuery->where('name', 'like', '%' . $this->search . '%')
-                                   ->orWhere('email', 'like', '%' . $this->search . '%')
-                                   ->orWhere('apellido', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('id', 'like', '%' . $searchNormalized . '%')
+                      ->orWhereHas('user', function ($userQuery) use ($searchNormalized) {
+                          $userQuery->where('name', 'like', '%' . $searchNormalized . '%')
+                                   ->orWhere('email', 'like', '%' . $searchNormalized . '%')
+                                   ->orWhere('apellido', 'like', '%' . $searchNormalized . '%');
                       });
                 });
             })

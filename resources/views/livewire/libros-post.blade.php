@@ -702,6 +702,7 @@
                                     <th scope="col" class="px-6 py-3">Edición</th>
                                     <th scope="col" class="px-6 py-3">Editorial</th>
                                     <th scope="col" class="px-6 py-3">Precio</th>
+                                    <th scope="col" class="px-6 py-3">Precio Promocional</th>
                                     <th scope="col" class="px-6 py-3">Stock</th>
                                     <th scope="col" class="px-6 py-3">Estado Stock</th>
                                 </tr>
@@ -710,14 +711,7 @@
                                 @foreach($libroDetalle->editions as $edicion)
                                 <tr class="bg-white dark:bg-gray-700 border-b dark:border-gray-600">
                                     <td class="px-6 py-4">
-                                        <div class="relative group cursor-pointer" onclick="openImageModal('{{ $edicion->url_portada }}', '{{ $edicion->book->titulo }} - {{ $edicion->numero_edicion }}')">
-                                            <img src="{{ $edicion->url_portada }}" alt="Portada" class="h-20 w-16 object-cover rounded shadow-lg transition-transform duration-200 group-hover:scale-105">
-                                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                <svg class="w-5 h-5 text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                                                </svg>
-                                            </div>
-                                        </div>
+                                        <x-edition-cover :edition="$edicion" size="md" />
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
@@ -731,6 +725,17 @@
                                         <span class="font-semibold text-green-600 dark:text-green-400">
                                             S/ {{ number_format($edicion->precio, 2) }}
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($edicion->precio_promocional && $edicion->precio_promocional > 0)
+                                            <span class="font-semibold text-red-600 dark:text-red-400">
+                                                S/ {{ number_format($edicion->precio_promocional, 2) }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-500 dark:text-gray-400 text-sm">
+                                                Sin descuento
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 text-gray-900 dark:text-gray-300">
                                         {{ $edicion->inventory->cantidad ?? 'N/A' }}

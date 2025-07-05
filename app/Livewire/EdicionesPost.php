@@ -55,7 +55,11 @@ class EdicionesPost extends Component
     protected $listeners = [
         'libroCreado' => 'actualizarLibros',
         'libroActualizado' => 'actualizarLibros',
-        'libroEliminado' => 'actualizarLibros'
+        'libroEliminado' => 'actualizarLibros',
+        'promocion-creada' => 'actualizarEdiciones',
+        'promocion-actualizada' => 'actualizarEdiciones',
+        'promocion-eliminada' => 'actualizarEdiciones',
+        'promociones-eliminadas' => 'actualizarEdiciones'
     ];
 
     public function mount()
@@ -73,6 +77,12 @@ class EdicionesPost extends Component
     public function actualizarLibros()
     {
         $this->cargarDatos();
+    }
+
+    public function actualizarEdiciones()
+    {
+        // Forzar la actualización de las ediciones para mostrar los precios promocionales actualizados
+        $this->dispatch('$refresh');
     }
 
     public function resetNuevaEdicion()
@@ -162,7 +172,26 @@ class EdicionesPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function editarEdicion($id)
@@ -398,15 +427,16 @@ class EdicionesPost extends Component
     {
         return Edition::with(['book', 'editorial', 'inventory'])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('numero_edicion', 'like', '%' . $this->search . '%')
-                      ->orWhere('precio', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('book', function ($bookQuery) {
-                          $bookQuery->where('titulo', 'like', '%' . $this->search . '%')
-                                   ->orWhere('ISBN', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('numero_edicion', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('precio', 'like', '%' . $searchNormalized . '%')
+                      ->orWhereHas('book', function ($bookQuery) use ($searchNormalized) {
+                          $bookQuery->where('titulo', 'like', '%' . $searchNormalized . '%')
+                                   ->orWhere('ISBN', 'like', '%' . $searchNormalized . '%');
                       })
-                      ->orWhereHas('editorial', function ($editorialQuery) {
-                          $editorialQuery->where('nombre', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('editorial', function ($editorialQuery) use ($searchNormalized) {
+                          $editorialQuery->where('nombre', 'like', '%' . $searchNormalized . '%');
                       });
                 });
             })
