@@ -69,7 +69,26 @@ class UsuariosPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function order($sort)
@@ -383,7 +402,8 @@ class UsuariosPost extends Component
     {
         return User::with(['roles'])
             ->when($this->search, function ($query) {
-                $query->search($this->search); // Usando el scope del modelo
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->search($searchNormalized); // Usando el scope del modelo
             })
             ->orderBy($this->sort, $this->direction)
             ->paginate(10);

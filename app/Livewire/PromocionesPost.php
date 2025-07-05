@@ -5,7 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Promotion;
-use App\Models\Category;
+use App\Models\Book;
 use App\Models\Edition;
 
 class PromocionesPost extends Component
@@ -29,22 +29,17 @@ class PromocionesPost extends Component
     // Propiedades para promociones
     public $nuevaPromocion = [
         'nombre' => '',
-        'tipo' => '',
-        'modalidad_promocion' => '',
         'cantidad' => '',
     ];
 
     public $promocionEditada = [
         'id' => '',
         'nombre' => '',
-        'tipo' => '',
-        'modalidad_promocion' => '',
         'cantidad' => '',
     ];
 
     // Propiedades para relaciones
-    public $categoriaSeleccionada = [];
-    public $edicionSeleccionada = [];
+    public $libroSeleccionado = '';
 
     // Propiedades para eliminación
     public $promocionIdAEliminar;
@@ -56,25 +51,22 @@ class PromocionesPost extends Component
     public $notificationType = 'success';
 
     // Datos para formularios
-    public $categorias = [];
-    public $ediciones = [];
+    public $libros = [];
 
     public function mount()
     {
-        $this->categorias = Category::all();
-        $this->ediciones = Edition::with(['book', 'editorial'])->get();
+        $this->libros = Book::all();
     }
 
     public function render()
     {
-        $promociones = Promotion::with(['categories', 'editions'])
+        $promociones = Promotion::with(['books'])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('nombre', 'like', '%' . $this->search . '%')
-                      ->orWhere('tipo', 'like', '%' . $this->search . '%')
-                      ->orWhere('modalidad_promocion', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('categories', function ($categoryQuery) {
-                          $categoryQuery->where('nombre', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('nombre', 'like', '%' . $searchNormalized . '%')
+                      ->orWhereHas('books', function ($bookQuery) use ($searchNormalized) {
+                          $bookQuery->where('titulo', 'like', '%' . $searchNormalized . '%');
                       });
                 });
             })
@@ -88,7 +80,26 @@ class PromocionesPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function order($sort)
@@ -107,9 +118,7 @@ class PromocionesPost extends Component
         if ($value) {
             $this->selectedPromociones = Promotion::when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('nombre', 'like', '%' . $this->search . '%')
-                      ->orWhere('tipo', 'like', '%' . $this->search . '%')
-                      ->orWhere('modalidad_promocion', 'like', '%' . $this->search . '%');
+                    $q->where('nombre', 'like', '%' . $this->search . '%');
                 });
             })->pluck('id')->toArray();
         } else {
@@ -121,33 +130,33 @@ class PromocionesPost extends Component
     {
         $this->validate([
             'nuevaPromocion.nombre' => 'required|string|max:255',
-            'nuevaPromocion.tipo' => 'required|string|max:100',
-            'nuevaPromocion.modalidad_promocion' => 'required|string|max:100',
-            'nuevaPromocion.cantidad' => 'required|numeric|min:0',
+            'nuevaPromocion.cantidad' => 'required|numeric|min:0|max:100',
+            'libroSeleccionado' => 'required|exists:books,id',
         ], [
             'nuevaPromocion.nombre.required' => 'El nombre es obligatorio.',
-            'nuevaPromocion.tipo.required' => 'El tipo es obligatorio.',
-            'nuevaPromocion.modalidad_promocion.required' => 'La modalidad de promoción es obligatoria.',
-            'nuevaPromocion.cantidad.required' => 'La cantidad es obligatoria.',
-            'nuevaPromocion.cantidad.numeric' => 'La cantidad debe ser un número.',
-            'nuevaPromocion.cantidad.min' => 'La cantidad debe ser mayor o igual a 0.',
+            'nuevaPromocion.cantidad.required' => 'El porcentaje de descuento es obligatorio.',
+            'nuevaPromocion.cantidad.numeric' => 'El porcentaje debe ser un número.',
+            'nuevaPromocion.cantidad.min' => 'El porcentaje debe ser mayor o igual a 0.',
+            'nuevaPromocion.cantidad.max' => 'El porcentaje no puede ser mayor a 100.',
+            'libroSeleccionado.required' => 'Debe seleccionar un libro.',
+            'libroSeleccionado.exists' => 'El libro seleccionado no existe.',
         ]);
 
         try {
             $promocion = Promotion::create($this->nuevaPromocion);
 
-            // Sincronizar relaciones
-            if (!empty($this->categoriaSeleccionada)) {
-                $promocion->categories()->sync($this->categoriaSeleccionada);
-            }
+            // Asociar el libro a la promoción
+            $promocion->books()->attach($this->libroSeleccionado);
 
-            if (!empty($this->edicionSeleccionada)) {
-                $promocion->editions()->sync($this->edicionSeleccionada);
-            }
+            // Aplicar el descuento a todas las ediciones del libro
+            $this->aplicarDescuentoALibro($this->libroSeleccionado, $this->nuevaPromocion['cantidad']);
 
             $this->resetearFormulario();
             $this->showCreateModal = false;
             $this->mostrarNotificacion('Promoción creada exitosamente.', 'success');
+            
+            // Disparar evento para actualizar automáticamente las ediciones
+            $this->dispatch('promocion-creada');
         } catch (\Exception $e) {
             $this->mostrarNotificacion('Error al crear la promoción: ' . $e->getMessage(), 'error');
         }
@@ -155,19 +164,16 @@ class PromocionesPost extends Component
 
     public function editarPromocion($promocionId)
     {
-        $promocion = Promotion::with(['categories', 'editions'])->findOrFail($promocionId);
+        $promocion = Promotion::with(['books'])->findOrFail($promocionId);
 
         $this->promocionEditada = [
             'id' => $promocion->id,
             'nombre' => $promocion->nombre,
-            'tipo' => $promocion->tipo,
-            'modalidad_promocion' => $promocion->modalidad_promocion,
             'cantidad' => $promocion->cantidad,
         ];
 
-        // Cargar relaciones existentes
-        $this->categoriaSeleccionada = $promocion->categories->pluck('id')->toArray();
-        $this->edicionSeleccionada = $promocion->editions->pluck('id')->toArray();
+        // Cargar libro asociado
+        $this->libroSeleccionado = $promocion->books->first()->id ?? '';
 
         $this->showEditModal = true;
     }
@@ -176,34 +182,44 @@ class PromocionesPost extends Component
     {
         $this->validate([
             'promocionEditada.nombre' => 'required|string|max:255',
-            'promocionEditada.tipo' => 'required|string|max:100',
-            'promocionEditada.modalidad_promocion' => 'required|string|max:100',
-            'promocionEditada.cantidad' => 'required|numeric|min:0',
+            'promocionEditada.cantidad' => 'required|numeric|min:0|max:100',
+            'libroSeleccionado' => 'required|exists:books,id',
         ], [
             'promocionEditada.nombre.required' => 'El nombre es obligatorio.',
-            'promocionEditada.tipo.required' => 'El tipo es obligatorio.',
-            'promocionEditada.modalidad_promocion.required' => 'La modalidad de promoción es obligatoria.',
-            'promocionEditada.cantidad.required' => 'La cantidad es obligatoria.',
-            'promocionEditada.cantidad.numeric' => 'La cantidad debe ser un número.',
-            'promocionEditada.cantidad.min' => 'La cantidad debe ser mayor o igual a 0.',
+            'promocionEditada.cantidad.required' => 'El porcentaje de descuento es obligatorio.',
+            'promocionEditada.cantidad.numeric' => 'El porcentaje debe ser un número.',
+            'promocionEditada.cantidad.min' => 'El porcentaje debe ser mayor o igual a 0.',
+            'promocionEditada.cantidad.max' => 'El porcentaje no puede ser mayor a 100.',
+            'libroSeleccionado.required' => 'Debe seleccionar un libro.',
+            'libroSeleccionado.exists' => 'El libro seleccionado no existe.',
         ]);
 
         try {
             $promocion = Promotion::findOrFail($this->promocionEditada['id']);
+            
+            // Obtener el libro anterior para revertir descuentos
+            $libroAnterior = $promocion->books->first();
+            if ($libroAnterior) {
+                $this->revertirDescuentoALibro($libroAnterior->id);
+            }
+
             $promocion->update([
                 'nombre' => $this->promocionEditada['nombre'],
-                'tipo' => $this->promocionEditada['tipo'],
-                'modalidad_promocion' => $this->promocionEditada['modalidad_promocion'],
                 'cantidad' => $this->promocionEditada['cantidad'],
             ]);
 
-            // Sincronizar relaciones
-            $promocion->categories()->sync($this->categoriaSeleccionada);
-            $promocion->editions()->sync($this->edicionSeleccionada);
+            // Sincronizar relación con libro
+            $promocion->books()->sync([$this->libroSeleccionado]);
+
+            // Aplicar el nuevo descuento
+            $this->aplicarDescuentoALibro($this->libroSeleccionado, $this->promocionEditada['cantidad']);
 
             $this->resetearFormulario();
             $this->showEditModal = false;
             $this->mostrarNotificacion('Promoción actualizada exitosamente.', 'success');
+            
+            // Disparar evento para actualizar automáticamente las ediciones
+            $this->dispatch('promocion-actualizada');
         } catch (\Exception $e) {
             $this->mostrarNotificacion('Error al actualizar la promoción: ' . $e->getMessage(), 'error');
         }
@@ -219,16 +235,22 @@ class PromocionesPost extends Component
     public function eliminarPromocion()
     {
         try {
-            $promocion = Promotion::findOrFail($this->promocionIdAEliminar);
+            $promocion = Promotion::with(['books'])->findOrFail($this->promocionIdAEliminar);
+
+            // Revertir descuentos antes de eliminar
+            foreach ($promocion->books as $libro) {
+                $this->revertirDescuentoALibro($libro->id);
+            }
 
             // Desvincular relaciones antes de eliminar
-            $promocion->categories()->detach();
-            $promocion->editions()->detach();
-
+            $promocion->books()->detach();
             $promocion->delete();
 
             $this->showDeleteModal = false;
             $this->mostrarNotificacion('Promoción eliminada exitosamente.', 'success');
+            
+            // Disparar evento para actualizar automáticamente las ediciones
+            $this->dispatch('promocion-eliminada');
         } catch (\Exception $e) {
             $this->mostrarNotificacion('Error al eliminar la promoción: ' . $e->getMessage(), 'error');
         }
@@ -243,12 +265,16 @@ class PromocionesPost extends Component
     public function eliminarPromocionesSeleccionadas()
     {
         try {
-            $promociones = Promotion::whereIn('id', $this->selectedPromociones)->get();
+            $promociones = Promotion::with(['books'])->whereIn('id', $this->selectedPromociones)->get();
 
             foreach ($promociones as $promocion) {
+                // Revertir descuentos antes de eliminar
+                foreach ($promocion->books as $libro) {
+                    $this->revertirDescuentoALibro($libro->id);
+                }
+
                 // Desvincular relaciones antes de eliminar
-                $promocion->categories()->detach();
-                $promocion->editions()->detach();
+                $promocion->books()->detach();
                 $promocion->delete();
             }
 
@@ -256,6 +282,9 @@ class PromocionesPost extends Component
             $this->selectAll = false;
             $this->showDeleteModal = false;
             $this->mostrarNotificacion('Promociones eliminadas exitosamente.', 'success');
+            
+            // Disparar evento para actualizar automáticamente las ediciones
+            $this->dispatch('promociones-eliminadas');
         } catch (\Exception $e) {
             $this->mostrarNotificacion('Error al eliminar las promociones: ' . $e->getMessage(), 'error');
         }
@@ -268,25 +297,45 @@ class PromocionesPost extends Component
         $this->eliminacionmode = 'unico';
     }
 
+    private function aplicarDescuentoALibro($libroId, $porcentajeDescuento)
+    {
+        $libro = Book::with('editions')->findOrFail($libroId);
+        
+        foreach ($libro->editions as $edicion) {
+            $descuento = $edicion->precio * ($porcentajeDescuento / 100);
+            $precio_promocional = $edicion->precio - $descuento;
+            
+            $edicion->update([
+                'precio_promocional' => round($precio_promocional, 2)
+            ]);
+        }
+    }
+
+    private function revertirDescuentoALibro($libroId)
+    {
+        $libro = Book::with('editions')->findOrFail($libroId);
+        
+        foreach ($libro->editions as $edicion) {
+            $edicion->update([
+                'precio_promocional' => null
+            ]);
+        }
+    }
+
     private function resetearFormulario()
     {
         $this->nuevaPromocion = [
             'nombre' => '',
-            'tipo' => '',
-            'modalidad_promocion' => '',
             'cantidad' => '',
         ];
 
         $this->promocionEditada = [
             'id' => '',
             'nombre' => '',
-            'tipo' => '',
-            'modalidad_promocion' => '',
             'cantidad' => '',
         ];
 
-        $this->categoriaSeleccionada = [];
-        $this->edicionSeleccionada = [];
+        $this->libroSeleccionado = '';
     }
 
     private function mostrarNotificacion($mensaje, $tipo = 'success')

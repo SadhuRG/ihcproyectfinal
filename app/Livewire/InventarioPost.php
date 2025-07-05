@@ -40,7 +40,26 @@ class InventarioPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function updatedStockFilter()
@@ -256,12 +275,13 @@ class InventarioPost extends Component
             ->leftJoin('editorials', 'editions.editorial_id', '=', 'editorials.id')
             ->whereNotNull('editions.id') // Solo inventarios con edición asociada
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('inventories.cantidad', 'like', '%' . $this->search . '%')
-                      ->orWhere('inventories.umbral', 'like', '%' . $this->search . '%')
-                      ->orWhere('books.titulo', 'like', '%' . $this->search . '%')
-                      ->orWhere('books.ISBN', 'like', '%' . $this->search . '%')
-                      ->orWhere('editorials.nombre', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('inventories.cantidad', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('inventories.umbral', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('books.titulo', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('books.ISBN', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('editorials.nombre', 'like', '%' . $searchNormalized . '%');
                 });
             })
             ->when($this->stockFilter === 'bajo_umbral', function ($query) {

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Book extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public $timestamps = false;
 
@@ -44,5 +45,10 @@ class Book extends Model
     public function commentedUsers() {
         return $this->belongsToMany(User::class, 'book_user_coment', 'book_id', 'user_id')
             ->withPivot(['puntuacion', 'comentario', 'fecha_valoracion']);
+    }
+
+    public function promotions()
+    {
+        return $this->belongsToMany(Promotion::class);
     }
 }

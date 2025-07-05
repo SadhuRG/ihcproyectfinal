@@ -33,11 +33,33 @@ class EdicionesPost extends Component
     // Para selects
     public $libros = [];
     public $editoriales = [];
+    
+    // Array estático de ediciones disponibles (formato exacto del seeder)
+    public $edicionesDisponibles = [
+        '1ra edición',
+        '2da edición', 
+        '3ra edición',
+        '4ta edición',
+        '5ta edición',
+        '6ta edición',
+        '7ma edición',
+        '8va edición',
+        '9na edición',
+        '10ma edición',
+        'edición especial'
+    ];
+    
+    // Ediciones disponibles filtradas para el libro seleccionado
+    public $edicionesDisponiblesFiltradas = [];
 
     protected $listeners = [
         'libroCreado' => 'actualizarLibros',
         'libroActualizado' => 'actualizarLibros',
-        'libroEliminado' => 'actualizarLibros'
+        'libroEliminado' => 'actualizarLibros',
+        'promocion-creada' => 'actualizarEdiciones',
+        'promocion-actualizada' => 'actualizarEdiciones',
+        'promocion-eliminada' => 'actualizarEdiciones',
+        'promociones-eliminadas' => 'actualizarEdiciones'
     ];
 
     public function mount()
@@ -57,6 +79,12 @@ class EdicionesPost extends Component
         $this->cargarDatos();
     }
 
+    public function actualizarEdiciones()
+    {
+        // Forzar la actualización de las ediciones para mostrar los precios promocionales actualizados
+        $this->dispatch('$refresh');
+    }
+
     public function resetNuevaEdicion()
     {
         $this->nuevaEdicion = [
@@ -68,6 +96,67 @@ class EdicionesPost extends Component
             'umbral' => '',
             'url_portada' => '/images/covers/default.jpg'
         ];
+        $this->edicionesDisponiblesFiltradas = [];
+    }
+    
+    /**
+     * Filtra las ediciones disponibles basándose en las ediciones existentes del libro seleccionado
+     */
+    public function updatedNuevaEdicionBookId($value)
+    {
+        if (!empty($value)) {
+            // Obtener las ediciones existentes del libro seleccionado
+            $edicionesExistentes = Edition::where('book_id', $value)
+                ->pluck('numero_edicion')
+                ->toArray();
+            
+            // Filtrar las ediciones disponibles excluyendo las que ya existen
+            $this->edicionesDisponiblesFiltradas = array_values(array_filter(
+                $this->edicionesDisponibles,
+                function($edicion) use ($edicionesExistentes) {
+                    return !in_array($edicion, $edicionesExistentes);
+                }
+            ));
+            
+            // Resetear el campo de edición cuando cambia el libro
+            $this->nuevaEdicion['numero_edicion'] = '';
+        } else {
+            $this->edicionesDisponiblesFiltradas = [];
+            $this->nuevaEdicion['numero_edicion'] = '';
+        }
+        
+        // Forzar el renderizado
+        $this->dispatch('edicionesFiltradas');
+    }
+    
+    /**
+     * Maneja el cambio de libro en el modal de edición
+     */
+    public function updatedEdicionEditadaBookId($value)
+    {
+        if (!empty($value)) {
+            // Obtener las ediciones existentes del libro seleccionado
+            $edicionesExistentes = Edition::where('book_id', $value)
+                ->pluck('numero_edicion')
+                ->toArray();
+            
+            // Filtrar las ediciones disponibles excluyendo las que ya existen
+            $this->edicionesDisponiblesFiltradas = array_values(array_filter(
+                $this->edicionesDisponibles,
+                function($edicion) use ($edicionesExistentes) {
+                    return !in_array($edicion, $edicionesExistentes);
+                }
+            ));
+            
+            // Resetear el campo de edición cuando cambia el libro
+            $this->edicionEditada['numero_edicion'] = '';
+        } else {
+            $this->edicionesDisponiblesFiltradas = [];
+            $this->edicionEditada['numero_edicion'] = '';
+        }
+        
+        // Forzar el renderizado
+        $this->dispatch('edicionesFiltradas');
     }
 
     public function order($sort)
@@ -83,7 +172,26 @@ class EdicionesPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function editarEdicion($id)
@@ -101,7 +209,36 @@ class EdicionesPost extends Component
                 'cantidad' => $edicion->inventory ? $edicion->inventory->cantidad : 0,
                 'umbral' => $edicion->inventory ? $edicion->inventory->umbral : 0
             ];
+            
+            // Filtrar ediciones disponibles para edición (excluyendo la actual)
+            $this->filtrarEdicionesParaEdicion($edicion->book_id, $edicion->numero_edicion);
+            
             $this->showEditModal = true;
+        }
+    }
+    
+    /**
+     * Filtra las ediciones disponibles para edición (excluyendo la edición actual)
+     */
+    public function filtrarEdicionesParaEdicion($bookId, $edicionActual)
+    {
+        if (!empty($bookId)) {
+            // Obtener las ediciones existentes del libro seleccionado
+            $edicionesExistentes = Edition::where('book_id', $bookId)
+                ->pluck('numero_edicion')
+                ->toArray();
+            
+            // Filtrar las ediciones disponibles excluyendo las que ya existen
+            // PERO incluyendo la edición actual que se está editando
+            $this->edicionesDisponiblesFiltradas = array_values(array_filter(
+                $this->edicionesDisponibles,
+                function($edicion) use ($edicionesExistentes, $edicionActual) {
+                    // Incluir la edición actual o las que no existen
+                    return $edicion === $edicionActual || !in_array($edicion, $edicionesExistentes);
+                }
+            ));
+        } else {
+            $this->edicionesDisponiblesFiltradas = [];
         }
     }
 
@@ -290,15 +427,16 @@ class EdicionesPost extends Component
     {
         return Edition::with(['book', 'editorial', 'inventory'])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('numero_edicion', 'like', '%' . $this->search . '%')
-                      ->orWhere('precio', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('book', function ($bookQuery) {
-                          $bookQuery->where('titulo', 'like', '%' . $this->search . '%')
-                                   ->orWhere('ISBN', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where(function ($q) use ($searchNormalized) {
+                    $q->where('numero_edicion', 'like', '%' . $searchNormalized . '%')
+                      ->orWhere('precio', 'like', '%' . $searchNormalized . '%')
+                      ->orWhereHas('book', function ($bookQuery) use ($searchNormalized) {
+                          $bookQuery->where('titulo', 'like', '%' . $searchNormalized . '%')
+                                   ->orWhere('ISBN', 'like', '%' . $searchNormalized . '%');
                       })
-                      ->orWhereHas('editorial', function ($editorialQuery) {
-                          $editorialQuery->where('nombre', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('editorial', function ($editorialQuery) use ($searchNormalized) {
+                          $editorialQuery->where('nombre', 'like', '%' . $searchNormalized . '%');
                       });
                 });
             })

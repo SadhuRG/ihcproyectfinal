@@ -7,6 +7,9 @@
             <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Mi perfil</a>
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Mis pedidos</a>
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Lista de deseos</a>
+            @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
+                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
+            @endif
             <a href="{{ route('logout') }}" 
                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

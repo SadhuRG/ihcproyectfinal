@@ -6,25 +6,12 @@ use Livewire\Volt\Volt;
 Route::view('/', '/welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Redirección automática tras login
+    // Vista de usuario (sin redirección automática)
     Route::get('/welcome', function () {
-        $user = auth()->user();
-
-        if ($user->hasRole('superadministrador')) {
-            return redirect()->route('dashboard');
-        } elseif ($user->hasRole('administrador')) {
-            return redirect()->route('dashboard');
-        } elseif ($user->hasRole('colaborador')) {
-            return redirect()->route('dashboard');
-        }
-
         return view('welcome');
     })->name('welcome');
 
-    Route::post('/welcome', function () {
-    Auth::logout();
-    return redirect('/');
-    })->name('logout');
+    // La ruta de logout ya está definida en auth.php, así que la removemos de aquí
 
     Route::view('user-profile', 'user-profile')
     ->middleware(['auth'])
@@ -45,6 +32,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ediciones', function () {
         return view('ediciones');
     })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('ediciones');
+
+    // Ruta para el componente de soporte
+    Route::get('/soporte', function () {
+        return view('soporte');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('soporte');
+
+    // Ruta para el componente de reportes
+    Route::get('/reportes', function () {
+        return view('reportes');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('reportes');
 });
 
 require __DIR__.'/auth.php';

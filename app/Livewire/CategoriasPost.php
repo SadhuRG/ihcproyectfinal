@@ -51,7 +51,26 @@ class CategoriasPost extends Component
 
     public function updatedSearch()
     {
+        // Solo resetear la página, NO modificar el valor del search
         $this->resetPage();
+    }
+
+    /**
+     * Normaliza el texto de búsqueda para hacerlo más amigable
+     */
+    private function normalizarBusqueda($texto)
+    {
+        if (empty($texto)) {
+            return '';
+        }
+        
+        // Eliminar espacios al inicio y final
+        $texto = trim($texto);
+        
+        // Reemplazar múltiples espacios con un solo espacio
+        $texto = preg_replace('/\s+/', ' ', $texto);
+        
+        return $texto;
     }
 
     public function order($sort)
@@ -240,7 +259,8 @@ class CategoriasPost extends Component
     {
         return Category::withCount('books')
             ->when($this->search, function ($query) {
-                $query->where('nombre', 'like', '%' . $this->search . '%');
+                $searchNormalized = $this->normalizarBusqueda($this->search);
+                $query->where('nombre', 'like', '%' . $searchNormalized . '%');
             })
             ->orderBy($this->sort, $this->direction)
             ->paginate(10);

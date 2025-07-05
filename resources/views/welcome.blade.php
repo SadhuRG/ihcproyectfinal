@@ -349,6 +349,24 @@
                     </div>
                 </section>
 
+                <!-- SECCIÓN DE SOPORTE -->
+                @auth
+                <section class="py-16 px-4 bg-gray-50">
+                    <div class="container mx-auto">
+                        <div class="text-center mb-12">
+                            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">¿Necesitas Ayuda?</h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                                Nuestro equipo de soporte está aquí para ayudarte. Envíanos tu consulta y te responderemos lo antes posible.
+                            </p>
+                        </div>
+                        
+                        <div class="max-w-2xl mx-auto">
+                            @livewire('user-support')
+                        </div>
+                    </div>
+                </section>
+                @endauth
+
             </div>
 
         </div>
