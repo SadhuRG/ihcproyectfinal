@@ -28,6 +28,8 @@ class ProfileDashboard extends Component
             'addressesCount' => $user->addresses()->count(),
             'lastOrder' => $user->orders()->latest('fecha_orden')->first(),
             'primaryAddress' => $user->addresses()->first(),
+            'recentOrders' => $user->orders()->with(['editions.book.authors'])->latest('fecha_orden')->take(3)->get(),
+            'favoriteBooks' => $user->favoriteBooks()->with(['authors', 'editions'])->take(4)->get(),
         ];
     }
 

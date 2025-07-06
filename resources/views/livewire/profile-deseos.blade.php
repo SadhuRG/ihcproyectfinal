@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-20 via-white to-purple-50">
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-2 via-white to-purple-50">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,4 @@
-
+<!-- resources\views\components\layouts\app\header.blade.php -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pulsar - Header Mejorado</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script> <!-- Alpine.js cargado -->
+
+    <!-- CSS para el carrito -->
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -45,25 +56,52 @@
                     Iniciar sesión
                 </a>
             @else
-                <a href="{{ route('user-profile') }}" class="text-white font-medium transition-all duration-300 hover:scale-105 hover:text-indigo-200 px-2 py-1 rounded hover:bg-white/10">
-                    Mi Perfil
-                </a>
-                @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
-                    <a href="{{ route('dashboard') }}" class="text-white font-medium transition-all duration-300 hover:scale-105 hover:text-indigo-200 px-2 py-1 rounded hover:bg-white/10">Dashboard</a>
-                @endif
-                <form method="POST" action="{{ route('logout') }}" class="inline">
-                    @csrf
-                    <button type="submit" class="text-white font-medium transition-all duration-300 hover:scale-105 hover:text-red-200 px-2 py-1 rounded hover:bg-red-500/20">Cerrar sesión</button>
-                </form>
+                <!-- Menú desplegable de usuario -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                        class="flex items-center space-x-2 text-white font-medium hover:text-indigo-200 transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>{{ Auth::user()->name }}</span>
+                        <svg class="w-4 h-4 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95">
+
+                        <div class="px-4 py-2 text-sm text-gray-700 font-semibold">Hola, {{ Auth::user()->name }}</div>
+
+                        <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Mi Perfil
+                        </a>
+                        <a href="{{ route('profile.pedidos') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Mis Pedidos
+                        </a>
+                        <a href="{{ route('profile.deseos') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Lista de Deseos
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Cerrar Sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @endguest
 
-            <!-- Botón carrito -->
-            <button id="cart-btn" class="relative p-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" aria-label="Ver carrito de compras">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
-                </svg>
-                <span id="cart-counter" class="absolute -top-1 -right-1 bg-white text-rose-500 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-0 scale-0 transition-all duration-300">0</span>
-            </button>
+            <!-- Componente Carrito de Compras -->
+            @livewire('shopping-cart')
 
             <!-- Botón menú móvil -->
             <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all hover:scale-105" aria-label="Abrir menú">

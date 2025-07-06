@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-20 via-white to-purple-50">
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-2 via-white to-purple-50">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -114,17 +114,9 @@
                             <label class="text-sm font-medium text-gray-500">Fecha de Nacimiento</label>
                             <p class="text-gray-900">{{ $user->fecha_n ? $user->fecha_n->format('d/m/Y') : 'No especificada' }}</p>
                         </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-500">Tipo de Documento</label>
-                            <p class="text-gray-900">DNI</p>
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-500">Nº De Documento</label>
-                            <p class="text-gray-900">{{ $user->telefono ?: 'No especificado' }}</p>
-                        </div>
                         <div class="sm:col-span-2">
-                            <label class="text-sm font-medium text-gray-500">Correo electrónico</label>
-                            <p class="text-gray-900">{{ $user->email }}</p>
+                            <label class="text-sm font-medium text-gray-500">Teléfono</label>
+                            <p class="text-gray-900">{{ $user->telefono ?: 'No especificado' }}</p>
                         </div>
                     </div>
                 </div>
@@ -136,7 +128,7 @@
                     <h3 class="text-xl font-semibold text-gray-900">Mis Direcciones</h3>
                     <a href="{{ route('profile.direcciones') }}"
                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                        ✏️ Editar
+                        ✏️ Gestionar
                     </a>
                 </div>
 
@@ -144,66 +136,177 @@
                     <!-- Dirección Principal -->
                     <div class="space-y-4">
                         <div>
-                            <h4 class="text-lg font-medium text-gray-900">Dirección de Envío</h4>
-                            <p class="text-sm text-gray-600 mt-1">{{ $userStats['primaryAddress']->referencia ?: 'Dirección principal' }}</p>
+                            <h4 class="text-lg font-medium text-gray-900">Dirección Principal</h4>
+                            <p class="text-sm text-gray-600 mt-1">{{ $userStats['primaryAddress']->referencia ?: 'Dirección de envío' }}</p>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Nombre</label>
-                                <p class="text-gray-900">{{ $user->name }}</p>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Apellidos</label>
-                                <p class="text-gray-900">{{ $user->apellido ?: 'No especificado' }}</p>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Número de teléfono</label>
-                                <p class="text-gray-900">{{ $user->telefono ?: 'No especificado' }}</p>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Tipo de Documento</label>
-                                <p class="text-gray-900">DNI</p>
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="text-sm font-medium text-gray-500">Nº De Documento</label>
-                                <p class="text-gray-900">{{ $user->telefono ?: 'No especificado' }}</p>
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="text-sm font-medium text-gray-500">Calle</label>
-                                <p class="text-gray-900">{{ $userStats['primaryAddress']->calle ?: 'No especificada' }}</p>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Distrito</label>
-                                <p class="text-gray-900">{{ $userStats['primaryAddress']->distrito ?: 'No especificado' }}</p>
-                            </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500">Provincia</label>
-                                <p class="text-gray-900">{{ $userStats['primaryAddress']->provincia ?: 'No especificada' }}</p>
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="text-sm font-medium text-gray-500">Departamento</label>
-                                <p class="text-gray-900">{{ $userStats['primaryAddress']->departamento ?: 'No especificado' }}</p>
-                            </div>
+                        <div class="space-y-2 text-sm">
+                            <p><strong>Calle:</strong> {{ $userStats['primaryAddress']->calle ?: 'No especificada' }}</p>
+                            <p><strong>Distrito:</strong> {{ $userStats['primaryAddress']->distrito ?: 'No especificado' }}</p>
+                            <p><strong>Provincia:</strong> {{ $userStats['primaryAddress']->provincia ?: 'No especificada' }}</p>
+                            <p><strong>Departamento:</strong> {{ $userStats['primaryAddress']->departamento ?: 'No especificado' }}</p>
                         </div>
+
+                        @if($userStats['addressesCount'] > 1)
+                            <p class="text-sm text-indigo-600 mt-4">+ {{ $userStats['addressesCount'] - 1 }} dirección(es) más</p>
+                        @endif
                     </div>
                 @else
                     <!-- Sin direcciones -->
-                    <div class="text-center py-12">
-                        <div class="mx-auto w-24 h-24 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center mb-4">
-                            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="text-center py-8">
+                        <div class="mx-auto w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Sin direcciones guardadas</h3>
-                        <p class="text-gray-600 mb-6">Aún no guardaste una dirección de envío.</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Sin direcciones</h3>
+                        <p class="text-gray-600 mb-4">Agrega tu primera dirección</p>
                         <a href="{{ route('profile.direcciones') }}"
-                           class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
-                            Agregar Primera Dirección
+                            Agregar Dirección
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Mis Pedidos -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Mis Pedidos</h3>
+                    <a href="{{ route('profile.pedidos') }}"
+                       class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        📦 Ver Todos
+                    </a>
+                </div>
+
+                @if($userStats['recentOrders']->count() > 0)
+                    <!-- Pedidos Recientes -->
+                    <div class="space-y-4">
+                        @foreach($userStats['recentOrders'] as $order)
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        @if($order->estado)
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                ✓ Finalizado
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                ⏱ Pendiente
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <span class="text-sm text-gray-600">{{ $order->fecha_orden ? $order->fecha_orden->format('d/m/Y') : $order->created_at->format('d/m/Y') }}</span>
+                                </div>
+
+                                <div class="space-y-1">
+                                    @foreach($order->editions->take(2) as $edition)
+                                        <p class="text-sm text-gray-700">• {{ $edition->book->titulo }}</p>
+                                    @endforeach
+                                    @if($order->editions->count() > 2)
+                                        <p class="text-sm text-gray-500">+ {{ $order->editions->count() - 2 }} libro(s) más</p>
+                                    @endif
+                                </div>
+
+                                <div class="mt-2 text-right">
+                                    <span class="text-lg font-bold text-gray-900">s/{{ number_format($order->total, 2) }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        @if($userStats['ordersCount'] > 3)
+                            <p class="text-sm text-green-600 mt-4 text-center">+ {{ $userStats['ordersCount'] - 3 }} pedido(s) más</p>
+                        @endif
+                    </div>
+                @else
+                    <!-- Sin pedidos -->
+                    <div class="text-center py-8">
+                        <div class="mx-auto w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Sin pedidos</h3>
+                        <p class="text-gray-600 mb-4">Aún no has realizado compras</p>
+                        <a href="{{ route('welcome') }}"
+                           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                            Explorar Libros
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Lista de Deseos -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Lista de Deseos</h3>
+                    <a href="{{ route('profile.deseos') }}"
+                       class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        ❤️ Ver Todos
+                    </a>
+                </div>
+
+                @if($userStats['favoriteBooks']->count() > 0)
+                    <!-- Libros Favoritos -->
+                    <div class="grid grid-cols-2 gap-4">
+                        @foreach($userStats['favoriteBooks'] as $book)
+                            @php
+                                $edition = $book->editions->first();
+                                $authors = $book->authors->pluck('nombre')->join(', ');
+                            @endphp
+
+                            <div class="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow duration-200">
+                                <!-- Imagen del libro -->
+                                <div class="flex items-start space-x-3">
+                                    @if($edition && $edition->url_portada && $edition->url_portada !== '/images/covers/default.jpg')
+                                        <img src="{{ $edition->url_portada }}" alt="{{ $book->titulo }}"
+                                             class="w-12 h-16 object-cover rounded shadow-sm">
+                                    @else
+                                        <div class="w-12 h-16 bg-gray-200 rounded flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                            </svg>
+                                        </div>
+                                    @endif
+
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-sm font-medium text-gray-900 line-clamp-2 mb-1">{{ Str::limit($book->titulo, 40) }}</h4>
+                                        <p class="text-xs text-gray-600 mb-2">{{ Str::limit($authors, 30) }}</p>
+                                        @if($edition)
+                                            <p class="text-sm font-bold text-red-600">s/{{ number_format($edition->precio_promocional ?? $edition->precio, 2) }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($userStats['favoriteBooksCount'] > 4)
+                        <p class="text-sm text-red-600 mt-4 text-center">+ {{ $userStats['favoriteBooksCount'] - 4 }} libro(s) más</p>
+                    @endif
+                @else
+                    <!-- Sin favoritos -->
+                    <div class="text-center py-8">
+                        <div class="mx-auto w-16 h-16 bg-gradient-to-br from-red-400 to-pink-600 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Sin favoritos</h3>
+                        <p class="text-gray-600 mb-4">Guarda tus libros preferidos</p>
+                        <a href="{{ route('welcome') }}"
+                           class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                            Descubrir Libros
                         </a>
                     </div>
                 @endif

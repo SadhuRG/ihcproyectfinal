@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-20 via-white to-purple-50">
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-2 via-white to-purple-50">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,7 +82,7 @@
 
 
     <!-- Contenido Principal -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Notificación Global -->
         @if($showNotification)
             <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 mb-6 p-4 rounded-lg shadow-lg {{ $notificationType === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800' }}">
@@ -101,9 +101,8 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Columna Izquierda - Información del Perfil -->
-            <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-1">
+            <div class="space-y-6">
                 <!-- Información Personal -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center justify-between mb-6">
@@ -218,7 +217,14 @@
                         </div>
 
                         <!-- Botón de actualizar -->
-                        <div class="flex justify-end pt-4">
+                        <div class="flex justify-end pt-4 space-x-4">
+                            <a href="{{ route('profile.dashboard') }}"
+                            class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <span>Cancelar</span>
+                            </a>
                             <button type="submit"
                                 class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2"
                                 wire:loading.attr="disabled" wire:target="updateProfile">
@@ -275,7 +281,15 @@
                             </div>
 
                             <!-- Botón de actualizar contraseña -->
-                            <div class="flex justify-end pt-4">
+                            <div class="flex justify-end pt-4 space-x-4">
+                                <a href="{{ route('profile.dashboard') }}"
+                                class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    <span>Cancelar</span>
+                                </a>
+
                                 <button type="submit"
                                     class="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2"
                                     wire:loading.attr="disabled" wire:target="updatePassword">
