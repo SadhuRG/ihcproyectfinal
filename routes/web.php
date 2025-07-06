@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Livewire\UserProfile;
+use App\Livewire\ProfileDashboard;
+use App\Livewire\ProfilePedidos;
+use App\Livewire\ProfileDirecciones;
+use App\Livewire\ProfileDeseos;
 
 Route::view('/', '/welcome');
 
@@ -11,13 +16,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('welcome');
     })->name('welcome');
 
-    // La ruta de logout ya está definida en auth.php, así que la removemos de aquí
+    // ========== RUTAS DEL SISTEMA DE PERFIL ==========
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', ProfileDashboard::class)->name('dashboard');
+        Route::get('/datos', UserProfile::class)->name('datos');
+        Route::get('/pedidos', ProfilePedidos::class)->name('pedidos');
+        Route::get('/direcciones', ProfileDirecciones::class)->name('direcciones');
+        Route::get('/deseos', ProfileDeseos::class)->name('deseos');
+    });
 
-    Route::view('user-profile', 'user-profile')
-    ->middleware(['auth'])
-    ->name('user-profile');
+    // ========== RUTA ANTIGUA DEL PERFIL (mantener por compatibilidad) ==========
+    Route::get('user-profile', UserProfile::class)->middleware(['auth'])->name('user-profile');
 
-
+    // ========== RUTAS DE ADMINISTRACIÓN ==========
     // Vista protegida "normal" (no Livewire)
     Route::get('/dashboard', function () {
         return view('dashboard');

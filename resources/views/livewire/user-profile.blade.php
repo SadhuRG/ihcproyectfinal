@@ -1,11 +1,3 @@
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    // El componente ya está definido en app/Livewire/UserProfile.php
-}; ?>
-
 <div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-20 via-white to-purple-50">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b">
@@ -28,6 +20,66 @@ new class extends Component {
             </div>
         </div>
     </div>
+    <!-- Navegación de Secciones -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Navegación Rápida</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Mi Cuenta -->
+                <a href="{{ route('profile.dashboard') }}"
+                class="flex flex-col items-center p-4 rounded-lg border-2 transition-colors duration-200
+                {{ request()->routeIs('profile.dashboard') ? 'bg-indigo-50 border-indigo-200 text-indigo-900' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="w-8 h-8 mb-2 {{ request()->routeIs('profile.dashboard') ? 'text-indigo-600' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Mi Cuenta</span>
+                </a>
+
+                <!-- Mis Datos -->
+                <a href="{{ route('profile.datos') }}"
+                class="flex flex-col items-center p-4 rounded-lg border-2 transition-colors duration-200
+                {{ request()->routeIs('profile.datos') ? 'bg-indigo-50 border-indigo-200 text-indigo-900' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="w-8 h-8 mb-2 {{ request()->routeIs('profile.datos') ? 'text-indigo-600' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Mis Datos</span>
+                </a>
+
+                <!-- Mis Pedidos -->
+                <a href="{{ route('profile.pedidos') }}"
+                class="flex flex-col items-center p-4 rounded-lg border-2 transition-colors duration-200
+                {{ request()->routeIs('profile.pedidos') ? 'bg-indigo-50 border-indigo-200 text-indigo-900' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="w-8 h-8 mb-2 {{ request()->routeIs('profile.pedidos') ? 'text-indigo-600' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Mis Pedidos</span>
+                </a>
+
+                <!-- Mis Direcciones -->
+                <a href="{{ route('profile.direcciones') }}"
+                class="flex flex-col items-center p-4 rounded-lg border-2 transition-colors duration-200
+                {{ request()->routeIs('profile.direcciones') ? 'bg-indigo-50 border-indigo-200 text-indigo-900' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="w-8 h-8 mb-2 {{ request()->routeIs('profile.direcciones') ? 'text-indigo-600' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Mis Direcciones</span>
+                </a>
+
+                <!-- Mi Lista de Deseos -->
+                <a href="{{ route('profile.deseos') }}"
+                class="flex flex-col items-center p-4 rounded-lg border-2 transition-colors duration-200
+                {{ request()->routeIs('profile.deseos') ? 'bg-indigo-50 border-indigo-200 text-indigo-900' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="w-8 h-8 mb-2 {{ request()->routeIs('profile.deseos') ? 'text-indigo-600' : 'text-gray-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Lista de Deseos</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- Contenido Principal -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -55,7 +107,10 @@ new class extends Component {
                 <!-- Información Personal -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-semibold text-gray-900">Información Personal</h2>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Información Personal</h2>
+                            <p class="text-sm text-gray-500 mt-1">Actualiza tu información personal. El email no se puede modificar por seguridad.</p>
+                        </div>
                         <div class="flex items-center space-x-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -74,11 +129,11 @@ new class extends Component {
                                 @else
                                     <label for="photo" class="cursor-pointer block">
                                         <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg hover:opacity-80 transition-opacity duration-200">
-                                            {{ substr($name, 0, 1) }}{{ substr($apellido, 0, 1) }}
+                                            {{ substr($name ?: 'U', 0, 1) }}{{ substr($apellido ?: 'U', 0, 1) }}
                                         </div>
                                     </label>
                                 @endif
-                                
+
                                 <!-- Botón de eliminar (solo cuando hay foto) -->
                                 @if($currentPhoto || $photo)
                                     <div class="absolute -bottom-1 -right-1">
@@ -89,7 +144,7 @@ new class extends Component {
                                         </button>
                                     </div>
                                 @endif
-                                
+
                                 <input wire:model="photo" type="file" id="photo" class="hidden" accept="image/*">
                             </div>
                             <div>
@@ -110,54 +165,72 @@ new class extends Component {
                         <!-- Campos del formulario -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Nombre -->
-                            <div>
+                            <div class="col-span-1">
                                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
-                                <input wire:model="name" type="text" id="name" required
+                                <input wire:model="name" type="text" id="name" value="{{ $name }}" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
                                 @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                             </div>
 
                             <!-- Apellido -->
-                            <div>
+                            <div class="col-span-1">
                                 <label for="apellido" class="block text-sm font-medium text-gray-700 mb-2">Apellido</label>
-                                <input wire:model="apellido" type="text" id="apellido"
+                                <input wire:model="apellido" type="text" id="apellido" value="{{ $apellido }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
                                 @error('apellido') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <!-- Email -->
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico *</label>
-                                <input wire:model="email" type="email" id="email" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
-                                @error('email') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <!-- Email (Bloqueado) -->
+                            <div class="col-span-full md:col-span-1">
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Correo Electrónico *
+                                    <span class="text-xs text-gray-500">(No se puede modificar)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="email" id="email" value="{{ $email }}" disabled
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed transition-colors duration-200">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Para cambiar tu email, contacta al administrador</p>
                             </div>
 
                             <!-- Teléfono -->
-                            <div>
+                            <div class="col-span-1">
                                 <label for="telefono" class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
-                                <input wire:model="telefono" type="tel" id="telefono"
+                                <input wire:model="telefono" type="tel" id="telefono" value="{{ $telefono }}"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
                                 @error('telefono') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                             </div>
 
                             <!-- Fecha de Nacimiento -->
-                            <div class="md:col-span-2">
+                            <div class="col-span-full">
                                 <label for="fecha_n" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento</label>
-                                <input wire:model="fecha_n" type="date" id="fecha_n"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
-                                @error('fecha_n') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                                <div class="max-w-xs">
+                                    <input wire:model="fecha_n" type="date" id="fecha_n" value="{{ $fecha_n }}"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
+                                    @error('fecha_n') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                         </div>
 
                         <!-- Botón de actualizar -->
                         <div class="flex justify-end pt-4">
-                            <button type="submit" 
-                                class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="submit"
+                                class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                                wire:loading.attr="disabled" wire:target="updateProfile">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" wire:loading.remove wire:target="updateProfile">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                                <span>Actualizar Perfil</span>
+                                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24" wire:loading wire:target="updateProfile">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span wire:loading.remove wire:target="updateProfile">Actualizar Perfil</span>
+                                <span wire:loading wire:target="updateProfile">Actualizando...</span>
                             </button>
                         </div>
                     </form>
@@ -167,7 +240,7 @@ new class extends Component {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-semibold text-gray-900">Cambiar Contraseña</h2>
-                        <button wire:click="togglePasswordFields" 
+                        <button wire:click="togglePasswordFields"
                             class="text-indigo-600 hover:text-indigo-700 font-medium text-sm">
                             {{ $showPasswordFields ? 'Cancelar' : 'Cambiar Contraseña' }}
                         </button>
@@ -203,12 +276,18 @@ new class extends Component {
 
                             <!-- Botón de actualizar contraseña -->
                             <div class="flex justify-end pt-4">
-                                <button type="submit" 
-                                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="submit"
+                                    class="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                                    wire:loading.attr="disabled" wire:target="updatePassword">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" wire:loading.remove wire:target="updatePassword">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                     </svg>
-                                    <span>Actualizar Contraseña</span>
+                                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24" wire:loading wire:target="updatePassword">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span wire:loading.remove wire:target="updatePassword">Actualizar Contraseña</span>
+                                    <span wire:loading wire:target="updatePassword">Actualizando...</span>
                                 </button>
                             </div>
                         </form>
@@ -223,74 +302,7 @@ new class extends Component {
                 </div>
             </div>
 
-            <!-- Columna Derecha - Información Adicional -->
-            <div class="space-y-6">
-                <!-- Información de la Cuenta -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Información de la Cuenta</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Rol:</span>
-                            <span class="text-sm font-medium text-gray-900 capitalize">{{ auth()->user()->roles->first()?->name ?? 'usuario' }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Miembro desde:</span>
-                            <span class="text-sm font-medium text-gray-900">{{ auth()->user()->created_at->format('d/m/Y') }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Email verificado:</span>
-                            <span class="text-sm font-medium {{ auth()->user()->email_verified_at ? 'text-green-600' : 'text-red-600' }}">
-                                {{ auth()->user()->email_verified_at ? 'Sí' : 'No' }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Estadísticas Rápidas -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Mis Estadísticas</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Pedidos realizados:</span>
-                            <span class="text-sm font-medium text-gray-900">{{ auth()->user()->orders()->count() }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Libros favoritos:</span>
-                            <span class="text-sm font-medium text-gray-900">{{ auth()->user()->favoriteBooks()->count() }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Comentarios:</span>
-                            <span class="text-sm font-medium text-gray-900">{{ auth()->user()->comments()->count() }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Enlaces Rápidos -->
-                @if(!auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Enlaces Rápidos</h3>
-                        <div class="space-y-3">
-                            <a href="#" class="flex items-center text-sm text-indigo-600 hover:text-indigo-700 transition-colors duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                </svg>
-                                Mis Pedidos
-                            </a>
-                            <a href="#" class="flex items-center text-sm text-indigo-600 hover:text-indigo-700 transition-colors duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                </svg>
-                                Lista de Deseos
-                            </a>
-                            <a href="#" class="flex items-center text-sm text-indigo-600 hover:text-indigo-700 transition-colors duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                                </svg>
-                                Mis Comentarios
-                            </a>
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -305,4 +317,4 @@ new class extends Component {
             }, 5000);
         });
     });
-</script> 
+</script>
