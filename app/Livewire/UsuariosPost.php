@@ -22,9 +22,6 @@ class UsuariosPost extends Component
     // Propiedades de edición (MODIFICADO para usar modal)
     public $showEditModal = false;
     public $usuarioEditado = [];
-    public $cambiarPassword = false;
-    public $nuevaPassword = '';
-    public $confirmarPassword = '';
 
     // Propiedades de eliminación
     public $showDeleteModal = false;
@@ -121,11 +118,6 @@ class UsuariosPost extends Component
                 'rol' => $usuario->roles->first()?->name ?? 'usuario'
             ];
 
-            // Resetear propiedades de cambio de contraseña
-            $this->cambiarPassword = false;
-            $this->nuevaPassword = '';
-            $this->confirmarPassword = '';
-
             $this->showEditModal = true;
         }
     }
@@ -157,75 +149,36 @@ class UsuariosPost extends Component
 
     /**
      * Guarda los cambios del usuario desde el modal de edición.
+     * Solo permite cambiar el rol del usuario.
      */
     public function guardarUsuario()
     {
-        // Validaciones base
-        $rules = [
-            'usuarioEditado.name' => 'required|string|max:255',
-            'usuarioEditado.apellido' => 'nullable|string|max:50',
-            'usuarioEditado.email' => [
-                'required',
-                'email',
-                Rule::unique('users', 'email')->ignore($this->usuarioEditado['id'])
-            ],
-            'usuarioEditado.telefono' => 'nullable|numeric|digits_between:9,15',
-            'usuarioEditado.fecha_n' => 'nullable|date',
-            'usuarioEditado.url_foto' => 'nullable|url|max:100',
+        // Solo validar el rol
+        $this->validate([
             'usuarioEditado.rol' => 'required|exists:roles,name'
-        ];
-
-        // Validaciones adicionales si se va a cambiar la contraseña
-        if ($this->cambiarPassword) {
-            $rules['nuevaPassword'] = 'required|string|min:8';
-            $rules['confirmarPassword'] = 'required|string|same:nuevaPassword';
-        }
-
-        $this->validate($rules);
+        ]);
 
         try {
             DB::beginTransaction();
 
             $usuario = User::find($this->usuarioEditado['id']);
-
-            // Limpiar datos antes de actualizar
-            $datosLimpios = $this->limpiarDatos([
-                'name' => $this->usuarioEditado['name'],
-                'apellido' => $this->usuarioEditado['apellido'],
-                'email' => $this->usuarioEditado['email'],
-                'telefono' => $this->usuarioEditado['telefono'],
-                'fecha_n' => $this->usuarioEditado['fecha_n'],
-                'url_foto' => $this->usuarioEditado['url_foto']
-            ]);
-
-            // Agregar nueva contraseña si se especificó
-            if ($this->cambiarPassword && !empty($this->nuevaPassword)) {
-                $datosLimpios['password'] = Hash::make($this->nuevaPassword);
+            
+            if (!$usuario) {
+                throw new \Exception('Usuario no encontrado.');
             }
 
-            $usuario->update($datosLimpios);
+            // Solo actualizar el rol
             $usuario->syncRoles([$this->usuarioEditado['rol']]);
 
             DB::commit();
 
             $this->showEditModal = false;
-
-            // Resetear propiedades de cambio de contraseña
-            $this->cambiarPassword = false;
-            $this->nuevaPassword = '';
-            $this->confirmarPassword = '';
-
-            $mensaje = 'Usuario actualizado correctamente.';
-            if ($this->cambiarPassword) {
-                $mensaje .= ' La contraseña también fue cambiada.';
-            }
-
-            $this->mostrarNotificacion($mensaje, 'success');
+            $this->mostrarNotificacion('Rol del usuario actualizado correctamente.', 'success');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error al actualizar usuario: ' . $e->getMessage());
-            $this->mostrarNotificacion('Error al actualizar el usuario: ' . $e->getMessage(), 'error');
+            \Log::error('Error al actualizar rol de usuario: ' . $e->getMessage());
+            $this->mostrarNotificacion('Error al actualizar el rol del usuario: ' . $e->getMessage(), 'error');
         }
     }
 
