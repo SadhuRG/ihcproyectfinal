@@ -80,15 +80,15 @@
 
                                 <td class="px-6 py-4">
                                     @if($ticket->estado === 'enviado')
-                                        <span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full text-xs font-medium">
+                                        <span class="px-4 py-2 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full text-xs font-medium">
                                             Enviado
                                         </span>
                                     @elseif($ticket->estado === 'recibido')
-                                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
+                                        <span class="px-4 py-2 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
                                             Recibido
                                         </span>
                                     @else
-                                        <span class="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-full text-xs font-medium">
+                                        <span class="px-4 py-2 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-full text-xs font-medium">
                                             Solucionado
                                         </span>
                                     @endif
@@ -177,36 +177,104 @@
             </div>
 
             <!-- Mensaje del usuario -->
-            <div class="mb-4">
-                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Mensaje del Usuario</h4>
-                <div class="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <p class="text-sm text-gray-700 dark:text-gray-300">{{ $ticketSeleccionado['mensaje_usuario'] }}</p>
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    Mensaje del Usuario
+                </h4>
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border-2 border-blue-200 dark:border-blue-700 shadow-sm">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+                                {{ $ticketSeleccionado['user']['name'] }} {{ $ticketSeleccionado['user']['apellido'] }}
+                            </div>
+                            <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                {{ $ticketSeleccionado['mensaje_usuario'] }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Respuesta previa del administrador (si existe) -->
+            @if($ticketSeleccionado['mensaje_admin'])
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Respuesta Anterior del Administrador
+                </h4>
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-700 shadow-sm">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium text-green-900 dark:text-green-100 mb-1">
+                                Administrador
+                            </div>
+                            <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                {{ $ticketSeleccionado['mensaje_admin'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <form wire:submit.prevent="guardarRespuesta">
                 <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
-                        <select wire:model="nuevoEstado" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="enviado">Enviado</option>
-                            <option value="recibido">Recibido</option>
-                            <option value="solucionado">Solucionado</option>
-                        </select>
+                        <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            Cambiar Estado del Ticket
+                        </label>
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-lg border-2 border-purple-200 dark:border-purple-700">
+                            <select wire:model="nuevoEstado" class="w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0 focus:outline-none">
+                                <option value="enviado" class="bg-white dark:bg-gray-800">🟡 Enviado - Ticket recibido</option>
+                                <option value="recibido" class="bg-white dark:bg-gray-800">🔵 Recibido - En revisión</option>
+                                <option value="solucionado" class="bg-white dark:bg-gray-800">🟢 Solucionado - Ticket cerrado</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                             Respuesta del Administrador
-                            <span class="text-xs text-gray-500">(Máximo 500 palabras)</span>
+                            <span class="text-xs text-gray-500 ml-2">(Máximo 500 palabras)</span>
                         </label>
-                        <textarea wire:model="mensajeAdmin" rows="6" 
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            placeholder="Escribe tu respuesta aquí..."></textarea>
-                        
-                        <!-- Contador de palabras -->
-                        <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            Palabras: {{ $this->getContadorPalabras() }}/500
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-700">
+                            <textarea wire:model="mensajeAdmin" rows="6" 
+                                class="w-full border-0 bg-transparent text-gray-900 dark:text-white resize-none focus:ring-0 focus:outline-none"
+                                placeholder="Escribe tu respuesta aquí..."></textarea>
+                            
+                            <!-- Contador de palabras -->
+                            <div class="mt-3 pt-3 border-t border-green-200 dark:border-green-600">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-gray-600 dark:text-gray-400">
+                                        Palabras: {{ $this->getContadorPalabras() }}/500
+                                    </span>
+                                    <span class="text-green-600 dark:text-green-400 font-medium">
+                                        Respuesta del Admin
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

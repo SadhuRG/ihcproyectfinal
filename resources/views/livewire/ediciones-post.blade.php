@@ -119,7 +119,7 @@
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    <span class="font-semibold text-green-600 dark:text-green-400">
+                                    <span class="font-semibold text-black dark:text-white">
                                         S/ {{ number_format($edicion->precio, 2) }}
                                     </span>
                                 </td>
@@ -127,10 +127,10 @@
                                 <td class="px-6 py-4">
                                     @if($edicion->precio_promocional && $edicion->precio_promocional < $edicion->precio)
                                         <div class="flex flex-col">
-                                            <span class="font-semibold text-red-600 dark:text-red-400 text-sm">
+                                            <span class="font-semibold text-green-600 dark:text-green-400 text-sm">
                                                 S/ {{ number_format($edicion->precio_promocional, 2) }}
                                             </span>
-                                            <span class="text-xs text-gray-500 dark:text-gray-400 line-through">
+                                            <span class="text-xs text-red-400 dark:text-red-200 line-through">
                                                 S/ {{ number_format($edicion->precio, 2) }}
                                             </span>
                                             <span class="text-xs text-green-600 dark:text-green-400 font-medium">
@@ -229,7 +229,7 @@
                         <select wire:model.live="nuevaEdicion.book_id" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                             <option value="">Seleccionar libro</option>
                             @foreach($libros as $libro)
-                            <option value="{{ $libro->id }}">{{ $libro->titulo }} ({{ $libro->ISBN }})</option>
+                            <option value="{{ $libro->id }}">{{ $libro->titulo }} </option>
                             @endforeach
                         </select>
                         @if(empty($nuevaEdicion['book_id']))
@@ -281,19 +281,19 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Precio</label>
-                        <input type="number" step="0.01" wire:model="nuevaEdicion.precio" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0.00">
+                        <input type="number" step="0.01" min="0" wire:model="nuevaEdicion.precio" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0.00">
                         @error('nuevaEdicion.precio') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cantidad en Stock</label>
-                        <input type="number" wire:model="nuevaEdicion.cantidad" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
+                        <input type="number" min="0" wire:model="nuevaEdicion.cantidad" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
                         @error('nuevaEdicion.cantidad') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Umbral Mínimo</label>
-                        <input type="number" wire:model="nuevaEdicion.umbral" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
+                        <input type="number" min="0" wire:model="nuevaEdicion.umbral" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
                         @error('nuevaEdicion.umbral') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -352,7 +352,7 @@
                         <select wire:model.live="edicionEditada.book_id" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                             <option value="">Seleccionar libro</option>
                             @foreach($libros as $libro)
-                            <option value="{{ $libro->id }}">{{ $libro->titulo }} ({{ $libro->ISBN }})</option>
+                            <option value="{{ $libro->id }}">{{ $libro->titulo }}</option>
                             @endforeach
                         </select>
                         @if(empty($edicionEditada['book_id']))
@@ -375,14 +375,16 @@
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número de Edición</label>
-                            <div class="relative group">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
-                                </svg>
-                                <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
-                                    Las ediciones que no se muestran ya han sido agregadas para este libro
-                                    <div class="absolute top-full left-4 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-                                </div>
+                            <div class="relative">
+                                <span class="group">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none">
+                                        Las ediciones que no se muestran ya han sido agregadas para este libro
+                                        <div class="absolute top-full left-4 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                    </div>
+                                </span>
                             </div>
                         </div>
                         <select wire:model.live="edicionEditada.numero_edicion" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" {{ empty($edicionEditada['book_id']) ? 'disabled' : '' }}>
@@ -404,19 +406,19 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Precio</label>
-                        <input type="number" step="0.01" wire:model="edicionEditada.precio" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0.00">
+                        <input type="number" step="0.01" min="0" wire:model="edicionEditada.precio" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0.00">
                         @error('edicionEditada.precio') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cantidad en Stock</label>
-                        <input type="number" wire:model="edicionEditada.cantidad" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
+                        <input type="number" min="0" wire:model="edicionEditada.cantidad" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
                         @error('edicionEditada.cantidad') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Umbral Mínimo</label>
-                        <input type="number" wire:model="edicionEditada.umbral" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
+                        <input type="number" min="0" wire:model="edicionEditada.umbral" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
                         @error('edicionEditada.umbral') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>

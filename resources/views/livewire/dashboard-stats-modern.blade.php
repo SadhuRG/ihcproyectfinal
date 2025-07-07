@@ -37,6 +37,11 @@
 
             </div>
 
+            <!-- Botón de Zoom -->
+            <button id="zoom-btn" class="text-white px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 transition-all font-bold hover:scale-105" title="Ajustar tamaño de letra" aria-label="Cambiar tamaño de fuente" onclick="toggleZoom()">
+                <span id="zoom-label">A</span>
+            </button>
+
             <!-- User Menu -->
             <div class="relative">
                 <button @click="openUserMenu = !openUserMenu" class="flex items-center space-x-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-full transition-all duration-300">
@@ -47,11 +52,20 @@
                         <p class="text-sm font-medium text-white">{{ Auth::user()->name }}</p>
                         <p class="text-xs text-white/80">Administrador</p>
                     </div>
+                    <!-- Triángulo desplegable -->
+                    <svg class="w-4 h-4 text-white/80 transition-transform duration-200" :class="{ 'rotate-180': openUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
                 </button>
                 <div x-show="openUserMenu" @click.away="openUserMenu = false" x-transition class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-lg py-1 z-50">
                     <a href="{{ route('user-profile') }}"class="block rounded-xl px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
                     <a href="{{ route('welcome') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                         Vista Usuario
+                    </a>
+                    <a href="{{ route('admin-help') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <span>Ayuda</span>
+                        </div>
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -92,7 +106,7 @@
 
     <div class="flex pt-24">
         <aside class="sidebar-gradient w-64 h-screen fixed left-0 top-20 overflow-y-auto p-4 z-40">
-            <nav class="space-y-2">
+            <nav class="mt-5 space-y-2">
                 <a href="#" onclick="showSection('dashboard-content')" data-section="dashboard-content" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white bg-white/10">
                     <img src="/icons/dashboard-svg/1.dashboard.svg" alt="Dashboard" class="w-8 h-8 flex-shrink-0">
                     <span class="font-medium">Dashboard</span>
@@ -158,35 +172,130 @@
                 </div>
                 <div class="glassmorphism rounded-2xl p-6">
                     <h3 class="text-xl font-bold text-gray-900 mb-4" style="color: var(--text-primary);">Resumen Rápido</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div>
                             <h4 class="font-semibold mb-2" style="color: var(--text-secondary);">Últimas Órdenes</h4>
-                            <div class="space-y-2">
+                            <div class="space-y-3">
                                 @forelse($ultimasOrdenes as $orden)
-                                    <div class="flex justify-between text-sm"><span style="color: var(--text-primary);">{{ $orden->user->name }}</span><span class="font-medium">S/ {{ number_format($orden->total, 2) }}</span></div>
+                                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <span class="font-medium text-sm" style="color: var(--text-primary);">{{ $orden->user->name }}</span>
+                                            <span class="font-bold text-green-600 dark:text-green-400 text-sm">S/ {{ number_format($orden->total, 2) }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs" style="color: var(--text-secondary);">
+                                            <span>{{ $orden->fecha_orden->format('d/m/Y') }}</span>
+                                            <span class="px-2 py-1 rounded-full text-xs font-medium 
+                                                @if($orden->estado == 1) bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200
+                                                @elseif($orden->estado == 0) bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200
+                                                @else bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200 @endif">
+                                                @if($orden->estado == 1) ✓ Completado
+                                                @elseif($orden->estado == 0) ⏳ Pendiente
+                                                @else ❌ Cancelado @endif
+                                            </span>
+                                        </div>
+                                    </div>
                                 @empty
-                                    <p class="text-sm" style="color: var(--text-secondary);">No hay órdenes recientes.</p>
+                                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                        <p class="text-sm text-center" style="color: var(--text-secondary);">No hay órdenes recientes.</p>
+                                    </div>
                                 @endforelse
                             </div>
                         </div>
                         <div>
                             <h4 class="font-semibold mb-2" style="color: var(--text-secondary);">Libros Más Vendidos</h4>
-                            <div class="space-y-2">
+                            <div class="space-y-3">
                                 @forelse($librosMasVendidos as $libro)
-                                    <div class="text-sm"><span class="block font-medium" style="color: var(--text-primary);">{{ Str::limit($libro->titulo, 25) }}</span><span style="color: var(--text-secondary);">{{ $libro->total_vendido }} vendidos</span></div>
+                                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <span class="font-medium text-sm" style="color: var(--text-primary);">{{ Str::limit($libro->titulo, 20) }}</span>
+                                            <span class="font-bold text-blue-600 dark:text-blue-400 text-sm">{{ $libro->total_vendido }}</span>
+                                        </div>
+                                        <div class="text-xs" style="color: var(--text-secondary);">
+                                            <span>📚 Unidades vendidas</span>
+                                        </div>
+                                    </div>
                                 @empty
-                                    <p class="text-sm" style="color: var(--text-secondary);">No hay ventas aún.</p>
+                                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                        <p class="text-sm text-center" style="color: var(--text-secondary);">No hay ventas aún.</p>
+                                    </div>
                                 @endforelse
                             </div>
                         </div>
                         <div>
-                            <h4 class="font-semibold mb-2" style="color: var(--text-secondary);">⚠️ Stock Bajo</h4>
-                            <div class="space-y-2">
-                                @forelse($stockBajo as $item)
-                                    <div class="text-sm"><span class="block font-medium" style="color: var(--text-primary);">{{ Str::limit($item->titulo, 20) }}</span><span class="text-red-400">{{ $item->cantidad }} restantes</span></div>
+                            <h4 class="font-semibold mb-2" style="color: var(--text-secondary);">Stock Bajo</h4>
+                            <div class="space-y-3">
+                                @forelse($stockBajo as $edicion)
+                                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <span class="font-medium text-sm" style="color: var(--text-primary);">{{ Str::limit($edicion->titulo, 18) }}</span>
+                                            <span class="font-bold text-orange-600 dark:text-orange-400 text-sm">{{ $edicion->cantidad }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs" style="color: var(--text-secondary);">
+                                            <span>{{ $edicion->numero_edicion }}ª edición</span>
+                                            @if($edicion->cantidad <= $edicion->umbral)
+                                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200">
+                                                    ⚠️ Crítico
+                                                </span>
+                                            @else
+                                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200">
+                                                    📦 Bajo
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
                                 @empty
-                                    <p class="text-sm text-green-400">Stock saludable.</p>
+                                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                        <p class="text-sm text-center" style="color: var(--text-secondary);">Stock normal.</p>
+                                    </div>
                                 @endforelse
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2" style="color: var(--text-secondary);">Tendencias</h4>
+                            <div class="space-y-3">
+                                <!-- Categoría más popular -->
+                                <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="font-medium text-sm" style="color: var(--text-primary);">{{ Str::limit($tendencias['categoria_popular'], 15) }}</span>
+                                        <span class="font-bold text-purple-600 dark:text-purple-400 text-sm">{{ $tendencias['categoria_vendida'] }}</span>
+                                    </div>
+                                    <div class="text-xs" style="color: var(--text-secondary);">
+                                        <span>📚 Categoría del mes</span>
+                                    </div>
+                                </div>
+
+                                <!-- Autor más vendido -->
+                                <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="font-medium text-sm" style="color: var(--text-primary);">{{ Str::limit($tendencias['autor_mas_vendido'], 15) }}</span>
+                                        <span class="font-bold text-indigo-600 dark:text-indigo-400 text-sm">{{ $tendencias['autor_vendido'] }}</span>
+                                    </div>
+                                    <div class="text-xs" style="color: var(--text-secondary);">
+                                        <span>✍️ Autor más vendido</span>
+                                    </div>
+                                </div>
+
+                                <!-- Editorial con más libros -->
+                                <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="font-medium text-sm" style="color: var(--text-primary);">{{ Str::limit($tendencias['editorial_mas_libros'], 15) }}</span>
+                                        <span class="font-bold text-teal-600 dark:text-teal-400 text-sm">{{ $tendencias['editorial_libros'] }}</span>
+                                    </div>
+                                    <div class="text-xs" style="color: var(--text-secondary);">
+                                        <span>🏢 Más libros</span>
+                                    </div>
+                                </div>
+
+                                <!-- Mes con más ventas -->
+                                <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="font-medium text-sm" style="color: var(--text-primary);">{{ Str::limit($tendencias['mes_mas_ventas'], 12) }}</span>
+                                        <span class="font-bold text-emerald-600 dark:text-emerald-400 text-sm">S/ {{ number_format($tendencias['mes_ventas'], 0) }}</span>
+                                    </div>
+                                    <div class="text-xs" style="color: var(--text-secondary);">
+                                        <span>📈 Mejor mes</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

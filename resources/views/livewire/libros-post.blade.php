@@ -953,13 +953,13 @@
                                         {{ $edicion->editorial->nombre }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="font-semibold text-green-600 dark:text-green-400">
+                                        <span class="font-semibold text-black dark:text-white">
                                             S/ {{ number_format($edicion->precio, 2) }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         @if($edicion->precio_promocional && $edicion->precio_promocional > 0)
-                                            <span class="font-semibold text-red-600 dark:text-red-400">
+                                            <span class="font-semibold text-green-600 dark:text-green-400">
                                                 S/ {{ number_format($edicion->precio_promocional, 2) }}
                                             </span>
                                         @else

@@ -1,10 +1,10 @@
 @auth
     <div class="relative">
         <button id="user-menu-btn" class="px-4 py-2 bg-white text-indigo-600 hover:bg-gray-100 font-medium rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
-            <span class="text-sm">Mi Cuenta</span>
+        <span class="text-sm">Hola {{ auth()->user()->name }}</span>
         </button>
         <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden">
-            <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Mi perfil</a>
+            <a href="{{ route('profile.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Mi perfil</a>
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Mis pedidos</a>
             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Lista de deseos</a>
             @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))

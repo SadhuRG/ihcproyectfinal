@@ -33,7 +33,7 @@
             </div>
 
             <!-- Slogan secundario -->
-            <p class="text-sm opacity-80 animate-fadeInUp">
+            <p class="text-lg opacity-80 animate-fadeInUp">
                 ¡Miles de títulos disponibles para todos los gustos!
             </p>
         </div>
@@ -47,42 +47,9 @@
 
     <!-- Sección Ficción -->
     <livewire:books.fiction-books />
-    
-    <!-- SECCIÓN DE SOPORTE -->
-    @auth
-    <section class="py-16 px-4" style="background: var(--card-bg);">
-        <div class="container mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: var(--text-primary);">¿Necesitas Ayuda?</h2>
-                <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-primary);">
-                    Nuestro equipo de soporte está aquí para ayudarte. Envíanos tu consulta y te responderemos lo antes posible.
-                </p>
-            </div>
-
-            <div class="max-w-2xl mx-auto">
-                @livewire('user-support')
-            </div>
-        </div>
-    </section>
-    @endauth
 
     <!-- Sección Romance -->
     <livewire:books.romance-books />
-
-    <!-- Sección de Soporte -->
-    @auth
-    <section class="py-16 px-4 bg-gray-50">
-        <div class="container mx-auto text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">¿Necesitas Ayuda?</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Nuestro equipo de soporte está aquí para ayudarte. Envíanos tu consulta y te responderemos lo antes posible.
-            </p>
-        </div>
-        <div class="max-w-2xl mx-auto">
-            @livewire('user-support')
-        </div>
-    </section>
-    @endauth
 
     <!-- Scripts de animación -->
     @push('scripts')

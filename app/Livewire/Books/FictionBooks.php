@@ -12,24 +12,26 @@ class FictionBooks extends Component
 
     public function mount()
     {
-        // Versión mejorada con ediciones cargadas
+        // Versión corregida con GROUP BY apropiado
         $this->books = Book::with(['authors', 'categories', 'editions' => function($query) {
                 $query->whereNull('deleted_at')
                       ->orderBy('precio')
                       ->with(['editorial', 'inventory']);
             }])
             ->select([
-                'books.*',
+                'books.id',
+                'books.titulo',
+                'books.descripcion',
+                'books.ISBN',
                 DB::raw('MIN(editions.precio) as precio_minimo')
             ])
             ->join('editions', 'books.id', '=', 'editions.book_id')
             ->whereHas('categories', function ($query) {
                 $query->where('nombre', 'Ciencia Ficción');
             })
-            ->whereNull('books.deleted_at')
             ->whereNull('editions.deleted_at')
-            ->groupBy('books.id')
-            ->orderBy('books.created_at', 'desc')
+            ->groupBy('books.id', 'books.titulo', 'books.descripcion', 'books.ISBN')
+            ->orderBy('books.id', 'desc')
             ->take(6)
             ->get()
             ->map(function ($book) {

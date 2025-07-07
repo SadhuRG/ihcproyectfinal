@@ -12,14 +12,17 @@ class BestSellers extends Component
 
     public function mount()
     {
-        // Versión mejorada con ediciones cargadas
+        // Versión corregida con GROUP BY apropiado
         $this->books = Book::with(['authors', 'categories', 'editions' => function($query) {
                 $query->whereNull('deleted_at')
                       ->orderBy('precio')
                       ->with(['editorial', 'inventory']);
             }])
             ->select([
-                'books.*',
+                'books.id',
+                'books.titulo',
+                'books.descripcion',
+                'books.ISBN',
                 DB::raw('MIN(editions.precio) as precio_minimo'),
                 DB::raw('SUM(edition_order.cantidad) as total_vendido')
             ])
@@ -27,9 +30,8 @@ class BestSellers extends Component
             ->join('edition_order', 'editions.id', '=', 'edition_order.edition_id')
             ->join('orders', 'edition_order.order_id', '=', 'orders.id')
             ->where('orders.estado', true)
-            ->whereNull('books.deleted_at')
             ->whereNull('editions.deleted_at')
-            ->groupBy('books.id')
+            ->groupBy('books.id', 'books.titulo', 'books.descripcion', 'books.ISBN')
             ->orderByDesc('total_vendido')
             ->take(6)
             ->get()

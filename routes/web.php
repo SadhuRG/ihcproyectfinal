@@ -43,6 +43,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('dashboard');
     })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('dashboard');
 
+    // Ruta de ayuda para administradores
+    Route::get('/admin-help', function () {
+        return view('admin-help');
+    })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('admin-help');
+
     Route::get('/pedidos', function () {
         return view('pedidos');
     })->middleware('checkAnyRole:superadministrador,administrador,colaborador')->name('pedidos');

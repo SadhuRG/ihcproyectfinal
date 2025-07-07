@@ -138,36 +138,14 @@
                     <button id="theme-toggle" class="relative w-14 h-7 bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:scale-110 flex items-center p-1" onclick="toggleTheme()">
                         <div id="toggle-circle" class="w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300 transform translate-x-0"></div>
                     </button>
-
-                    <!-- Dropdown -->
-                    <div x-show="open" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95">
-
-                        <div class="px-4 py-2 text-sm text-gray-700 font-semibold">Hola, {{ Auth::user()->name }}</div>
-
-                        <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Mi Perfil
-                        </a>
-                        <a href="{{ route('profile.pedidos') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Mis Pedidos
-                        </a>
-                        <a href="{{ route('profile.deseos') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Lista de Deseos
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Cerrar Sesión
-                            </button>
-                        </form>
-                    </div>
                 </div>
+            </div>
+
+            @guest
+                <x-auth.register-button />
+                <x-auth.login-button />
+            @else
+                <x-auth.user-menu />
             @endguest
 
             <!-- Componente Carrito de Compras -->

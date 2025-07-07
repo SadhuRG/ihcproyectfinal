@@ -28,7 +28,7 @@
     <x-layouts.app.header />
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="pt-24">
+    <main class="pt-20">
         {{ $slot }}
     </main>
 
