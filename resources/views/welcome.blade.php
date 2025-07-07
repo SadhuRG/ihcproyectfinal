@@ -1,5 +1,5 @@
 <x-layouts.app>
-
+    <x-horizontal-categories-menu />
     <!-- Hero Banner Combinado -->
     <section class="relative pt-24 pb-20 overflow-hidden">
         <!-- Fondo degradado -->
@@ -93,6 +93,6 @@
             overflow: hidden;
         }
     </style>
-    
+
     @endpush
 </x-layouts.app>
