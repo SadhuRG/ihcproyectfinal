@@ -93,18 +93,54 @@
     <div class="flex pt-24">
         <aside class="sidebar-gradient w-64 h-screen fixed left-0 top-20 overflow-y-auto p-4 z-40">
             <nav class="space-y-2">
-                <a href="#" onclick="showSection('dashboard-content')" data-section="dashboard-content" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path></svg><span class="font-medium">Dashboard</span></a>
-                <a href="#" onclick="showSection('libros')" data-section="libros" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg><span class="font-medium">Libros</span></a>
-                <a href="#" onclick="showSection('ediciones')" data-section="ediciones" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="font-medium">Ediciones</span></a>
-                <a href="#" onclick="showSection('autores')" data-section="autores" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg><span class="font-medium">Autores</span></a>
-                <a href="#" onclick="showSection('categorias')" data-section="categorias" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg><span class="font-medium">Categorías</span></a>
-                <a href="#" onclick="showSection('editoriales')" data-section="editoriales" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m5-11h1m-1 4h1m-1 4h1"></path></svg><span class="font-medium">Editoriales</span></a>
-                <a href="#" onclick="showSection('inventario')" data-section="inventario" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg><span class="font-medium">Inventario</span></a>
-                <a href="#" onclick="showSection('pedidos')" data-section="pedidos" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg><span class="font-medium">Pedidos</span></a>
-                <a href="#" onclick="showSection('usuarios')" data-section="usuarios" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m9 5.197H15"></path></svg><span class="font-medium">Usuarios</span></a>
-                <a href="#" onclick="showSection('soporte-usuario')" data-section="soporte-usuario" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-medium">Soporte</span></a>
-                <a href="#" onclick="showSection('promociones')" data-section="promociones" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM14.5 18.5a2.5 2.5 0 105 0 2.5 2.5 0 00-5 0z"></path></svg><span class="font-medium">Promociones</span></a>
-                <a href="#" onclick="showSection('reportes')" data-section="reportes" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span class="font-medium">Reportes</span></a>
+                <a href="#" onclick="showSection('dashboard-content')" data-section="dashboard-content" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white bg-white/10">
+                    <img src="/icons/dashboard-svg/1.dashboard.svg" alt="Dashboard" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="#" onclick="showSection('libros')" data-section="libros" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/11.libro.svg" alt="Libros" class="w-8 h-8 flex-shrink-0"> 
+                    <span class="font-medium">Libros</span>
+                </a>
+                <a href="#" onclick="showSection('ediciones')" data-section="ediciones" class="nav-button nav-item flex items-center space-x-3 p-3 pl-5 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/2.edicion.svg" alt="Ediciones" class="w-5 h-5 flex-shrink-0">
+                    <span class="font-medium pl-1">Ediciones</span>
+                </a>
+                <a href="#" onclick="showSection('autores')" data-section="autores" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/0.autor.svg" alt="Autores" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Autores</span>
+                </a>
+                <a href="#" onclick="showSection('categorias')" data-section="categorias" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/4.categoria.svg" alt="Categorías" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Categorías</span>
+                </a>
+                <a href="#" onclick="showSection('editoriales')" data-section="editoriales" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/publisher.svg" alt="Editoriales" class="w-6 h-6 pl-1 flex-shrink-0">
+                    <span class="font-medium">Editoriales</span>
+                </a>
+                <a href="#" onclick="showSection('inventario')" data-section="inventario" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/12.inventario.svg" alt="Inventario" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Inventario</span>
+                </a>
+                <a href="#" onclick="showSection('pedidos')" data-section="pedidos" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/8.pedido.svg" alt="Pedidos" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Pedidos</span>
+                </a>
+                <a href="#" onclick="showSection('usuarios')" data-section="usuarios" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/13.usuario.svg" alt="Usuarios" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Usuarios</span>
+                </a>
+                <a href="#" onclick="showSection('soporte-usuario')" data-section="soporte-usuario" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/10.soporte_usuario.svg" alt="Soporte de Usuario" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Soporte de Usuario</span>
+                </a>
+                <a href="#" onclick="showSection('promociones')" data-section="promociones" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/7.promociones.svg" alt="Promociones" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Promociones</span>
+                </a>
+                <a href="#" onclick="showSection('reportes')" data-section="reportes" class="nav-button nav-item flex items-center space-x-3 p-3 rounded-xl text-white/80 hover:bg-white/10">
+                    <img src="/icons/dashboard-svg/6.reporte.svg" alt="Reportes" class="w-8 h-8 flex-shrink-0">
+                    <span class="font-medium">Reportes</span>
+                </a>
             </nav>
         </aside>
 
