@@ -19,7 +19,7 @@
     </section>
 
     <!-- Sección Promocional -->
-    <section class="py-16 px-4">
+    <section class="py-10 px-4">
         <div class="container mx-auto">
             <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 rounded-3xl p-8 md:p-12 text-white text-center relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
