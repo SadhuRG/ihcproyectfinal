@@ -1,42 +1,41 @@
 <x-layouts.app>
 
-    <!-- Hero Section -->
-    <section class="relative pt-24 pb-12 overflow-hidden">
+    <!-- Hero Banner Combinado -->
+    <section class="relative pt-24 pb-20 overflow-hidden">
+        <!-- Fondo degradado -->
         <div class="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 opacity-90"></div>
 
+        <!-- Efecto de puntos -->
         <div class="absolute inset-0 opacity-10">
             <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
         </div>
 
+        <!-- Contenido -->
         <div class="relative z-10 container mx-auto px-4 text-center text-white">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg animate-fadeInUp">
                 Descubre tu próxima lectura
             </h1>
-            <p class="text-xl md:text-2xl mb-8 opacity-90">
+            <p class="text-xl md:text-2xl mb-8 opacity-90 animate-fadeInUp">
                 Miles de libros esperan por ti en Librería Pulsar
             </p>
-        </div>
-    </section>
 
-    <!-- Sección Promocional -->
-    <section class="py-10 px-4">
-        <div class="container mx-auto">
-            <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 rounded-3xl p-8 md:p-12 text-white text-center relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                <div class="absolute bottom-0 right-0 w-24 h-24 bg-white/10 rounded-full translate-x-1/2 translate-y-1/2"></div>
-
-                <div class="relative z-10">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                        ¡Oferta Especial!
-                    </h2>
-                    <p class="text-xl mb-6 opacity-90">
-                        20% de descuento en tu primera compra
-                    </p>
-                    <button class="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-xl">
-                        Aprovechar Oferta
-                    </button>
-                </div>
+            <!-- Oferta Especial -->
+            <div class="bg-white/20 backdrop-blur-md rounded-3xl inline-block px-8 py-6 md:px-12 md:py-8 mb-8 animate-fadeInUp">
+                <h2 class="text-2xl md:text-3xl font-bold mb-2">
+                    ¡Oferta Especial!
+                </h2>
+                <p class="text-lg mb-4">
+                    20% de descuento en tu primera compra
+                </p>
+                <button class="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-xl">
+                    Aprovechar Oferta
+                </button>
             </div>
+
+            <!-- Slogan secundario -->
+            <p class="text-sm opacity-80 animate-fadeInUp">
+                ¡Miles de títulos disponibles para todos los gustos!
+            </p>
         </div>
     </section>
 
