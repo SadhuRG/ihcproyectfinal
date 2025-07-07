@@ -1,6 +1,9 @@
 <x-layouts.app>
 
-    <!-- Hero Banner Combinado -->
+    <!-- Menú de Categorías Horizontal - ARRIBA DEL BANNER -->
+    <x-horizontal-categories-menu />
+
+    <!-- Hero Banner -->
     <section class="relative pt-24 pb-20 overflow-hidden">
         <!-- Fondo degradado -->
         <div class="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800 opacity-90"></div>
@@ -124,6 +127,48 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        /* Estilos para el menú horizontal */
+        .submenu-enter {
+            opacity: 0;
+            transform: translateX(8px);
+        }
+
+        .submenu-enter-active {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 200ms ease-out, transform 200ms ease-out;
+        }
+
+        .submenu-leave {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .submenu-leave-active {
+            opacity: 0;
+            transform: translateX(8px);
+            transition: opacity 150ms ease-in, transform 150ms ease-in;
+        }
+
+        /* Scrollbar personalizada para submenús largos */
+        .submenu-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .submenu-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .submenu-scroll::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .submenu-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
         }
     </style>
     

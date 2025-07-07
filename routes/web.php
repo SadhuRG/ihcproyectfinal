@@ -15,6 +15,7 @@ Route::view('/', '/welcome');
 // 📚 Esta ruta debe ir FUERA del grupo protegido
 Route::get('/libro/{bookId}', BookDetail::class)->name('book.detail');
 
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Vista de usuario (sin redirección automática)
     Route::get('/welcome', function () {
