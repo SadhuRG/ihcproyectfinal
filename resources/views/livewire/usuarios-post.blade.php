@@ -23,11 +23,6 @@
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <button wire:click="$set('showCreateModal', true)"
-                            class="px-4 py-2 flex items-center justify-center bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            <span>Nuevo Usuario</span>
-                        </button>
                     </div>
                 </div>
 
@@ -316,177 +311,126 @@
             </div>
 
             <form wire:submit.prevent="guardarUsuario" class="space-y-6">
-                {{-- INFORMACIÓN BÁSICA --}}
+                {{-- INFORMACIÓN DEL USUARIO (SOLO LECTURA) --}}
                 <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                    <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Información Básica</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Nombre <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text"
-                                wire:model.defer="usuarioEditado.name"
-                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Ingresa el nombre">
-                            @error('usuarioEditado.name')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
+                    <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Información del Usuario</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {{-- Foto del usuario --}}
+                        <div class="flex flex-col items-center">
+                            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-600 mb-3">
+                                @if($usuarioEditado['url_foto'] ?? false)
+                                    <img src="{{ $usuarioEditado['url_foto'] }}" 
+                                         alt="Foto de {{ $usuarioEditado['name'] ?? 'Usuario' }}" 
+                                         class="w-full h-full object-cover"
+                                         onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-blue-500 flex items-center justify-center\'><span class=\'text-white text-2xl font-bold\'>{{ substr($usuarioEditado['name'] ?? 'U', 0, 1) }}{{ substr($usuarioEditado['apellido'] ?? 'U', 0, 1) }}</span></div>'">
+                                @else
+                                    <div class="w-full h-full bg-blue-300 flex items-center justify-center">
+                                        <span class="text-white text-2xl font-bold">
+                                            {{ substr($usuarioEditado['name'] ?? 'U', 0, 1) }}{{ substr($usuarioEditado['apellido'] ?? 'U', 0, 1) }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                            <span class="text-sm text-gray-600 dark:text-gray-400 text-center">
+                                Foto del usuario
+                            </span>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Apellido</label>
-                            <input type="text"
-                                wire:model.defer="usuarioEditado.apellido"
-                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Ingresa el apellido">
-                            @error('usuarioEditado.apellido')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
+                        {{-- Información básica (solo lectura) --}}
+                        <div class="md:col-span-2 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
+                                    <input type="text"
+                                        value="{{ $usuarioEditado['name'] ?? '' }}"
+                                        disabled
+                                        class="w-full pl-1 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Apellido</label>
+                                    <input type="text"
+                                        value="{{ $usuarioEditado['apellido'] ?? '' }}"
+                                        disabled
+                                        class="w-full pl-1 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                    <input type="email"
+                                        value="{{ $usuarioEditado['email'] ?? '' }}"
+                                        disabled
+                                        class="w-full pl-1 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>
+                                    <input type="tel"
+                                        value="{{ $usuarioEditado['telefono'] ?? 'No especificado' }}"
+                                        disabled
+                                        class="w-full pl-1 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Nacimiento</label>
+                                    <input type="text"
+                                        value="{{ $usuarioEditado['fecha_n'] ? \Carbon\Carbon::parse($usuarioEditado['fecha_n'])->format('d/m/Y') : 'No especificada' }}"
+                                        disabled
+                                        class="w-full pl-1 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID del Usuario</label>
+                                    <input type="text"
+                                        value="{{ $usuarioEditado['id'] ?? '' }}"
+                                        disabled
+                                        class="w-full pl-1 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- INFORMACIÓN DE CONTACTO --}}
-                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                    <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Información de Contacto</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Email <span class="text-red-500">*</span>
-                            </label>
-                            <input type="email"
-                                wire:model.defer="usuarioEditado.email"
-                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="ejemplo@correo.com">
-                            @error('usuarioEditado.email')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>
-                            <input type="tel"
-                                wire:model.defer="usuarioEditado.telefono"
-                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="987654321">
-                            @error('usuarioEditado.telefono')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
+                {{-- CAMBIO DE ROL --}}
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <h4 class="text-lg font-medium text-blue-800 dark:text-blue-300">Cambio de Rol</h4>
                     </div>
-                </div>
 
-                {{-- INFORMACIÓN PERSONAL --}}
-                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                    <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Información Personal</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Nacimiento</label>
-                            <input type="date"
-                                wire:model.defer="usuarioEditado.fecha_n"
-                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            @error('usuarioEditado.fecha_n')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL de Foto</label>
-                            <input type="url"
-                                wire:model.defer="usuarioEditado.url_foto"
-                                class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="https://ejemplo.com/foto.jpg">
-                            @error('usuarioEditado.url_foto')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                {{-- SEGURIDAD Y ROL --}}
-                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                    <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Permisos y Seguridad</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Rol <span class="text-red-500">*</span>
+                            <label class="block text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
+                                Rol Actual <span class="text-red-500">*</span>
                             </label>
                             <select wire:model.defer="usuarioEditado.rol"
-                                    class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    class="w-full border-blue-300 dark:border-blue-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                 @foreach($rolesDisponibles as $rol)
-                                    <option value="{{ $rol->name }}">{{ ucfirst($rol->name) }}</option>
+                                    <option value="{{ $rol->name }}" {{ ($usuarioEditado['rol'] ?? '') === $rol->name ? 'selected' : '' }}>
+                                        {{ ucfirst($rol->name) }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('usuarioEditado.rol')
                                 <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
+                    </div>
 
-                        {{-- Información adicional del usuario --}}
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID del Usuario</label>
-                            <input type="text"
-                                value="{{ $usuarioEditado['id'] ?? '' }}"
-                                disabled
-                                class="w-full border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-md shadow-sm cursor-not-allowed">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">El ID no se puede modificar</p>
-                        </div>
+                    <div class="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            <strong>Nota:</strong> Solo puedes cambiar el rol del usuario. Los demás datos no se pueden modificar.
+                        </p>
                     </div>
                 </div>
 
-                {{-- CAMBIO DE CONTRASEÑA (OPCIONAL) --}}
-                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                    <div class="flex items-center mb-3">
-                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                        </svg>
-                        <h4 class="text-lg font-medium text-yellow-800 dark:text-yellow-300">Cambio de Contraseña</h4>
-                    </div>
 
-                    <div class="flex items-center mb-3">
-                        <input type="checkbox"
-                            wire:model.live="cambiarPassword"
-                            id="cambiarPassword"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="cambiarPassword" class="ml-2 text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                            Cambiar contraseña del usuario
-                        </label>
-                    </div>
-
-                    @if($cambiarPassword ?? false)
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-yellow-700 dark:text-yellow-300 mb-1">
-                                Nueva Contraseña <span class="text-red-500">*</span>
-                            </label>
-                            <input type="password"
-                                wire:model.defer="nuevaPassword"
-                                class="w-full border-yellow-300 dark:border-yellow-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
-                                placeholder="Mínimo 8 caracteres">
-                            @error('nuevaPassword')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-yellow-700 dark:text-yellow-300 mb-1">
-                                Confirmar Contraseña <span class="text-red-500">*</span>
-                            </label>
-                            <input type="password"
-                                wire:model.defer="confirmarPassword"
-                                class="w-full border-yellow-300 dark:border-yellow-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
-                                placeholder="Repetir contraseña">
-                            @error('confirmarPassword')
-                                <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                    @else
-                    <p class="text-sm text-yellow-700 dark:text-yellow-300">
-                        Si no marcas esta opción, la contraseña del usuario no será modificada.
-                    </p>
-                    @endif
-                </div>
 
                 {{-- BOTONES --}}
                 <div class="flex justify-end space-x-4 pt-6 border-t dark:border-gray-600">

@@ -8,11 +8,12 @@ use App\Models\Book;
 use App\Models\Editorial;
 use App\Models\Inventory;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
 
 class EdicionesPost extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $sort = 'id';
@@ -29,6 +30,10 @@ class EdicionesPost extends Component
     public $eliminacionmode = 'unico';
     public $showCreateModal = false;
     public $nuevaEdicion = [];
+    public $nuevaPortada = null;
+    public $portadaPreview = null; // Para vista previa en tiempo real
+    public $portadaCrear = null; // Para portada en crear edición
+    public $portadaCrearPreview = null; // Para vista previa en crear edición
 
     // Para selects
     public $libros = [];
@@ -97,6 +102,8 @@ class EdicionesPost extends Component
             'url_portada' => '/images/covers/default.jpg'
         ];
         $this->edicionesDisponiblesFiltradas = [];
+        $this->portadaCrear = null;
+        $this->portadaCrearPreview = null;
     }
     
     /**
@@ -210,6 +217,10 @@ class EdicionesPost extends Component
                 'umbral' => $edicion->inventory ? $edicion->inventory->umbral : 0
             ];
             
+            // Resetear la nueva portada y vista previa
+            $this->nuevaPortada = null;
+            $this->portadaPreview = null;
+            
             // Filtrar ediciones disponibles para edición (excluyendo la actual)
             $this->filtrarEdicionesParaEdicion($edicion->book_id, $edicion->numero_edicion);
             
@@ -250,12 +261,27 @@ class EdicionesPost extends Component
             'edicionEditada.numero_edicion' => 'required|string|max:50',
             'edicionEditada.precio' => 'required|numeric|min:0',
             'edicionEditada.cantidad' => 'required|integer|min:0',
-            'edicionEditada.umbral' => 'required|integer|min:0'
+            'edicionEditada.umbral' => 'required|integer|min:0',
+            'nuevaPortada' => 'nullable|image|max:2048'
         ]);
 
         try {
             DB::transaction(function () {
                 $edicion = Edition::with('inventory')->find($this->edicionEditada['id']);
+                $book = Book::find($this->edicionEditada['book_id']);
+                
+                // Manejar la nueva portada si se subió una
+                $urlPortada = $edicion->url_portada; // Mantener la portada actual por defecto
+                
+                if ($this->nuevaPortada) {
+                    // Generar nombre único para la portada
+                    $nombreArchivo = $book->titulo . '_' . $this->edicionEditada['numero_edicion'] . '.' . $this->nuevaPortada->getClientOriginalExtension();
+                    $nombreArchivo = str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $nombreArchivo);
+                    
+                    // Guardar la portada usando store (como en el perfil)
+                    $portadaPath = $this->nuevaPortada->storeAs('portadas', $nombreArchivo, 'public');
+                    $urlPortada = '/storage/' . $portadaPath;
+                }
 
                 // Actualizar edición
                 $edicion->update([
@@ -263,7 +289,7 @@ class EdicionesPost extends Component
                     'editorial_id' => $this->edicionEditada['editorial_id'],
                     'numero_edicion' => $this->edicionEditada['numero_edicion'],
                     'precio' => $this->edicionEditada['precio'],
-                    'url_portada' => $this->edicionEditada['url_portada']
+                    'url_portada' => $urlPortada
                 ]);
 
                 // Actualizar inventario
@@ -277,14 +303,17 @@ class EdicionesPost extends Component
 
             $this->showEditModal = false;
             $this->edicionEditada = [];
+            $this->nuevaPortada = null; // Resetear la nueva portada
+            $this->portadaPreview = null; // Resetear la vista previa
 
             $this->showNotification = true;
             $this->notificationMessage = 'Edición actualizada correctamente';
             $this->notificationType = 'success';
 
         } catch (\Exception $e) {
+            \Log::error('Error al actualizar edición: ' . $e->getMessage());
             $this->showNotification = true;
-            $this->notificationMessage = 'Error al actualizar la edición';
+            $this->notificationMessage = 'Error al actualizar la edición: ' . $e->getMessage();
             $this->notificationType = 'error';
         }
     }
@@ -297,11 +326,26 @@ class EdicionesPost extends Component
             'nuevaEdicion.numero_edicion' => 'required|string|max:50',
             'nuevaEdicion.precio' => 'required|numeric|min:0',
             'nuevaEdicion.cantidad' => 'required|integer|min:0',
-            'nuevaEdicion.umbral' => 'required|integer|min:0'
+            'nuevaEdicion.umbral' => 'required|integer|min:0',
+            'portadaCrear' => 'nullable|image|max:2048'
         ]);
 
         try {
             DB::transaction(function () {
+                $book = Book::find($this->nuevaEdicion['book_id']);
+                
+                // Procesar portada si se subió una
+                $urlPortada = '/images/covers/default.jpg'; // Portada por defecto
+                if ($this->portadaCrear) {
+                    // Generar nombre único para la portada
+                    $nombreArchivo = $book->titulo . '_' . $this->nuevaEdicion['numero_edicion'] . '.' . $this->portadaCrear->getClientOriginalExtension();
+                    $nombreArchivo = str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $nombreArchivo);
+                    
+                    // Guardar la portada usando store (como en el perfil)
+                    $portadaPath = $this->portadaCrear->storeAs('portadas', $nombreArchivo, 'public');
+                    $urlPortada = '/storage/' . $portadaPath;
+                }
+
                 // Crear inventario
                 $inventario = Inventory::create([
                     'cantidad' => $this->nuevaEdicion['cantidad'],
@@ -315,7 +359,7 @@ class EdicionesPost extends Component
                     'inventorie_id' => $inventario->id,
                     'numero_edicion' => $this->nuevaEdicion['numero_edicion'],
                     'precio' => $this->nuevaEdicion['precio'],
-                    'url_portada' => $this->nuevaEdicion['url_portada']
+                    'url_portada' => $urlPortada
                 ]);
             });
 
@@ -327,7 +371,7 @@ class EdicionesPost extends Component
 
         } catch (\Exception $e) {
             $this->showNotification = true;
-            $this->notificationMessage = 'Error al crear la edición';
+            $this->notificationMessage = 'Error al crear la edición: ' . $e->getMessage();
             $this->notificationType = 'error';
         }
     }
@@ -421,6 +465,34 @@ class EdicionesPost extends Component
     public function updatedSelectedEdiciones()
     {
         $this->selectAll = count($this->selectedEdiciones) === $this->getEdiciones()->count();
+    }
+
+    public function updatedNuevaPortada()
+    {
+        $this->validate([
+            'nuevaPortada' => 'nullable|image|max:2048' // 2MB máximo
+        ]);
+        
+        // Actualizar la vista previa en tiempo real
+        if ($this->nuevaPortada) {
+            $this->portadaPreview = $this->nuevaPortada->temporaryUrl();
+        } else {
+            $this->portadaPreview = null;
+        }
+    }
+
+    public function updatedPortadaCrear()
+    {
+        $this->validate([
+            'portadaCrear' => 'nullable|image|max:2048' // 2MB máximo
+        ]);
+        
+        // Actualizar la vista previa en tiempo real para crear edición
+        if ($this->portadaCrear) {
+            $this->portadaCrearPreview = $this->portadaCrear->temporaryUrl();
+        } else {
+            $this->portadaCrearPreview = null;
+        }
     }
 
     public function getEdiciones()

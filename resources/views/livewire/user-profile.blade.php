@@ -180,16 +180,17 @@ new class extends Component {
                                 <div>
                                     <label for="current_password" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Contraseña Actual *</label>
                                     <input wire:model="current_password" type="password" id="current_password" required
-                                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200" style="border-color: var(--text-primary); background: var(--card-bg); color: var(--text-primary);">
-                                    @error('current_password') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
+                                    @error('current_password') <span class="text-red-600 text-sm">Error el sistema no reconoce la contraseña actual</span> @enderror
                                 </div>
 
                                 <!-- Nueva Contraseña -->
                                 <div>
                                     <label for="new_password" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Nueva Contraseña *</label>
                                     <input wire:model="new_password" type="password" id="new_password" required
-                                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200" style="border-color: var(--text-primary); background: var(--card-bg); color: var(--text-primary);">
-                                    @error('new_password') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                                    
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
+                                    @error('new_password') <span class="text-red-600 text-sm">El tamaño mínimo de la contraseña es de 8 caracteres</span> @enderror
                                 </div>
 
                                 <!-- Confirmar Nueva Contraseña -->

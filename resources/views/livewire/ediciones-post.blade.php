@@ -298,6 +298,27 @@
                     </div>
                 </div>
 
+                <!-- Sección de Portada -->
+                <div class="mt-6 border-t pt-6">
+                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Portada de la Edición</h4>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subir Portada</label>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <input type="file" wire:model="portadaCrear" accept="image/*" class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300">
+                                @if($portadaCrearPreview)
+                                    <div class="w-24 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                                        <img src="{{ $portadaCrearPreview }}" alt="Vista previa" class="w-full h-full object-cover">
+                                    </div>
+                                @endif
+                            </div>
+                            @error('portadaCrear') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" wire:click="$set('showCreateModal', false)" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                         Cancelar
@@ -311,7 +332,7 @@
     </div>
     @endif
 
-    <!-- MODAL EDITAR EDICIÓN -->
+    <!-- MODAL EDITAR EDICIÓN DE LIBRO-->
     @if($showEditModal)
     <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-4">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -352,7 +373,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Número de Edición</label>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número de Edición</label>
+                            <div class="relative group">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                                    Las ediciones que no se muestran ya han sido agregadas para este libro
+                                    <div class="absolute top-full left-4 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                </div>
+                            </div>
+                        </div>
                         <select wire:model.live="edicionEditada.numero_edicion" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" {{ empty($edicionEditada['book_id']) ? 'disabled' : '' }}>
                             <option value="">Seleccionar edición...</option>
                             @if(!empty($edicionEditada['book_id']) && count($edicionesDisponiblesFiltradas) > 0)
@@ -363,17 +395,6 @@
                                 <option value="" disabled>Todas las ediciones ya existen para este libro</option>
                             @endif
                         </select>
-                        
-                        <!-- Información de debug para edición -->
-                        @if(!empty($edicionEditada['book_id']))
-                            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                                <p>Libro seleccionado: {{ $edicionEditada['book_id'] }}</p>
-                                <p>Ediciones disponibles: {{ count($edicionesDisponiblesFiltradas) }}</p>
-                                @if(count($edicionesDisponiblesFiltradas) > 0)
-                                    <p>Opciones: {{ implode(', ', $edicionesDisponiblesFiltradas) }}</p>
-                                @endif
-                            </div>
-                        @endif
                         
                         @if(!empty($edicionEditada['book_id']) && count($edicionesDisponiblesFiltradas) == 0)
                             <p class="text-yellow-600 dark:text-yellow-400 text-sm mt-1">Este libro ya tiene todas las ediciones disponibles</p>
@@ -397,6 +418,53 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Umbral Mínimo</label>
                         <input type="number" wire:model="edicionEditada.umbral" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0">
                         @error('edicionEditada.umbral') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <!-- Sección de Portada -->
+                <div class="mt-6 border-t pt-6">
+                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Portada de la Edición</h4>
+                    
+                    <!-- Portada Actual -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Portada Actual</label>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-24 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                                @if($edicionEditada['url_portada'] && $edicionEditada['url_portada'] !== '/images/covers/default.jpg')
+                                    <img src="{{ $edicionEditada['url_portada'] }}" alt="Portada actual" class="w-full h-full object-cover">
+                                @else
+                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                @endif
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    @if($edicionEditada['url_portada'] && $edicionEditada['url_portada'] !== '/images/covers/default.jpg')
+                                        Portada actual de la edición
+                                    @else
+                                        Sin portada asignada
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nueva Portada -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cambiar Portada</label>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <input type="file" wire:model="nuevaPortada" accept="image/*" class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300">
+                                @if($portadaPreview)
+                                    <div class="w-24 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                                        <img src="{{ $portadaPreview }}" alt="Vista previa" class="w-full h-full object-cover">
+                                    </div>
+                                @endif
+                            </div>
+                            @error('nuevaPortada') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
+                        </div>
                     </div>
                 </div>
 

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Book;
 use App\Models\Author;
 use App\Models\Category;
@@ -11,10 +12,11 @@ use App\Models\Edition;
 use App\Models\Inventory;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LibrosPost extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $sort = 'id';
@@ -34,6 +36,9 @@ class LibrosPost extends Component
     public $showDetailModal = false;
     public $libroDetalle = null;
     
+    // Para subida de portada
+    public $portada;
+    
     // Modal de atención para ISBN duplicado
     public $showIsbnDuplicateModal = false;
     public $libroExistente = null;
@@ -48,6 +53,16 @@ class LibrosPost extends Component
     public $editoriales = [];
     public $autorSeleccionado = [];
     public $categoriaSeleccionada = [];
+    
+    // Para sistema de tags
+    public $autoresSeleccionados = []; // Array de objetos autor para mostrar tags
+    public $categoriasSeleccionadas = []; // Array de objetos categoria para mostrar tags
+    
+    // Para sistema de tags en edición
+    public $autoresSeleccionadosEdit = []; // Array de objetos autor para mostrar tags en edición
+    public $categoriasSeleccionadasEdit = []; // Array de objetos categoria para mostrar tags en edición
+    public $autorSeleccionadoEdit = []; // Array de IDs de autores seleccionados en edición
+    public $categoriaSeleccionadaEdit = []; // Array de IDs de categorías seleccionadas en edición
     
     // Array estático de ediciones disponibles (formato exacto del seeder)
     public $edicionesDisponibles = [
@@ -72,6 +87,13 @@ class LibrosPost extends Component
         $this->resetNuevoLibro();
     }
 
+    public function updatedPortada()
+    {
+        $this->validate([
+            'portada' => 'nullable|image|max:2048|mimes:jpg,jpeg,png,gif',
+        ]);
+    }
+
     public function resetNuevoLibro()
     {
         $this->nuevoLibro = [
@@ -86,6 +108,9 @@ class LibrosPost extends Component
         ];
         $this->autorSeleccionado = [];
         $this->categoriaSeleccionada = [];
+        $this->autoresSeleccionados = [];
+        $this->categoriasSeleccionadas = [];
+        $this->portada = null;
     }
 
     public function order($sort)
@@ -135,8 +160,14 @@ class LibrosPost extends Component
                 'descripcion' => $libro->descripcion
             ];
 
-            $this->autorSeleccionado = $libro->authors->pluck('id')->toArray();
-            $this->categoriaSeleccionada = $libro->categories->pluck('id')->toArray();
+            // Para el sistema de tags en edición
+            $this->autorSeleccionadoEdit = $libro->authors->pluck('id')->toArray();
+            $this->categoriaSeleccionadaEdit = $libro->categories->pluck('id')->toArray();
+            
+            // Cargar objetos para tags en edición
+            $this->autoresSeleccionadosEdit = $libro->authors->toArray();
+            $this->categoriasSeleccionadasEdit = $libro->categories->toArray();
+            
             $this->showEditModal = true;
         }
     }
@@ -174,13 +205,15 @@ class LibrosPost extends Component
                     'ISBN' => $isbnNormalizado,
                     'descripcion' => $this->libroEditado['descripcion']
                 ]);
-                $libro->authors()->sync($this->autorSeleccionado);
-                $libro->categories()->sync($this->categoriaSeleccionada);
+                $libro->authors()->sync($this->autorSeleccionadoEdit);
+                $libro->categories()->sync($this->categoriaSeleccionadaEdit);
             });
             $this->showEditModal = false;
             $this->libroEditado = [];
-            $this->autorSeleccionado = [];
-            $this->categoriaSeleccionada = [];
+            $this->autorSeleccionadoEdit = [];
+            $this->categoriaSeleccionadaEdit = [];
+            $this->autoresSeleccionadosEdit = [];
+            $this->categoriasSeleccionadasEdit = [];
             $this->showNotification = true;
             $this->notificationMessage = 'Libro actualizado correctamente';
             $this->notificationType = 'success';
@@ -404,12 +437,24 @@ class LibrosPost extends Component
                     'umbral' => $this->nuevoLibro['umbral']
                 ]);
 
+                // Procesar portada si se subió una
+                $urlPortada = '/images/covers/default.jpg'; // Portada por defecto
+                if ($this->portada) {
+                    // Generar nombre único para la portada
+                    $nombreArchivo = $this->nuevoLibro['titulo'] . '.' . $this->portada->getClientOriginalExtension();
+                    $nombreArchivo = str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $nombreArchivo);
+                    
+                    // Guardar la portada directamente en public/portadas/
+                    $this->portada->move(public_path('portadas'), $nombreArchivo);
+                    $urlPortada = '/portadas/' . $nombreArchivo;
+                }
+
                 // Crear edición
                 Edition::create([
                     'editorial_id' => $this->nuevoLibro['editorial_id'],
                     'inventorie_id' => $inventario->id,
                     'book_id' => $libro->id,
-                    'url_portada' => '/images/covers/default.jpg',
+                    'url_portada' => $urlPortada,
                     'numero_edicion' => $this->nuevoLibro['numero_edicion'],
                     'precio' => $this->nuevoLibro['precio']
                 ]);
@@ -539,6 +584,51 @@ class LibrosPost extends Component
         $this->selectAll = count($this->selectedLibros) === $this->getLibros()->count();
     }
 
+    // Métodos para sistema de tags
+    public function agregarAutor($autorId)
+    {
+        if (!in_array($autorId, $this->autorSeleccionado)) {
+            $this->autorSeleccionado[] = $autorId;
+            $autor = $this->autores->find($autorId);
+            if ($autor) {
+                $this->autoresSeleccionados[] = $autor;
+            }
+        }
+    }
+
+    public function quitarAutor($autorId)
+    {
+        $this->autorSeleccionado = array_filter($this->autorSeleccionado, function($id) use ($autorId) {
+            return $id != $autorId;
+        });
+        
+        $this->autoresSeleccionados = array_filter($this->autoresSeleccionados, function($autor) use ($autorId) {
+            return $autor->id != $autorId;
+        });
+    }
+
+    public function agregarCategoria($categoriaId)
+    {
+        if (!in_array($categoriaId, $this->categoriaSeleccionada)) {
+            $this->categoriaSeleccionada[] = $categoriaId;
+            $categoria = $this->categorias->find($categoriaId);
+            if ($categoria) {
+                $this->categoriasSeleccionadas[] = $categoria;
+            }
+        }
+    }
+
+    public function quitarCategoria($categoriaId)
+    {
+        $this->categoriaSeleccionada = array_filter($this->categoriaSeleccionada, function($id) use ($categoriaId) {
+            return $id != $categoriaId;
+        });
+        
+        $this->categoriasSeleccionadas = array_filter($this->categoriasSeleccionadas, function($categoria) use ($categoriaId) {
+            return $categoria->id != $categoriaId;
+        });
+    }
+
     public function getLibros()
     {
         return Book::with(['authors', 'categories', 'editions.editorial'])
@@ -574,5 +664,50 @@ class LibrosPost extends Component
     private function normalizarIsbn($isbn)
     {
         return preg_replace('/[\s-]+/', '', $isbn);
+    }
+
+    // Métodos para sistema de tags en edición
+    public function agregarAutorEdit($autorId)
+    {
+        if (!in_array($autorId, $this->autorSeleccionadoEdit)) {
+            $this->autorSeleccionadoEdit[] = $autorId;
+            $autor = $this->autores->find($autorId);
+            if ($autor) {
+                $this->autoresSeleccionadosEdit[] = $autor;
+            }
+        }
+    }
+
+    public function quitarAutorEdit($autorId)
+    {
+        $this->autorSeleccionadoEdit = array_filter($this->autorSeleccionadoEdit, function($id) use ($autorId) {
+            return $id != $autorId;
+        });
+        
+        $this->autoresSeleccionadosEdit = array_filter($this->autoresSeleccionadosEdit, function($autor) use ($autorId) {
+            return $autor['id'] != $autorId;
+        });
+    }
+
+    public function agregarCategoriaEdit($categoriaId)
+    {
+        if (!in_array($categoriaId, $this->categoriaSeleccionadaEdit)) {
+            $this->categoriaSeleccionadaEdit[] = $categoriaId;
+            $categoria = $this->categorias->find($categoriaId);
+            if ($categoria) {
+                $this->categoriasSeleccionadasEdit[] = $categoria;
+            }
+        }
+    }
+
+    public function quitarCategoriaEdit($categoriaId)
+    {
+        $this->categoriaSeleccionadaEdit = array_filter($this->categoriaSeleccionadaEdit, function($id) use ($categoriaId) {
+            return $id != $categoriaId;
+        });
+        
+        $this->categoriasSeleccionadasEdit = array_filter($this->categoriasSeleccionadasEdit, function($categoria) use ($categoriaId) {
+            return $categoria['id'] != $categoriaId;
+        });
     }
 }
