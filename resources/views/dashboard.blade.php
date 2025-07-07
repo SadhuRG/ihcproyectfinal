@@ -54,7 +54,7 @@
     </style>
 </head>
 
-<body>
+<body class="{{ auth()->check() ? 'auth-user' : '' }}">
     @livewire('dashboard-stats-modern')
 
     @livewireScripts

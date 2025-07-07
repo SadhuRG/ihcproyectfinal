@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-neutral-100 antialiased :bg-linear-to-b :from-neutral-950 :to-neutral-900">
+    <body class="min-h-screen bg-neutral-100 antialiased :bg-linear-to-b :from-neutral-950 :to-neutral-900 {{ auth()->check() ? 'auth-user' : '' }}">
         <div class="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div class="flex w-full max-w-md flex-col gap-6">
                 <a href="{{ route('welcome') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>

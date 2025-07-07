@@ -15,6 +15,7 @@ class UserSupport extends Component
     public $notificationMessage = '';
     public $notificationType = 'success';
     public $ticketActivo = null;
+    public $showTicketStatus = false;
 
     public function mount()
     {
@@ -26,10 +27,15 @@ class UserSupport extends Component
 
     public function abrirModal()
     {
-        if (!$this->puedeCrearTicket()) {
+        if (!Auth::check()) {
             $this->showNotification = true;
-            $this->notificationMessage = 'Ya tienes un ticket de soporte activo. Debes esperar a que sea solucionado para crear uno nuevo.';
+            $this->notificationMessage = 'Debes iniciar sesión para contactar soporte.';
             $this->notificationType = 'error';
+            return;
+        }
+
+        if (!$this->puedeCrearTicket()) {
+            $this->showTicketStatus = true;
             return;
         }
 
@@ -41,6 +47,11 @@ class UserSupport extends Component
         $this->showCreateModal = false;
         $this->asunto = '';
         $this->mensaje = '';
+    }
+
+    public function cerrarTicketStatus()
+    {
+        $this->showTicketStatus = false;
     }
 
     public function enviarTicket()
@@ -109,6 +120,30 @@ class UserSupport extends Component
         $this->showNotification = false;
         $this->notificationMessage = '';
         $this->notificationType = 'success';
+    }
+
+    public function getEstadoColor()
+    {
+        if (!$this->ticketActivo) return '';
+        
+        return match($this->ticketActivo->estado) {
+            'enviado' => 'yellow',
+            'recibido' => 'blue',
+            'solucionado' => 'green',
+            default => 'gray'
+        };
+    }
+
+    public function getEstadoTexto()
+    {
+        if (!$this->ticketActivo) return '';
+        
+        return match($this->ticketActivo->estado) {
+            'enviado' => 'Enviado',
+            'recibido' => 'En Revisión',
+            'solucionado' => 'Solucionado',
+            default => 'Desconocido'
+        };
     }
 
     public function render()

@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white :bg-zinc-800">
+    <body class="min-h-screen bg-white :bg-zinc-800 {{ auth()->check() ? 'auth-user' : '' }}">
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 :border-zinc-700 :bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 

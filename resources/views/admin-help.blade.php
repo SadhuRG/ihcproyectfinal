@@ -77,7 +77,7 @@
     </style>
 </head>
 
-<body class="min-h-screen">
+<body class="min-h-screen {{ auth()->check() ? 'auth-user' : '' }}">
     <!-- Header -->
     <div class="w-full p-4 bg-header shadow-xl flex items-center fixed top-0 z-50">
         <div class="w-1/4 flex items-center justify-start">

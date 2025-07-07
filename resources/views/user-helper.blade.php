@@ -9,7 +9,7 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 </head>
 
-<body class="min-h-screen" style="background: var(--bg-primary);">
+<body class="min-h-screen {{ auth()->check() ? 'auth-user' : '' }}" style="background: var(--bg-primary);">
     <x-layouts.app>
         <div class="min-h-screen flex flex-col">
             <!-- SECCIÓN PRINCIPAL -->
@@ -146,7 +146,6 @@
         </div>
     </x-layouts.app>
 
-    <x-layouts.app.footer/>
 
     <!-- Script para animación de entrada y acordeón -->
     <script>

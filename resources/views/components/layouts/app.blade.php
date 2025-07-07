@@ -22,7 +22,7 @@
     @livewireStyles
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 to-blue-100 min-h-screen">
+<body class="bg-gradient-to-br from-slate-50 to-blue-100 min-h-screen {{ auth()->check() ? 'auth-user' : '' }}">
 
     <!-- HEADER -->
     <x-layouts.app.header />

@@ -16,6 +16,9 @@ Route::view('/', '/welcome');
 Route::get('/libro/{bookId}', BookDetail::class)->name('book.detail');
 // Agregar esta ruta en routes/web.php
 
+// Ruta de ayuda para usuarios (accesible sin autenticación)
+Route::view('user-helper', 'user-helper')->name('user-helper');
+
 Route::get('/categoria/{categoria}', function ($categoria) {
     // Mapear URL amigables a nombres reales de categorías
     $categoriaMap = [
@@ -78,10 +81,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ========== RUTA ANTIGUA DEL PERFIL ==========
     Route::get('user-profile', UserProfile::class)->middleware(['auth'])->name('user-profile');
-    // Vista de ayuda para el usuario
-    Route::view('user-helper', 'user-helper')
+
+    // Ruta para el componente de soporte de usuario
+    Route::get('/user-support', \App\Livewire\UserSupport::class)
     ->middleware(['auth'])
-    ->name('user-helper');
+    ->name('user-support');
 
     // ========== RUTAS DE ADMINISTRACIÓN ==========
     Route::get('/dashboard', function () {

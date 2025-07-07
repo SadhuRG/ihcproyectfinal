@@ -117,13 +117,6 @@
             <button id="font-size-btn" class="text-white px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 transition-all font-bold hover:scale-105" title="Ajustar tamaño de letra" aria-label="Cambiar tamaño de fuente">
                 <span id="font-size-label">A</span>
             </button>
-            
-            <!-- Botón de Ayuda -->
-            <a href="{{ route('user-helper') }}" class="relative p-2 rounded-full transition-all duration-300 hover:scale-110 shadow-lg" style="background-color: white; color: #374151;" id="help-button" title="Ayuda">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </a>
             <!-- Interruptor de Tema -->
             <div class="theme-toggle-container hidden md:block flex items-center space-x-2">
                 <div class="flex items-center space-x-2">
@@ -243,7 +236,6 @@
             const body = document.body;
             const isDark = body.classList.contains('dark');
             const searchInput = document.querySelector('input[placeholder="Buscar libro..."]');
-            const helpButton = document.getElementById('help-button');
             
             body.classList.toggle('dark');
             localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
@@ -254,17 +246,6 @@
                     searchInput.style.backgroundColor = '#1f2937'; // gray-800
                 } else {
                     searchInput.style.backgroundColor = 'white';
-                }
-            }
-            
-            // Actualizar el botón de ayuda
-            if (helpButton) {
-                if (body.classList.contains('dark')) {
-                    helpButton.style.backgroundColor = '#1f2937'; // gray-800
-                    helpButton.style.color = '#e5e7eb'; // gray-200
-                } else {
-                    helpButton.style.backgroundColor = 'white';
-                    helpButton.style.color = '#374151'; // gray-700
                 }
             }
             
@@ -279,25 +260,16 @@
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
             const searchInput = document.querySelector('input[placeholder="Buscar libro..."]');
-            const helpButton = document.getElementById('help-button');
             
             if (isDark) {
                 document.body.classList.add('dark');
                 if (searchInput) {
                     searchInput.style.backgroundColor = '#1f2937'; // gray-800
                 }
-                if (helpButton) {
-                    helpButton.style.backgroundColor = '#1f2937'; // gray-800
-                    helpButton.style.color = '#e5e7eb'; // gray-200
-                }
             } else {
                 document.body.classList.remove('dark');
                 if (searchInput) {
                     searchInput.style.backgroundColor = 'white';
-                }
-                if (helpButton) {
-                    helpButton.style.backgroundColor = 'white';
-                    helpButton.style.color = '#374151'; // gray-700
                 }
             }
             updateThemeToggle(isDark);
