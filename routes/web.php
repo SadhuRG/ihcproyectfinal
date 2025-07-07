@@ -17,6 +17,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->middleware(['auth'])
     ->name('user-profile');
 
+    // Vista de ayuda para el usuario
+    Route::view('user-helper', 'user-helper')
+    ->middleware(['auth'])
+    ->name('user-helper');
 
     // Vista protegida "normal" (no Livewire)
     Route::get('/dashboard', function () {
