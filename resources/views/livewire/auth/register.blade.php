@@ -25,10 +25,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     public function register(): void
     {
+        // Log para debug
+        \Log::info('Intentando registrar usuario con email: ' . $this->email);
+        
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'apellido' => ['nullable', 'string', 'max:50'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'telefono' => ['nullable', 'numeric', 'digits_between:9,15'],
             'fecha_n' => ['nullable', 'date', 'before_or_equal:today', 'after:1900-01-01'],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
@@ -36,7 +39,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $userData = [
             'name' => $this->name,
-            'email' => $this->email,
+            'email' => strtolower($this->email),
             'password' => Hash::make($this->password),
         ];
 
@@ -105,7 +108,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         placeholder="Tu nombre"
                         class="w-full px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 placeholder-white/50 text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-200"
                     />
-                    @error('name') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                    @error('name') <span class="text-pink-300 text-xs">El sistema no permite agregar ese nombre por favor ingrese un nombre válido</span> @enderror
                 </div>
 
                 <div>
@@ -120,7 +123,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         placeholder="Tu apellido"
                         class="w-full px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 placeholder-white/50 text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-200"
                     />
-                    @error('apellido') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                    @error('apellido') <span class="text-pink-300 text-xs">El sistema no permite agregar ese apellido por favor ingrese un apellido válido</span> @enderror
                 </div>
             </div>
 
@@ -138,7 +141,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
                     placeholder="correo@ejemplo.com"
                     class="w-full px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 placeholder-white/50 text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-200"
                 />
-                @error('email') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                @error('email') 
+                    <span class="text-pink-300 text-xs">
+                        @if(str_contains($message, 'unique'))
+                            Este correo electrónico ya está registrado en el sistema
+                        @else
+                            El correo electrónico no tiene un formato válido
+                        @endif
+                    </span> 
+                @enderror
             </div>
 
             <!-- Teléfono y Fecha de Nacimiento (fila) -->
@@ -155,7 +166,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         placeholder="987654321"
                         class="w-full px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 placeholder-white/50 text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-200"
                     />
-                    @error('telefono') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                    @error('telefono') <span class="text-pink-300 text-xs">El sistema no permite agregar ese teléfono por favor ingrese un teléfono válido</span> @enderror
                 </div>
 
                 <div>
@@ -169,7 +180,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         autocomplete="bday"
                         class="w-full px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 placeholder-white/50 text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-200"
                     />
-                    @error('fecha_n') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                    @error('fecha_n') <span class="text-pink-300 text-xs">El sistema no permite agregar esa fecha de nacimiento por favor ingrese una fecha de nacimiento válida</span> @enderror
                 </div>
             </div>
 
@@ -207,7 +218,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         @endif
                     </button>
                 </div>
-                @error('password') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                @error('password') <span class="text-pink-300 text-xs">La contraseña debe tener al menos 8 caracteres</span> @enderror
             </div>
 
             <!-- Confirmar Contraseña -->
@@ -244,7 +255,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         @endif
                     </button>
                 </div>
-                @error('password_confirmation') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
+                @error('password_confirmation') <span class="text-pink-300 text-xs">Las contraseñas no coinciden</span> @enderror
             </div>
             <!-- Términos y Condiciones -->
             <div class="flex items-center space-x-2">

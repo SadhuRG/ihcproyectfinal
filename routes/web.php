@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ========== RUTA ANTIGUA DEL PERFIL ==========
     Route::get('user-profile', UserProfile::class)->middleware(['auth'])->name('user-profile');
+    // Vista de ayuda para el usuario
+    Route::view('user-helper', 'user-helper')
+    ->middleware(['auth'])
+    ->name('user-helper');
 
     // ========== RUTAS DE ADMINISTRACIÓN ==========
     Route::get('/dashboard', function () {

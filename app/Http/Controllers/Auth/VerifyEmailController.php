@@ -20,7 +20,7 @@ class VerifyEmailController extends Controller
             if ($user->hasAnyRole(['superadministrador', 'administrador', 'colaborador'])) {
                 return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
             } else {
-                return redirect()->intended(route('welcome', absolute: false).'?verified=1');
+            return redirect()->intended(route('welcome', absolute: false).'?verified=1');
             }
         }
 
@@ -36,7 +36,7 @@ class VerifyEmailController extends Controller
         if ($user->hasAnyRole(['superadministrador', 'administrador', 'colaborador'])) {
             return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
         } else {
-            return redirect()->intended(route('welcome', absolute: false).'?verified=1');
+        return redirect()->intended(route('welcome', absolute: false).'?verified=1');
         }
     }
 }

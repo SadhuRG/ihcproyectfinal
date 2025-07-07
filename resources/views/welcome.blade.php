@@ -47,6 +47,24 @@
 
     <!-- Sección Ficción -->
     <livewire:books.fiction-books />
+    
+    <!-- SECCIÓN DE SOPORTE -->
+    @auth
+    <section class="py-16 px-4" style="background: var(--card-bg);">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: var(--text-primary);">¿Necesitas Ayuda?</h2>
+                <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-primary);">
+                    Nuestro equipo de soporte está aquí para ayudarte. Envíanos tu consulta y te responderemos lo antes posible.
+                </p>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                @livewire('user-support')
+            </div>
+        </div>
+    </section>
+    @endauth
 
     <!-- Sección Romance -->
     <livewire:books.romance-books />
@@ -108,6 +126,6 @@
             overflow: hidden;
         }
     </style>
+    
     @endpush
-
 </x-layouts.app>

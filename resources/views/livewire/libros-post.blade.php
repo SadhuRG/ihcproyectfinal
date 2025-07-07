@@ -213,14 +213,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
                         <input type="text" wire:model="nuevoLibro.titulo" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full pl-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('nuevoLibro.titulo') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ISBN *</label>
                         <input type="text" wire:model="nuevoLibro.ISBN" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full pl-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('nuevoLibro.ISBN') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -228,31 +228,155 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
                     <textarea wire:model="nuevoLibro.descripcion" rows="3"
-                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    @error('nuevoLibro.descripcion') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                        class="w-full pl-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    @error('nuevoLibro.descripcion') <span class="text-red-500 dark:text-red-400 text-sm">El tamaño máximo de la descripción es de 100 caracteres</span> @enderror
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Campo de Portada -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Autores</label>
-                        <select wire:model="autorSeleccionado" multiple size="4"
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Portada del Libro</label>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <input type="file" wire:model="portada" accept="image/*"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300">
+                        </div>
+                        @if($portada)
+                            <div class="flex-shrink-0">
+                                <img src="{{ $portada->temporaryUrl() }}" alt="Vista previa" class="w-16 h-20 object-cover rounded border">
+                            </div>
+                        @endif
+                    </div>
+                    <small class="text-gray-500 dark:text-gray-400">Formatos permitidos: JPG, JPEG, PNG, GIF. Máximo 2MB.</small>
+                    @error('portada') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Sección de Autores con Tags -->
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4">
+                        <!-- Etiqueta a la izquierda -->
+                        <div class="w-24 flex-shrink-0">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Autores</label>
+                            <div class="relative inline-block" x-data="{ showTooltip: false }">
+                                <svg class="w-4 h-4 ml-4 text-gray-500 dark:text-gray-400 cursor-help hover:text-gray-700 dark:hover:text-gray-300" 
+                                     fill="currentColor" 
+                                     viewBox="0 0 20 20"
+                                     @mouseenter="showTooltip = true"
+                                     @mouseleave="showTooltip = false">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none"
+                                     x-show="showTooltip"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0">
+                                    Si nesesita agregar un nuevo autor, primero debe crearlo en la sección de autores
+                                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Contenido a la derecha -->
+                        <div class="flex-1">
+                            <!-- Tags de autores seleccionados -->
+                            @if(count($autoresSeleccionados) > 0)
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    @foreach($autoresSeleccionados as $autor)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                            {{ $autor['nombre'] }} {{ $autor['apellido'] }}
+                                            <button type="button" wire:click="quitarAutor({{ $autor['id'] }})" class="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            
+                            <!-- Select de autores disponibles -->
+                            <div class="relative">
+                                <select wire:change="agregarAutor($event.target.value)" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none pr-10 pl-1">
+                                    <option value="">Agregar autor...</option>
                             @foreach($autores as $autor)
+                                        @if(!in_array($autor->id, $autorSeleccionado))
                             <option value="{{ $autor->id }}">{{ $autor->nombre }} {{ $autor->apellido }}</option>
+                                        @endif
                             @endforeach
                         </select>
-                        <small class="text-gray-500 dark:text-gray-400">Mantén Ctrl/Cmd para seleccionar múltiples autores</small>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <small class="text-gray-500 dark:text-gray-400">Haz clic para agregar autores</small>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categorías</label>
-                        <select wire:model="categoriaSeleccionada" multiple size="4"
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <div class="flex items-start gap-4">
+                        <!-- Etiqueta a la izquierda -->
+                        <div class="w-24 flex-shrink-0">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categorías</label>
+                            <div class="relative inline-block" x-data="{ showTooltip: false }">
+                                <svg class="w-4 h-4 ml-4 text-gray-500 dark:text-gray-400 cursor-help hover:text-gray-700 dark:hover:text-gray-300" 
+                                     fill="currentColor" 
+                                     viewBox="0 0 20 20"
+                                     @mouseenter="showTooltip = true"
+                                     @mouseleave="showTooltip = false">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none"
+                                     x-show="showTooltip"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0">
+                                    Si nesesita agregar una nueva categoría, primero debe crearlo en la sección de categorías
+                                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenido a la derecha -->
+                        <div class="flex-1">
+                            <!-- Tags de categorías seleccionadas -->
+                            @if(count($categoriasSeleccionadas) > 0)
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    @foreach($categoriasSeleccionadas as $categoria)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            {{ $categoria['nombre'] }}
+                                            <button type="button" wire:click="quitarCategoria({{ $categoria['id'] }})" class="ml-2 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            
+                            <!-- Select de categorías disponibles -->
+                            <div class="relative">
+                                <select wire:change="agregarCategoria($event.target.value)" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none pr-10 pl-1">
+                                    <option value="">Agregar categoría...</option>
                             @foreach($categorias as $categoria)
+                                        @if(!in_array($categoria->id, $categoriaSeleccionada))
                             <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                        @endif
                             @endforeach
                         </select>
-                        <small class="text-gray-500 dark:text-gray-400">Mantén Ctrl/Cmd para seleccionar múltiples categorías</small>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <small class="text-gray-500 dark:text-gray-400">Haz clic para agregar categorías</small>
+                        </div>
                     </div>
                 </div>
 
@@ -338,14 +462,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
                         <input type="text" wire:model="libroEditado.titulo" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full pl-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('libroEditado.titulo') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ISBN *</label>
                         <input type="text" wire:model="libroEditado.ISBN" required
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full pl-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         @error('libroEditado.ISBN') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -353,31 +477,138 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
                     <textarea wire:model="libroEditado.descripcion" rows="3"
-                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    @error('libroEditado.descripcion') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                        class="w-full pl-1 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    @error('libroEditado.descripcion') <span class="text-red-500 dark:text-red-400 text-sm">El tamaño máximo de la descripción es de 100 caracteres</span> @enderror
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Autores</label>
-                        <select wire:model="autorSeleccionado" multiple size="4"
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <!-- Sección de Autores con Tags -->
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4">
+                        <!-- Etiqueta a la izquierda -->
+                        <div class="w-24 flex-shrink-0">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Autores</label>
+                            <div class="relative inline-block" x-data="{ showTooltip: false }">
+                                <svg class="w-4 h-4 ml-4 text-gray-500 dark:text-gray-400 cursor-help hover:text-gray-700 dark:hover:text-gray-300" 
+                                     fill="currentColor" 
+                                     viewBox="0 0 20 20"
+                                     @mouseenter="showTooltip = true"
+                                     @mouseleave="showTooltip = false">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none"
+                                     x-show="showTooltip"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0">
+                                    Si nesesita agregar un nuevo autor, primero debe crearlo en la sección de autores
+                                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenido a la derecha -->
+                        <div class="flex-1">
+                            <!-- Tags de autores seleccionados -->
+                            @if(count($autoresSeleccionadosEdit) > 0)
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    @foreach($autoresSeleccionadosEdit as $autor)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                            {{ $autor['nombre'] }} {{ $autor['apellido'] }}
+                                            <button type="button" wire:click="quitarAutorEdit({{ $autor['id'] }})" class="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            
+                            <!-- Select de autores disponibles -->
+                            <div class="relative">
+                                <select wire:change="agregarAutorEdit($event.target.value)" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none pr-10 pl-1">
+                                    <option value="">Agregar autor...</option>
                             @foreach($autores as $autor)
+                                        @if(!in_array($autor->id, $autorSeleccionadoEdit))
                             <option value="{{ $autor->id }}">{{ $autor->nombre }} {{ $autor->apellido }}</option>
+                                        @endif
                             @endforeach
                         </select>
-                        <small class="text-gray-500 dark:text-gray-400">Mantén Ctrl/Cmd para seleccionar múltiples autores</small>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <small class="text-gray-500 dark:text-gray-400">Haz clic para agregar autores</small>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categorías</label>
-                        <select wire:model="categoriaSeleccionada" multiple size="4"
-                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <div class="flex items-start gap-4">
+                        <!-- Etiqueta a la izquierda -->
+                        <div class="w-24 flex-shrink-0">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categorías</label>
+                            <div class="relative inline-block" x-data="{ showTooltip: false }">
+                                <svg class="w-4 h-4 ml-4 text-gray-500 dark:text-gray-400 cursor-help hover:text-gray-700 dark:hover:text-gray-300" 
+                                     fill="currentColor" 
+                                     viewBox="0 0 20 20"
+                                     @mouseenter="showTooltip = true"
+                                     @mouseleave="showTooltip = false">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="absolute bottom-full left-0 transform translate-x-2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg transition-opacity duration-200 whitespace-nowrap z-10 pointer-events-none"
+                                     x-show="showTooltip"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0">
+                                    Si nesesita agregar una nueva categoría, primero debe crearlo en la sección de categorías
+                                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenido a la derecha -->
+                        <div class="flex-1">
+                            <!-- Tags de categorías seleccionadas -->
+                            @if(count($categoriasSeleccionadasEdit) > 0)
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    @foreach($categoriasSeleccionadasEdit as $categoria)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            {{ $categoria['nombre'] }}
+                                            <button type="button" wire:click="quitarCategoriaEdit({{ $categoria['id'] }})" class="ml-2 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            
+                            <!-- Select de categorías disponibles -->
+                            <div class="relative">
+                                <select wire:change="agregarCategoriaEdit($event.target.value)" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none pr-10 pl-1">
+                                    <option value="">Agregar categoría...</option>
                             @foreach($categorias as $categoria)
+                                        @if(!in_array($categoria->id, $categoriaSeleccionadaEdit))
                             <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                        @endif
                             @endforeach
                         </select>
-                        <small class="text-gray-500 dark:text-gray-400">Mantén Ctrl/Cmd para seleccionar múltiples categorías</small>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <small class="text-gray-500 dark:text-gray-400">Haz clic para agregar categorías</small>
+                        </div>
                     </div>
                 </div>
 

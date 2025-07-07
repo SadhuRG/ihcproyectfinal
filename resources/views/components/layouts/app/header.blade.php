@@ -2,12 +2,22 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pulsar - Header Mejorado</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Librería Pulsar</title>
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="//unpkg.com/alpinejs" defer></script> <!-- Alpine.js cargado -->
-
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
     <!-- CSS para el carrito -->
     <style>
         .line-clamp-2 {
@@ -17,56 +27,116 @@
             overflow: hidden;
         }
     </style>
+    <style>
+        :root {
+            /* Variables para modo claro */
+            --bg-primary: linear-gradient(to bottom right, #F1F5F9, #DBEAFE);
+            --bg-header: linear-gradient(to right, #4F46E5, #7C3AED, #4F46E5);
+            --text-primary: #1F2937;
+            --card-bg: #FFFFFF;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --button-bg: #7C3AED;
+            --button-text: #FFFFFF;
+            --accent: #7C3AED;
+        }
+
+        .dark {
+            /* Variables para modo oscuro */
+            --bg-primary: linear-gradient(to bottom right, #1F2937, #374151);
+            --bg-header: linear-gradient(to right, #1E3A8A, #5B21B6, #1E3A8A);
+            --text-primary: #F3F4F6;
+            --card-bg: #374151;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --button-bg: #A78BFA;
+            --button-text: #1F2937;
+            --accent: #A78BFA;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-header {
+            background: var(--bg-header);
+        }
+
+        .card {
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn-primary {
+            background: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
 
-<header class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 shadow-md fixed top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center px-4 py-3">
+<body class="min-h-screen">
 
-        <!-- Logo -->
-        <a href="{{ url('/') }}" class="flex items-center space-x-3 group">
-            <img src="/imagenes/LOGO.jpg" alt="Pulsar Logo" class="w-10 h-10 rounded-full shadow transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2">
-            <span class="text-white text-2xl font-bold hidden md:block group-hover:text-indigo-100 transition-colors duration-300">Pulsar</span>
-        </a>
+    <!-- ENCABEZADO -->
+    <div class="w-full p-4 bg-header shadow-xl flex items-center fixed top-0 z-50">
+        <!-- Sección del Logo -->
+        <div class="w-1/4 flex items-center justify-start">
+            <a href="{{ url('/') }}" class="flex items-center space-x-3">
+                <img src="/imagenes/LOGO.jpg" alt="Pulsar - Logo" class="w-12 h-12 rounded-full shadow-lg transition-transform duration-300 hover:scale-110">
+                <span class="text-white text-2xl font-bold tracking-wide hidden md:block">Pulsar</span>
+            </a>
+        </div>
 
-        <!-- Search Bar -->
-        <div class="flex-1 mx-4 max-w-md relative hidden md:block">
-            <input type="text" placeholder="Buscar libro..."
-                   class="w-full px-4 py-2 pl-10 rounded-full bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 shadow hover:shadow-md transition-all duration-300">
-            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+        <!-- Sección de Búsqueda -->
+        <div class="w-2/4 flex items-center justify-center px-4">
+            <div class="relative w-full max-w-md">
+                <input type="text"
+                       placeholder="Buscar libro..."
+                       class="w-full px-4 py-3 pl-12 bg-white dark:bg-gray-800 backdrop-blur-sm border-0 rounded-full text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 shadow-lg"
+                       style="background-color: white;">
+                <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white p-2 rounded-full transition-all duration-300 hover:scale-110">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <!-- Right Actions -->
-        <div class="flex items-center space-x-4">
-
+        <!-- Sección de Navegación -->
+        <div class="w-1/4 flex items-center justify-end space-x-3">
+            
             <!-- Botón tamaño de fuente -->
             <button id="font-size-btn" class="text-white px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 transition-all font-bold hover:scale-105" title="Ajustar tamaño de letra" aria-label="Cambiar tamaño de fuente">
                 <span id="font-size-label">A</span>
             </button>
-
-            @guest
-                <a href="{{ route('register') }}" class="text-white font-medium transition-all duration-300 hover:scale-105 hover:text-indigo-200 px-2 py-1 rounded hover:bg-white/10">
-                    Registrar
-                </a>
-                <a href="{{ route('login') }}" class="text-white font-medium transition-all duration-300 hover:scale-105 hover:text-indigo-200 px-2 py-1 rounded hover:bg-white/10">
-                    Iniciar sesión
-                </a>
-            @else
-                <!-- Menú desplegable de usuario -->
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open"
-                        class="flex items-center space-x-2 text-white font-medium hover:text-indigo-200 transition-colors duration-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            
+            <!-- Botón de Ayuda -->
+            <a href="{{ route('user-helper') }}" class="relative p-2 rounded-full transition-all duration-300 hover:scale-110 shadow-lg" style="background-color: white; color: #374151;" id="help-button" title="Ayuda">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </a>
+            <!-- Interruptor de Tema -->
+            <div class="theme-toggle-container hidden md:block flex items-center space-x-2">
+                <div class="flex items-center space-x-2">
+                    <div id="theme-icon-container" class="w-8 h-8">
+                        <svg id="sun-icon" class="w-8 h-8 text-yellow-300 transition-all duration-300 absolute" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
-                        <span>{{ Auth::user()->name }}</span>
-                        <svg class="w-4 h-4 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        <svg id="moon-icon" class="w-8 h-8 text-blue-300 transition-all duration-300 absolute opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
+                    </div>
+                    <button id="theme-toggle" class="relative w-14 h-7 bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:scale-110 flex items-center p-1" onclick="toggleTheme()">
+                        <div id="toggle-circle" class="w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300 transform translate-x-0"></div>
                     </button>
 
                     <!-- Dropdown -->
@@ -102,10 +172,9 @@
 
             <!-- Componente Carrito de Compras -->
             @livewire('shopping-cart')
-
-            <!-- Botón menú móvil -->
-            <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all hover:scale-105" aria-label="Abrir menú">
-                <svg id="menu-icon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Botón de Menú Móvil -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-gray-800/30 text-white rounded-full transition-all duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
                 <svg id="close-icon" class="w-5 h-5 transition-transform duration-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,16 +183,37 @@
             </button>
         </div>
     </div>
-
-    <!-- Mobile Menu -->
-    <div class="hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-sm shadow-lg rounded-b-2xl md:hidden transition-all duration-300" id="mobile-menu">
-        <div class="p-4 space-y-3">
-            <input type="text" placeholder="Buscar libro..."
-                   class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 shadow">
-            <div class="absolute left-7 top-6 text-gray-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+    
+        <!-- Menú Móvil -->
+        <div class="hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl rounded-b-2xl md:hidden transition-all duration-300" id="mobile-menu">
+            <div class="p-4 space-y-3">
+                @guest
+                    <a href="{{ route('register') }}"
+                        class="block w-full px-4 py-3 text-center font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xl transition-all duration-300">
+                        Crear Cuenta
+                    </a>
+                    <a href="{{ route('login') }}"
+                        class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 rounded-xl transition-all duration-300">
+                        Iniciar Sesión
+                    </a>
+                @else
+                    <a href="{{ route('user-profile') }}"
+                        class="block w-full px-4 py-3 text-center font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xl transition-all duration-300">
+                        Mi Perfil
+                    </a>
+                    @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
+                        <a href="{{ route('dashboard') }}"
+                            class="block w-full px-4 py-3 text-center font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-xl transition-all duration-300">
+                            Dashboard
+                        </a>
+                    @endif
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="block w-full px-4 py-3 text-center font-medium text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 rounded-xl transition-all duration-300">
+                            Cerrar Sesión
+                        </button>
+                    </form>
+                @endguest
             </div>
 
             @guest
@@ -141,4 +231,110 @@
             @endguest
         </div>
     </div>
-</header>
+    
+    <!-- FIN ENCABEZADO -->
+
+    <script>
+        // Alternar menú móvil
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Función de animación para el interruptor de tema
+        function updateThemeToggle(isDark) {
+            const toggleCircle = document.getElementById('toggle-circle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (toggleCircle && sunIcon && moonIcon) {
+                if (isDark) {
+                    toggleCircle.style.transform = 'translateX(1.75rem)';
+                    sunIcon.style.opacity = '0';
+                    moonIcon.style.opacity = '1';
+                } else {
+                    toggleCircle.style.transform = 'translateX(0)';
+                    sunIcon.style.opacity = '1';
+                    moonIcon.style.opacity = '0';
+                }
+            }
+        }
+
+        // Función global para alternar tema
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.classList.contains('dark');
+            const searchInput = document.querySelector('input[placeholder="Buscar libro..."]');
+            const helpButton = document.getElementById('help-button');
+            
+            body.classList.toggle('dark');
+            localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+            
+            // Actualizar el fondo de la barra de búsqueda
+            if (searchInput) {
+                if (body.classList.contains('dark')) {
+                    searchInput.style.backgroundColor = '#1f2937'; // gray-800
+                } else {
+                    searchInput.style.backgroundColor = 'white';
+                }
+            }
+            
+            // Actualizar el botón de ayuda
+            if (helpButton) {
+                if (body.classList.contains('dark')) {
+                    helpButton.style.backgroundColor = '#1f2937'; // gray-800
+                    helpButton.style.color = '#e5e7eb'; // gray-200
+                } else {
+                    helpButton.style.backgroundColor = 'white';
+                    helpButton.style.color = '#374151'; // gray-700
+                }
+            }
+            
+            updateThemeToggle(!isDark);
+            
+            window.dispatchEvent(new CustomEvent('theme-changed'));
+        }
+
+        // Cargar tema al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+            const searchInput = document.querySelector('input[placeholder="Buscar libro..."]');
+            const helpButton = document.getElementById('help-button');
+            
+            if (isDark) {
+                document.body.classList.add('dark');
+                if (searchInput) {
+                    searchInput.style.backgroundColor = '#1f2937'; // gray-800
+                }
+                if (helpButton) {
+                    helpButton.style.backgroundColor = '#1f2937'; // gray-800
+                    helpButton.style.color = '#e5e7eb'; // gray-200
+                }
+            } else {
+                document.body.classList.remove('dark');
+                if (searchInput) {
+                    searchInput.style.backgroundColor = 'white';
+                }
+                if (helpButton) {
+                    helpButton.style.backgroundColor = 'white';
+                    helpButton.style.color = '#374151'; // gray-700
+                }
+            }
+            updateThemeToggle(isDark);
+        });
+
+        // Escuchar cambios en el tema del sistema
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                document.body.classList.toggle('dark', e.matches);
+                updateThemeToggle(e.matches);
+            }
+        });
+    </script>
+
+    {{ $slot }}
+
+</body>
+</html>

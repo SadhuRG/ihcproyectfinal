@@ -1,18 +1,26 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 pt-2 via-white to-purple-50">
+<?php
+
+use Livewire\Volt\Component;
+
+new class extends Component {
+    // El componente ya está definido en app/Livewire/UserProfile.php
+}; ?>
+
+<div class="min-h-screen pt-20" style="background: var(--bg-primary);">
     <!-- Header -->
-    <div class="bg-white shadow-sm border-b">
+    <div class="card shadow-sm border-b" style="background: var(--card-bg); border-color: var(--text-primary);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-                    <p class="mt-1 text-sm text-gray-600">Gestiona tu información personal y configuración de cuenta</p>
+                    <h1 class="text-3xl font-bold" style="color: var(--text-primary);">Mi Perfil</h1>
+                    <p class="mt-1 text-sm" style="color: var(--text-primary);">Gestiona tu información personal y configuración de cuenta</p>
                 </div>
                 <div class="flex flex-col space-y-2">
-                    <a href="{{ route('welcome') }}" class="text-indigo-600 hover:text-indigo-700 font-medium">
+                    <a href="{{ route('welcome') }}" class="font-medium text-accent hover:text-indigo-700 dark:hover:text-indigo-400">
                         ← Volver al inicio
                     </a>
                     @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
-                        <a href="{{ route('dashboard') }}" class="text-indigo-600 hover:text-indigo-700 font-medium">
+                        <a href="{{ route('dashboard') }}" class="font-medium text-accent hover:text-indigo-700 dark:hover:text-indigo-400">
                             ← Volver al Dashboard
                         </a>
                     @endif
@@ -85,7 +93,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Notificación Global -->
         @if($showNotification)
-            <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 mb-6 p-4 rounded-lg shadow-lg {{ $notificationType === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800' }}">
+            <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 mb-6 p-4 rounded-lg shadow-lg {{ $notificationType === 'success' ? 'bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-200' : 'bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-200' }}">
                 <div class="flex items-center">
                     @if($notificationType === 'success')
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -111,23 +119,23 @@
                             <p class="text-sm text-gray-500 mt-1">Actualiza tu información personal. El email no se puede modificar por seguridad.</p>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-primary);">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                         </div>
                     </div>
 
-                    <form wire:submit="updateProfile" class="space-y-6">
+                    <form wire:submit="updateProfile" class="space-y-6 p-6">
                         <!-- Foto de Perfil -->
                         <div class="flex items-center space-x-6">
                             <div class="relative">
                                 @if($currentPhoto || $photo)
                                     <label for="photo" class="cursor-pointer block">
-                                        <img src="{{ $photo ? $photo->temporaryUrl() : $currentPhoto }}" alt="Foto de perfil" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg hover:opacity-80 transition-opacity duration-200">
+                                        <img src="{{ $photo ? $photo->temporaryUrl() : $currentPhoto }}" alt="Foto de perfil" class="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-lg hover:opacity-80 transition-opacity duration-200">
                                     </label>
                                 @else
                                     <label for="photo" class="cursor-pointer block">
-                                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg hover:opacity-80 transition-opacity duration-200">
+                                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg hover:opacity-80 transition-opacity duration-200">
                                             {{ substr($name ?: 'U', 0, 1) }}{{ substr($apellido ?: 'U', 0, 1) }}
                                         </div>
                                     </label>
@@ -136,8 +144,8 @@
                                 <!-- Botón de eliminar (solo cuando hay foto) -->
                                 @if($currentPhoto || $photo)
                                     <div class="absolute -bottom-1 -right-1">
-                                        <button wire:click="removePhoto" type="button" class="bg-white p-1 rounded-full shadow-lg transition-colors duration-200 hover:bg-gray-50" title="Restaurar foto por defecto">
-                                            <svg class="w-6 h-6 text-red-500 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <button wire:click="removePhoto" type="button" class="bg-white dark:bg-gray-800 p-1 rounded-full shadow-lg transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700" title="Restaurar foto por defecto">
+                                            <svg class="w-6 h-6 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
                                         </button>
@@ -147,17 +155,17 @@
                                 <input wire:model="photo" type="file" id="photo" class="hidden" accept="image/*">
                             </div>
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900">{{ $name }} {{ $apellido }}</h3>
-                                <p class="text-sm text-gray-600">{{ $email }}</p>
+                                <h3 class="text-lg font-medium" style="color: var(--text-primary);">{{ $name }} {{ $apellido }}</h3>
+                                <p class="text-sm" style="color: var(--text-primary);">{{ $email }}</p>
                                 @if($telefono)
-                                    <p class="text-sm text-gray-600">{{ $telefono }}</p>
+                                    <p class="text-sm" style="color: var(--text-primary);">{{ $telefono }}</p>
                                 @endif
                             </div>
                         </div>
 
                         @if($photo)
-                            <div class="p-3 bg-blue-50 rounded-lg">
-                                <p class="text-sm text-blue-700">Nueva foto seleccionada: {{ $photo->getClientOriginalName() }}</p>
+                            <div class="p-3 rounded-lg" style="background: var(--card-bg);">
+                                <p class="text-sm text-accent">Nueva foto seleccionada: {{ $photo->getClientOriginalName() }}</p>
                             </div>
                         @endif
 
@@ -212,11 +220,12 @@
                                     <input wire:model="fecha_n" type="date" id="fecha_n" value="{{ $fecha_n }}"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
                                     @error('fecha_n') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                                </div>
+                                </div> 
                             </div>
                         </div>
 
                         <!-- Botón de actualizar -->
+                        
                         <div class="flex justify-end pt-4 space-x-4">
                             <a href="{{ route('profile.dashboard') }}"
                             class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2">
@@ -243,44 +252,47 @@
                 </div>
 
                 <!-- Cambio de Contraseña -->
+                
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-semibold text-gray-900">Cambiar Contraseña</h2>
                         <button wire:click="togglePasswordFields"
-                            class="text-indigo-600 hover:text-indigo-700 font-medium text-sm">
+                            class="text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-400 font-medium text-sm">
                             {{ $showPasswordFields ? 'Cancelar' : 'Cambiar Contraseña' }}
                         </button>
                     </div>
 
                     @if($showPasswordFields)
-                        <form wire:submit="updatePassword" class="space-y-6">
+                        <form wire:submit="updatePassword" class="space-y-6 p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Contraseña Actual -->
                                 <div>
-                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña Actual *</label>
+                                    <label for="current_password" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Contraseña Actual *</label>
                                     <input wire:model="current_password" type="password" id="current_password" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
-                                    @error('current_password') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                                    @error('current_password') <span class="text-red-600 text-sm">Error el sistema no reconoce la contraseña actual</span> @enderror
                                 </div>
 
                                 <!-- Nueva Contraseña -->
                                 <div>
-                                    <label for="new_password" class="block text-sm font-medium text-gray-700 mb-2">Nueva Contraseña *</label>
+                                    <label for="new_password" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Nueva Contraseña *</label>
                                     <input wire:model="new_password" type="password" id="new_password" required
+                                    
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
-                                    @error('new_password') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                                    @error('new_password') <span class="text-red-600 text-sm">El tamaño mínimo de la contraseña es de 8 caracteres</span> @enderror
                                 </div>
 
                                 <!-- Confirmar Nueva Contraseña -->
                                 <div class="md:col-span-2">
-                                    <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">Confirmar Nueva Contraseña *</label>
+                                    <label for="confirm_password" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Confirmar Nueva Contraseña *</label>
                                     <input wire:model="confirm_password" type="password" id="confirm_password" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-200">
-                                    @error('confirm_password') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-colors duration-200" style="border-color: var(--text-primary); background: var(--card-bg); color: var(--text-primary);">
+                                    @error('confirm_password') <span class="text-red-600 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
                             <!-- Botón de actualizar contraseña -->
+
                             <div class="flex justify-end pt-4 space-x-4">
                                 <a href="{{ route('profile.dashboard') }}"
                                 class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2">
@@ -307,15 +319,14 @@
                         </form>
                     @else
                         <div class="text-center py-8">
-                            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-primary);">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
-                            <p class="text-gray-600">Haz clic en "Cambiar Contraseña" para actualizar tu contraseña de acceso.</p>
+                            <p style="color: var(--text-primary);">Haz clic en "Cambiar Contraseña" para actualizar tu contraseña de acceso.</p>
                         </div>
                     @endif
                 </div>
             </div>
-
 
             </div>
         </div>
