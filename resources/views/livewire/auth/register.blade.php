@@ -257,7 +257,20 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 </div>
                 @error('password_confirmation') <span class="text-pink-300 text-xs">Las contraseñas no coinciden</span> @enderror
             </div>
-
+            <!-- Términos y Condiciones -->
+            <div class="flex items-center space-x-2">
+                <input
+                    type="checkbox"
+                    id="acceptTerms"
+                    wire:model="acceptTerms"
+                    class="w-4 h-4 text-purple-600 bg-white/10 border-white/20 rounded focus:ring-2 focus:ring-purple-400"
+                    required
+                />
+                <label for="acceptTerms" class="text-white/80 text-sm">
+                    Acepto los <a href="#" class="text-purple-200 hover:underline">términos y condiciones</a>
+                </label>
+            </div>
+            @error('acceptTerms') <span class="text-pink-300 text-xs">{{ $message }}</span> @enderror
             <!-- Submit Button -->
             <div class="pt-3">
                 <button

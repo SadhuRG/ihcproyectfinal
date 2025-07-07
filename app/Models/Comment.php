@@ -20,6 +20,12 @@ class Comment extends Model
         'fecha_valoracion',
     ];
 
+    // ✅ ESTO ES LO QUE FALTABA - Convertir fecha_valoracion a Carbon
+    protected $casts = [
+        'fecha_valoracion' => 'date',
+        'puntuacion' => 'integer',
+    ];
+
     /**
      * Relación uno a muchos (inversa): Un comentario pertenece a un usuario.
      */

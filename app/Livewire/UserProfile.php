@@ -4,189 +4,263 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Auth;
 
 class UserProfile extends Component
 {
     use WithFileUploads;
 
-    // Datos del perfil
+    // Propiedades del perfil
     public $name;
     public $apellido;
     public $email;
     public $telefono;
     public $fecha_n;
-    public $url_foto;
+    public $photo;
     public $currentPhoto;
 
-    // Cambio de contraseña
+    // Propiedades para cambio de contraseña
     public $current_password;
     public $new_password;
     public $confirm_password;
     public $showPasswordFields = false;
 
-    // Notificaciones
+    // Propiedades para notificaciones
     public $showNotification = false;
     public $notificationMessage = '';
     public $notificationType = 'success';
 
-    // Foto de perfil
-    public $photo;
+    // Estadísticas del usuario
+    public $ordersCount = 0;
+    public $favoriteBooksCount = 0;
+    public $commentsCount = 0;
+
+    protected $rules = [
+        'name' => 'required|string|max:255',
+        'apellido' => 'nullable|string|max:255',
+        'telefono' => 'nullable|numeric|digits_between:9,15',
+        'fecha_n' => 'nullable|date|before:today',
+        'photo' => 'nullable|image|max:2048', // 2MB máximo
+    ];
+
+    protected $messages = [
+        'name.required' => 'El nombre es obligatorio.',
+        'name.max' => 'El nombre no puede tener más de 255 caracteres.',
+        'telefono.max' => 'El teléfono no puede tener más de 20 caracteres.',
+        'fecha_n.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+        'fecha_n.before' => 'La fecha de nacimiento debe ser anterior a hoy.',
+        'photo.image' => 'El archivo debe ser una imagen.',
+        'photo.max' => 'La imagen no puede ser mayor a 2MB.',
+        'current_password.required' => 'La contraseña actual es obligatoria.',
+        'new_password.required' => 'La nueva contraseña es obligatoria.',
+        'new_password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+        'confirm_password.required' => 'Debes confirmar la nueva contraseña.',
+        'confirm_password.same' => 'Las contraseñas no coinciden.',
+    ];
 
     public function mount()
     {
         $user = Auth::user();
-        $this->name = $user->name;
-        $this->apellido = $user->apellido;
-        $this->email = $user->email;
-        $this->telefono = $user->telefono;
-        $this->fecha_n = $user->fecha_n ? $user->fecha_n->format('Y-m-d') : '';
-        $this->url_foto = $user->url_foto;
-        $this->currentPhoto = $user->url_foto;
+
+        // Pre-llenar todos los campos con los datos del usuario
+        $this->fill([
+            'name' => $user->name,
+            'apellido' => $user->apellido,
+            'email' => $user->email, // Solo para mostrar, no se puede editar
+            'telefono' => $user->telefono,
+            'fecha_n' => $user->fecha_n ? $user->fecha_n->format('Y-m-d') : '',
+        ]);
+
+        $this->currentPhoto = $user->url_foto ? Storage::url($user->url_foto) : null;
+
+        // Cargar estadísticas
+        $this->loadUserStats();
     }
 
-    public function updatedPhoto()
+    public function loadUserStats()
     {
-        $this->validate([
-            'photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,gif',
-        ]);
+        $user = Auth::user();
+
+        $this->ordersCount = $user->orders()->count();
+        $this->favoriteBooksCount = $user->favoriteBooks()->count();
+        $this->commentsCount = $user->comments()->count();
+    }
+
+    public function updated($propertyName)
+    {
+        // Validación cuando el usuario cambia los valores del perfil
+        if (in_array($propertyName, ['name', 'apellido', 'telefono', 'fecha_n'])) {
+            $this->validateOnly($propertyName);
+        }
+
+        // Validación en tiempo real para contraseñas cuando están activas
+        if ($this->showPasswordFields) {
+            if ($propertyName === 'new_password' && !empty($this->new_password)) {
+                $this->validateOnly('new_password', [
+                    'new_password' => ['required', 'min:8']
+                ], [
+                    'new_password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.'
+                ]);
+            }
+
+            if ($propertyName === 'confirm_password' && !empty($this->confirm_password)) {
+                $this->validateOnly('confirm_password', [
+                    'confirm_password' => 'same:new_password'
+                ], [
+                    'confirm_password.same' => 'Las contraseñas no coinciden.'
+                ]);
+            }
+        }
     }
 
     public function updateProfile()
     {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'apellido' => 'nullable|string|max:50',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore(Auth::id()),
-            ],
-            'telefono' => 'nullable|numeric|digits_between:9,15',
-            'fecha_n' => 'nullable|date|before:today',
-            'photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,gif',
-        ]);
+        // Validar sin incluir email (está bloqueado)
+        logger('updateProfile ejecutado');
+        $this->validate($this->rules);
 
         try {
             $user = Auth::user();
-            
-            // Procesar foto si se subió una nueva
-            if ($this->photo) {
-                // Eliminar foto anterior si existe
-                if ($user->url_foto && !str_contains($user->url_foto, 'http')) {
-                    Storage::disk('public')->delete(str_replace('/storage/', '', $user->url_foto));
-                }
-                
-                // Guardar nueva foto
-                $photoPath = $this->photo->store('profile-photos', 'public');
-                $this->url_foto = '/storage/' . $photoPath;
-            }
 
-            // Actualizar datos del usuario
+            // Actualizar datos básicos (sin email)
             $user->update([
                 'name' => $this->name,
                 'apellido' => $this->apellido,
-                'email' => $this->email,
                 'telefono' => $this->telefono,
-                'fecha_n' => $this->fecha_n,
-                'url_foto' => $this->url_foto,
+                'fecha_n' => $this->fecha_n ?: null,
             ]);
 
-            $this->currentPhoto = $this->url_foto;
-            $this->photo = null; // Limpiar la foto temporal después de guardar
-            
-            $this->mostrarNotificacion('Perfil actualizado correctamente.', 'success');
-            
+            // Manejar foto de perfil
+            if ($this->photo) {
+                // Eliminar foto anterior si existe
+                if ($user->url_foto && Storage::exists($user->url_foto)) {
+                    Storage::delete($user->url_foto);
+                }
+
+                // Guardar nueva foto
+                $photoPath = $this->photo->store('profile-photos', 'public');
+                $user->update(['url_foto' => $photoPath]);
+                $this->currentPhoto = Storage::url($photoPath);
+                $this->photo = null;
+            }
+
+            $this->showSuccessNotification('Perfil actualizado correctamente.');
+
         } catch (\Exception $e) {
-            $this->mostrarNotificacion('Error al actualizar el perfil: ' . $e->getMessage(), 'error');
+            $this->showErrorNotification('Error al actualizar el perfil: ' . $e->getMessage());
         }
     }
 
     public function updatePassword()
     {
         $this->validate([
-            'current_password' => 'required|current_password',
-            'new_password' => 'required|string|min:8|different:current_password',
+            'current_password' => 'required',
+            'new_password' => ['required', 'min:8', 'different:current_password'],
             'confirm_password' => 'required|same:new_password',
+        ], [
+            'current_password.required' => 'La contraseña actual es obligatoria.',
+            'new_password.required' => 'La nueva contraseña es obligatoria.',
+            'new_password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'new_password.different' => 'La nueva contraseña debe ser diferente a la actual.',
+            'confirm_password.required' => 'Debes confirmar la nueva contraseña.',
+            'confirm_password.same' => 'Las contraseñas no coinciden.',
         ]);
 
         try {
             $user = Auth::user();
+
+            // Verificar contraseña actual
+            if (!Hash::check($this->current_password, $user->password)) {
+                $this->addError('current_password', 'La contraseña actual es incorrecta.');
+                return;
+            }
+
+            // Actualizar contraseña
             $user->update([
                 'password' => Hash::make($this->new_password)
             ]);
 
             // Limpiar campos
-            $this->current_password = '';
-            $this->new_password = '';
-            $this->confirm_password = '';
+            $this->reset(['current_password', 'new_password', 'confirm_password']);
             $this->showPasswordFields = false;
 
-            $this->mostrarNotificacion('Contraseña actualizada correctamente.', 'success');
-            
+            $this->showSuccessNotification('Contraseña actualizada correctamente.');
+
         } catch (\Exception $e) {
-            $this->mostrarNotificacion('Error al actualizar la contraseña: ' . $e->getMessage(), 'error');
+            $this->showErrorNotification('Error al actualizar la contraseña: ' . $e->getMessage());
         }
-    }
-
-    public function togglePasswordFields()
-    {
-        $this->showPasswordFields = !$this->showPasswordFields;
-        if (!$this->showPasswordFields) {
-            $this->resetPasswordFields();
-        }
-    }
-
-    public function resetPasswordFields()
-    {
-        $this->current_password = '';
-        $this->new_password = '';
-        $this->confirm_password = '';
     }
 
     public function removePhoto()
     {
         try {
             $user = Auth::user();
-            
-            // Eliminar foto anterior si existe
-            if ($user->url_foto && !str_contains($user->url_foto, 'http')) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $user->url_foto));
+
+            if ($user->url_foto && Storage::exists($user->url_foto)) {
+                Storage::delete($user->url_foto);
             }
-            
-            // Actualizar usuario sin foto
+
             $user->update(['url_foto' => null]);
-            
             $this->currentPhoto = null;
-            $this->url_foto = null;
-            $this->photo = null; // Limpiar también la foto temporal
-            
-            $this->mostrarNotificacion('Foto de perfil eliminada correctamente.', 'success');
-            
+            $this->photo = null;
+
+            $this->showSuccessNotification('Foto eliminada correctamente.');
+
         } catch (\Exception $e) {
-            $this->mostrarNotificacion('Error al eliminar la foto: ' . $e->getMessage(), 'error');
+            $this->showErrorNotification('Error al eliminar la foto: ' . $e->getMessage());
         }
     }
 
-    public function mostrarNotificacion($mensaje, $tipo = 'success')
+    public function togglePasswordFields()
     {
-        $this->notificationMessage = $mensaje;
-        $this->notificationType = $tipo;
+        $this->showPasswordFields = !$this->showPasswordFields;
+
+        if (!$this->showPasswordFields) {
+            // Limpiar campos y errores cuando se cancela
+            $this->reset(['current_password', 'new_password', 'confirm_password']);
+            $this->resetErrorBag(['current_password', 'new_password', 'confirm_password']);
+        }
+    }
+
+    private function showSuccessNotification($message)
+    {
+        $this->notificationMessage = $message;
+        $this->notificationType = 'success';
         $this->showNotification = true;
-        
-        // Ocultar notificación después de 5 segundos
+
         $this->dispatch('notify', [
-            'message' => $mensaje,
-            'type' => $tipo
+            'type' => 'success',
+            'message' => $message
         ]);
+    }
+
+    private function showErrorNotification($message)
+    {
+        $this->notificationMessage = $message;
+        $this->notificationType = 'error';
+        $this->showNotification = true;
+
+        $this->dispatch('notify', [
+            'type' => 'error',
+            'message' => $message
+        ]);
+    }
+
+    public function hydrate()
+    {
+        // Asegurar que los datos persistan en cada request de Livewire
+        if (empty($this->email)) {
+            $user = Auth::user();
+            $this->email = $user->email;
+        }
     }
 
     public function render()
     {
-        return view('livewire.user-profile')
-            ->layout('components.layouts.app');
+        return view('livewire.user-profile');
     }
-} 
+}
+

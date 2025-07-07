@@ -1,5 +1,6 @@
+<!-- resources\views\components\layouts\app\header.blade.php -->
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -16,6 +18,15 @@
             }
         }
     </script>
+    <!-- CSS para el carrito -->
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
     <style>
         :root {
             /* Variables para modo claro */
@@ -102,6 +113,11 @@
         <!-- Sección de Navegación -->
         <div class="w-1/4 flex items-center justify-end space-x-3">
             
+            <!-- Botón tamaño de fuente -->
+            <button id="font-size-btn" class="text-white px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 transition-all font-bold hover:scale-105" title="Ajustar tamaño de letra" aria-label="Cambiar tamaño de fuente">
+                <span id="font-size-label">A</span>
+            </button>
+            
             <!-- Botón de Ayuda -->
             <a href="{{ route('user-helper') }}" class="relative p-2 rounded-full transition-all duration-300 hover:scale-110 shadow-lg" style="background-color: white; color: #374151;" id="help-button" title="Ayuda">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,36 +138,52 @@
                     <button id="theme-toggle" class="relative w-14 h-7 bg-white/20 backdrop-blur-sm rounded-full transition-all duration-300 hover:scale-110 flex items-center p-1" onclick="toggleTheme()">
                         <div id="toggle-circle" class="w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300 transform translate-x-0"></div>
                     </button>
-                </div>
-            </div>
 
-            @guest
-                <x-auth.register-button />
-                <x-auth.login-button />
-            @else
-                <x-auth.user-menu />
+                    <!-- Dropdown -->
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95">
+
+                        <div class="px-4 py-2 text-sm text-gray-700 font-semibold">Hola, {{ Auth::user()->name }}</div>
+
+                        <a href="{{ route('user-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Mi Perfil
+                        </a>
+                        <a href="{{ route('profile.pedidos') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Mis Pedidos
+                        </a>
+                        <a href="{{ route('profile.deseos') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Lista de Deseos
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Cerrar Sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @endguest
 
-            <!-- Botón de Carrito -->
-            <button class="relative p-2 bg-rose-500 dark:bg-rose-400 hover:bg-rose-600 dark:hover:bg-rose-500 text-white rounded-full transition-all duration-300 hover:scale-110 shadow-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6
-
-m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
-                </svg>
-                <span id="cart-counter" class="absolute -top-2 -right-2 bg-white dark:bg-gray-800 text-rose-500 dark:text-rose-400 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
-            </button>
-
-
-
+            <!-- Componente Carrito de Compras -->
+            @livewire('shopping-cart')
             <!-- Botón de Menú Móvil -->
             <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-gray-800/30 text-white rounded-full transition-all duration-300">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
+                <svg id="close-icon" class="w-5 h-5 transition-transform duration-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
             </button>
         </div>
-
+    </div>
+    
         <!-- Menú Móvil -->
         <div class="hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl rounded-b-2xl md:hidden transition-all duration-300" id="mobile-menu">
             <div class="p-4 space-y-3">
@@ -183,8 +215,23 @@ m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
                     </form>
                 @endguest
             </div>
+
+            @guest
+                <a href="{{ route('register') }}" class="block w-full text-center py-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg">Registrar</a>
+                <a href="{{ route('login') }}" class="block w-full text-center py-3 bg-white text-indigo-600 rounded-full hover:bg-gray-50 transition-all border border-indigo-200 shadow-md">Iniciar sesión</a>
+            @else
+                <a href="{{ route('user-profile') }}" class="block w-full text-center py-3 bg-white text-indigo-600 rounded-full hover:bg-gray-50 transition-all border border-indigo-200 shadow-md">Mi Perfil</a>
+                @if(auth()->user()->hasAnyRole(['superadministrador', 'administrador', 'colaborador']))
+                    <a href="{{ route('dashboard') }}" class="block w-full text-center py-3 bg-white text-indigo-600 rounded-full hover:bg-gray-50 transition-all border border-indigo-200 shadow-md">Dashboard</a>
+                @endif
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="block w-full text-center py-3 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-all shadow-md hover:shadow-lg">Cerrar sesión</button>
+                </form>
+            @endguest
         </div>
     </div>
+    
     <!-- FIN ENCABEZADO -->
 
     <script>
