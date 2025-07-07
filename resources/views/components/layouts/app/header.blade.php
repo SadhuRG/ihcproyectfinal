@@ -8,6 +8,14 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
     <style>
         :root {
             /* Variables para modo claro */
@@ -76,7 +84,8 @@
             <div class="relative w-full max-w-md">
                 <input type="text"
                        placeholder="Buscar libro..."
-                       class="w-full px-4 py-3 pl-12 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 rounded-full text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white dark:focus:bg-gray-800 transition-all duration-300 shadow-lg">
+                       class="w-full px-4 py-3 pl-12 bg-white dark:bg-gray-800 backdrop-blur-sm border-0 rounded-full text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 shadow-lg"
+                       style="background-color: white;">
                 <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
                     <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -92,6 +101,13 @@
 
         <!-- Sección de Navegación -->
         <div class="w-1/4 flex items-center justify-end space-x-3">
+            
+            <!-- Botón de Ayuda -->
+            <a href="{{ route('user-helper') }}" class="relative p-2 rounded-full transition-all duration-300 hover:scale-110 shadow-lg" style="background-color: white; color: #374151;" id="help-button" title="Ayuda">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </a>
             <!-- Interruptor de Tema -->
             <div class="theme-toggle-container hidden md:block flex items-center space-x-2">
                 <div class="flex items-center space-x-2">
@@ -126,12 +142,7 @@ m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
                 <span id="cart-counter" class="absolute -top-2 -right-2 bg-white dark:bg-gray-800 text-rose-500 dark:text-rose-400 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
             </button>
 
-            <!-- Botón de Ayuda -->
-            <a href="{{ route('user-helper') }}" class="relative p-2 bg-rose-500 dark:bg-rose-400 hover:bg-Specs for Grok 3.5rose-600 dark:hover:bg-rose-500 text-white rounded-full transition-all duration-300 hover:scale-110 shadow-lg" title="Ayuda">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </a>
+
 
             <!-- Botón de Menú Móvil -->
             <button id="mobile-menu-btn" class="md:hidden p-2 bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-gray-800/30 text-white rounded-full transition-all duration-300">
@@ -206,9 +217,31 @@ m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
         function toggleTheme() {
             const body = document.body;
             const isDark = body.classList.contains('dark');
+            const searchInput = document.querySelector('input[placeholder="Buscar libro..."]');
+            const helpButton = document.getElementById('help-button');
             
             body.classList.toggle('dark');
             localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+            
+            // Actualizar el fondo de la barra de búsqueda
+            if (searchInput) {
+                if (body.classList.contains('dark')) {
+                    searchInput.style.backgroundColor = '#1f2937'; // gray-800
+                } else {
+                    searchInput.style.backgroundColor = 'white';
+                }
+            }
+            
+            // Actualizar el botón de ayuda
+            if (helpButton) {
+                if (body.classList.contains('dark')) {
+                    helpButton.style.backgroundColor = '#1f2937'; // gray-800
+                    helpButton.style.color = '#e5e7eb'; // gray-200
+                } else {
+                    helpButton.style.backgroundColor = 'white';
+                    helpButton.style.color = '#374151'; // gray-700
+                }
+            }
             
             updateThemeToggle(!isDark);
             
@@ -220,11 +253,27 @@ m8 0a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4a2 2 0 012-2h4z"></path>
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+            const searchInput = document.querySelector('input[placeholder="Buscar libro..."]');
+            const helpButton = document.getElementById('help-button');
             
             if (isDark) {
                 document.body.classList.add('dark');
+                if (searchInput) {
+                    searchInput.style.backgroundColor = '#1f2937'; // gray-800
+                }
+                if (helpButton) {
+                    helpButton.style.backgroundColor = '#1f2937'; // gray-800
+                    helpButton.style.color = '#e5e7eb'; // gray-200
+                }
             } else {
                 document.body.classList.remove('dark');
+                if (searchInput) {
+                    searchInput.style.backgroundColor = 'white';
+                }
+                if (helpButton) {
+                    helpButton.style.backgroundColor = 'white';
+                    helpButton.style.color = '#374151'; // gray-700
+                }
             }
             updateThemeToggle(isDark);
         });
